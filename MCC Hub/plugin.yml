@@ -1,0 +1,15 @@
+name: MCC-Test
+version: 0.0.1 Beta
+description: A prototype for MCC-likes
+api-version: 1.19
+
+author: SpiForge
+
+prefix: MCCTest
+
+main: mcc.MCCTest
+
+commands:
+  decisiondome:
+    description: Manage all decisiondome relevant commands
+    usage: "Usage: /<command> [fields] [add|remove|list]"
