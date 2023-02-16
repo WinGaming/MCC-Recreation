@@ -20,6 +20,8 @@ public class DecisionDome {
 	private int ticksWaited = 0;
 	private int currentSelectionIndex;
 	
+	private int chosenPosition = -1;
+	
 	public DecisionDome(MCCTest pluginInstance, DecisionDomeTemplate template) {
 		this.loadFromTemplate(template);
 		
@@ -46,6 +48,7 @@ public class DecisionDome {
 			case WAITING: this.currentTimer = null; break;
 			case GAME_SELECTION: this.currentTimer = new Timer(TimeUnit.SECONDS, 30); this.ticksWaited = 0; break;
 			case GAME_SELECTION_FINAL: this.currentTimer = new Timer(TimeUnit.SECONDS, 5); break;
+			case GAME_SELECTION_AWAIT_CHOSEN_POSITION_HIGHLIGHT: this.currentTimer = null; break;
 			case GAME_SELECTED: this.currentTimer = new Timer(TimeUnit.SECONDS, 10); break;
 			case GAME_SELECTED_AWAIT_TELEPORT: this.currentTimer = new Timer(TimeUnit.HOURS, 10); break;
 			}
@@ -78,10 +81,24 @@ public class DecisionDome {
 				} else {
 					this.ticksWaited++;
 				}
+			} else if (this.state == DecisionDomeState.GAME_SELECTION_AWAIT_CHOSEN_POSITION_HIGHLIGHT) {
+				double delay = 2; // minDelay
+				int ticksToWait = (int) delay;
+				if (this.ticksWaited >= ticksToWait) {
+					this.currentSelectionIndex++;
+					this.currentSelectionIndex %= this.fields.length;
+					this.ticksWaited = 0;
+					
+					if (this.currentSelectionIndex == this.chosenPosition) {
+						this.setState(DecisionDomeState.GAME_SELECTED); // we continue the method here, because we want to show the correct highlighting
+					}
+				} else {
+					this.ticksWaited++;
+				}
 			}
 			
-			if (this.currentTimer != null) {
-				Bukkit.broadcastMessage(this.currentTimer.buildText(System.currentTimeMillis()));
+			if (this.currentTimer != null || this.state.shouldUpdateFieldsWithoutActiveTimer()) {
+				if (this.currentTimer != null) Bukkit.broadcastMessage(this.currentTimer.buildText(System.currentTimeMillis()));
 				
 				switch (this.state) {
 				case WAITING:
@@ -89,6 +106,7 @@ public class DecisionDome {
 					break;
 				case GAME_SELECTION:
 				case GAME_SELECTION_FINAL:
+				case GAME_SELECTION_AWAIT_CHOSEN_POSITION_HIGHLIGHT:
 					for (int i = 0; i < this.fields.length; i++) this.fields[i].setState(i == this.currentSelectionIndex ? DecisionFieldState.HIGHLIGHTED : DecisionFieldState.ENABLED);
 					break;
 				case GAME_SELECTED:
@@ -101,7 +119,8 @@ public class DecisionDome {
 				switch (this.state) {
 				case WAITING: System.err.println("A timer run out where it shouldn't!"); break;
 				case GAME_SELECTION: Bukkit.broadcastMessage("Finished GAME_SELECTION"); setState(DecisionDomeState.GAME_SELECTION_FINAL); break;
-				case GAME_SELECTION_FINAL: Bukkit.broadcastMessage("Finished GAME_SELECTION_FINAL"); setState(DecisionDomeState.GAME_SELECTED); break;
+				case GAME_SELECTION_FINAL: Bukkit.broadcastMessage("Finished GAME_SELECTION_FINAL"); setState(DecisionDomeState.GAME_SELECTION_AWAIT_CHOSEN_POSITION_HIGHLIGHT); break;
+				case GAME_SELECTION_AWAIT_CHOSEN_POSITION_HIGHLIGHT: System.err.println("A timer run out where it shouldn't!"); break;
 				case GAME_SELECTED: Bukkit.broadcastMessage("Finished GAME_SELECTED"); setState(DecisionDomeState.GAME_SELECTED_AWAIT_TELEPORT); break;
 				case GAME_SELECTED_AWAIT_TELEPORT: Bukkit.broadcastMessage("Finished GAME_SELECTED_AWAIT_TELEPORT"); setState(DecisionDomeState.WAITING); break;
 				}
@@ -120,10 +139,26 @@ public class DecisionDome {
 		GAME_SELECTION,
 		// Teams can't use any items anymore
 		GAME_SELECTION_FINAL,
+		// Waiting for selected field to reach chosen
+		GAME_SELECTION_AWAIT_CHOSEN_POSITION_HIGHLIGHT(true),
 		// A game was selected
 		GAME_SELECTED,
 		// A game was selected and players should teleport currently or have been teleported
-		GAME_SELECTED_AWAIT_TELEPORT
+		GAME_SELECTED_AWAIT_TELEPORT;
+		
+		private boolean updateFieldsWithoutActiveTimer;
+
+		private DecisionDomeState() {
+			this(false);
+		}
+		
+		private DecisionDomeState(boolean updateFieldsWithoutActiveTimer) {
+			this.updateFieldsWithoutActiveTimer = updateFieldsWithoutActiveTimer;
+		}
+		
+		public boolean shouldUpdateFieldsWithoutActiveTimer() {
+			return updateFieldsWithoutActiveTimer;
+		}
 	}
 	
 //	private class SelectableGame {
