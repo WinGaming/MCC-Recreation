@@ -75,13 +75,13 @@ public class HubConfig implements MCCConfigSerializable {
 	}
 	
 	@Override
-	public void load(ConfigurationSection config) {
-		
+	public boolean load(ConfigurationSection config) {
+		return this.decisiondome.load(config.getConfigurationSection("decisiondome"));
 	}
 	
 	@Override
 	public void save(ConfigurationSection config) {
-		
+		this.decisiondome.save(config.getConfigurationSection("decisiondome"));
 	}
 	
 	public HubDecisiondomeConfig getDecisiondome() {
