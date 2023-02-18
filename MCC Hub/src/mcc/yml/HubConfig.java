@@ -10,6 +10,9 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import mcc.Constants;
 
+/**
+ * This class represents the configuration implementing {@link MCCConfigSerializable}.
+ */
 public class HubConfig implements MCCConfigSerializable {
 	
 	private File configFile;
@@ -18,9 +21,15 @@ public class HubConfig implements MCCConfigSerializable {
 	private HubDecisiondomeConfig decisiondome;
 	
 	public HubConfig() throws IOException {
+		this.decisiondome = new HubDecisiondomeConfig();
+		
 		this.reload();
 	}
 	
+	/**
+	 * Loads the configuration from the file-system.
+	 * @throws IOException when an unknown io-error occurred
+	 */
 	public void reload() throws IOException {
 		File configDir = new File(new File("").getAbsolutePath() + "/" + Constants.FOLDER_CONFIGS);
 		File file = new File(configDir.getAbsolutePath() + "/hub.yml");
@@ -89,15 +98,15 @@ public class HubConfig implements MCCConfigSerializable {
 	}
 	
 	public enum FileSaveResponse {
-		// No error
+		/** No error */
 		SUCCESS,
-		// The file was missing, recreated it from currently known data
+		/** The file was missing, recreated it from currently known data */
 		SUCCESS_RECREATED,
-		// The file was edited after the last reload, but was overwritten with currently known data
+		/** The file was edited after the last reload, but was overwritten with currently known data */
 		SUCCESS_FORCED,
-		// The file was edited after the last reload
+		/** The file was edited after the last reload */
 		FAILED_MODIFIED,
-		// Unknown error
+		/** Unknown error */
 		FAILED_UNKNOWN,
 	}
 }

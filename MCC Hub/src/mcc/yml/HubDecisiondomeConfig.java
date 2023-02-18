@@ -9,6 +9,9 @@ import org.bukkit.configuration.ConfigurationSection;
 import mcc.utils.Pair;
 import mcc.utils.Vector3i;
 
+/**
+ * This class represents the configuration section for the Decision-dome implementing {@link MCCConfigSerializable}.
+ */
 public class HubDecisiondomeConfig implements MCCConfigSerializable {
 	
 	private HubDecisiondomeSingleFieldConfig[] fields = new HubDecisiondomeSingleFieldConfig[0];
@@ -21,14 +24,23 @@ public class HubDecisiondomeConfig implements MCCConfigSerializable {
 	private int minTickDelay = 2;
 	private int maxAdditionalTickDelay = 20;
 	
-	private HubDecisiondomeFieldTypeConfig enabledState = new HubDecisiondomeFieldTypeConfig().setMaterial(Material.WHITE_WOOL);
-	private HubDecisiondomeFieldTypeConfig disabledState = new HubDecisiondomeFieldTypeConfig().setMaterial(Material.LIGHT_GRAY_WOOL);
-	private HubDecisiondomeFieldTypeConfig highlightedState = new HubDecisiondomeFieldTypeConfig().setMaterial(Material.LIME_WOOL);
-	private HubDecisiondomeFieldTypeConfig selectedState = new HubDecisiondomeFieldTypeConfig().setMaterial(Material.GREEN_WOOL);
+	private HubDecisiondomeFieldTypeConfig enabledState = new HubDecisiondomeFieldTypeConfig(Material.WHITE_WOOL);
+	private HubDecisiondomeFieldTypeConfig disabledState = new HubDecisiondomeFieldTypeConfig(Material.LIGHT_GRAY_WOOL);
+	private HubDecisiondomeFieldTypeConfig highlightedState = new HubDecisiondomeFieldTypeConfig(Material.LIME_WOOL);
+	private HubDecisiondomeFieldTypeConfig selectedState = new HubDecisiondomeFieldTypeConfig(Material.GREEN_WOOL);
 	
-	private static Pair<Pair<TimeUnit, Integer>, Boolean> handleTimerPair(String timerkey, TimeUnit defaultUnit, int defaultAmount, ConfigurationSection config) {
-		String unitKey = "timer." + timerkey + ".unit";
-		String amountKey = "timer." + timerkey + ".amount";
+	/**
+	 * Loads and returns the stored timer values and a {@link Boolean} if default values were used.
+	 * The data is loaded under the key <code>"timer." + timerKey</code>
+	 * @param timerKey is the key of the name of the timer
+	 * @param defaultUnit is the default {@link TimeUnit}
+	 * @param defaultAmount is the default amount of time
+	 * @param config the {@link ConfigurationSection} to load from
+	 * @return the stored timer values and a {@link Boolean} if default values were used
+	 */
+	private static Pair<Pair<TimeUnit, Integer>, Boolean> loadTimerPair(String timerKey, TimeUnit defaultUnit, int defaultAmount, ConfigurationSection config) {
+		String unitKey = "timer." + timerKey + ".unit";
+		String amountKey = "timer." + timerKey + ".amount";
 		
 		Pair<TimeUnit, Boolean> gameSelectionUnit = ConfigUtils.readEnumValue(TimeUnit.class, unitKey, defaultUnit, config);
 		if (config.contains(amountKey)) {
@@ -57,16 +69,16 @@ public class HubDecisiondomeConfig implements MCCConfigSerializable {
 		this.fields = newFields;
 		
 		// Timers
-		var gameSelection = handleTimerPair("gameselection", TimeUnit.SECONDS, 30, config);
+		var gameSelection = loadTimerPair("gameselection", TimeUnit.SECONDS, 30, config);
 		this.gameSelectionTimer = gameSelection.getA();
 		
-		var gameSelectionFinal = handleTimerPair("gameselectionfinal", TimeUnit.SECONDS, 5, config);
+		var gameSelectionFinal = loadTimerPair("gameselectionfinal", TimeUnit.SECONDS, 5, config);
 		this.gameSelectionFinalTimer = gameSelectionFinal.getA();
 		
-		var gameSelected = handleTimerPair("gameselected", TimeUnit.SECONDS, 10, config);
+		var gameSelected = loadTimerPair("gameselected", TimeUnit.SECONDS, 10, config);
 		this.gameSelectedTimer = gameSelected.getA();
 		
-		var gameSelectedAwaitTeleport = handleTimerPair("awaitteleport", TimeUnit.HOURS, 10, config);
+		var gameSelectedAwaitTeleport = loadTimerPair("awaitteleport", TimeUnit.HOURS, 10, config);
 		this.gameSelectedAwaitTeleportTimer = gameSelectedAwaitTeleport.getA();
 		
 		valuesChanged = valuesChanged || gameSelection.getB() || gameSelectionFinal.getB() || gameSelected.getB() || gameSelectedAwaitTeleport.getB();
@@ -118,11 +130,18 @@ public class HubDecisiondomeConfig implements MCCConfigSerializable {
 		this.selectedState.save(config.getConfigurationSection("state.selected"));
 	}
 	
+	/**
+	 * This class represents the configuration section for field-type in the Decision-dome implementing {@link MCCConfigSerializable}.
+	 */
 	public class HubDecisiondomeFieldTypeConfig implements MCCConfigSerializable {
 		
-		private final Material defaultMaterial = Material.ORANGE_WOOL;
+		private final Material defaultMaterial;
 		
-		private Material material = defaultMaterial;
+		private Material material;
+		
+		public HubDecisiondomeFieldTypeConfig() { this.defaultMaterial = Material.ORANGE_WOOL; this.material = defaultMaterial; }
+		public HubDecisiondomeFieldTypeConfig(Material defaultMaterial) { this.defaultMaterial = defaultMaterial; this.material = defaultMaterial; }
+		
 		
 		@Override
 		public boolean load(ConfigurationSection config) throws IllegalArgumentException {
@@ -136,16 +155,14 @@ public class HubDecisiondomeConfig implements MCCConfigSerializable {
 			config.set("material", this.material.name());
 		}
 		
-		public HubDecisiondomeFieldTypeConfig setMaterial(Material material) {
-			this.material = material;
-			return this;
-		}
-		
 		public Material getMaterial() {
 			return material;
 		}
 	}
 	
+	/**
+	 * This class represents the configuration section for a single field in the Decision-dome implementing {@link MCCConfigSerializable}.
+	 */
 	public class HubDecisiondomeSingleFieldConfig implements MCCConfigSerializable {
 		
 		private Vector3i[] positions = new Vector3i[0];
