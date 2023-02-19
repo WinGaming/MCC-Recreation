@@ -1,6 +1,6 @@
 package mcc;
 
-import java.util.ArrayList;
+import java.io.IOException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -8,7 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import mcc.config.ConfigBuilder;
 import mcc.decisiondome.DecisionDome;
 import mcc.decisiondome.DecisionDomeCommand;
-import mcc.decisiondome.DecisionDomeTemplate;
+import mcc.yml.HubConfig;
 
 public class MCCTest extends JavaPlugin {
 	
@@ -20,17 +20,28 @@ public class MCCTest extends JavaPlugin {
 	
 	private int schedulerId;
 	
-	// Templates
-	private DecisionDomeTemplate decisionDomeTemplate;
+	private HubConfig config;
 	
 	@Override
 	public void onEnable() {
 		this.configBuilder = new ConfigBuilder();
 		
-		this.decisionDomeTemplate = new DecisionDomeTemplate(new ArrayList<>()); // TODO: Load from config
-		this.decisionDome = new DecisionDome(this, this.decisionDomeTemplate);
+		try {
+			this.config = new HubConfig();
+		} catch (IOException e) {
+			System.err.println("Failed to load configuration! See error message for more details");
+			
+			e.printStackTrace();
+			
+			Bukkit.getPluginManager().disablePlugin(this);
+			Bukkit.getServer().shutdown();
+			
+			return;
+		}
 		
-		getCommand("decisiondome").setExecutor(this.domeCommand = new DecisionDomeCommand(this));
+		this.decisionDome = new DecisionDome(this, this.config.getDecisiondome());
+		
+		getCommand("decisiondome").setExecutor(this.domeCommand = new DecisionDomeCommand(this, this.config));
 		
 		getServer().getPluginManager().registerEvents(this.configBuilder, this);
 		
@@ -49,10 +60,6 @@ public class MCCTest extends JavaPlugin {
 	
 	public ConfigBuilder getConfigBuilder() {
 		return configBuilder;
-	}
-	
-	public DecisionDomeTemplate getDecisionDomeTemplate() {
-		return decisionDomeTemplate;
 	}
 	
 	public DecisionDome getDecisionDome() {

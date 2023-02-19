@@ -51,7 +51,11 @@ public class HubConfig implements MCCConfigSerializable {
 		this.lastEdited = file.lastModified();
 		
 		YamlConfiguration config = YamlConfiguration.loadConfiguration(new InputStreamReader(new FileInputStream(file), "UTF-8"));
-		this.load(config);
+		if (this.load(config)) {
+			System.out.println("Detected patches in config, force saving changed version...");
+			this.save(config);
+			config.save(file);
+		}
 	}
 	
 	/**
@@ -85,11 +89,13 @@ public class HubConfig implements MCCConfigSerializable {
 	
 	@Override
 	public boolean load(ConfigurationSection config) {
+		config.createSection("decisiondome");
 		return this.decisiondome.load(config.getConfigurationSection("decisiondome"));
 	}
 	
 	@Override
 	public void save(ConfigurationSection config) {
+		config.createSection("decisiondome");
 		this.decisiondome.save(config.getConfigurationSection("decisiondome"));
 	}
 	

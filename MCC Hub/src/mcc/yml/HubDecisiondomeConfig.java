@@ -1,11 +1,16 @@
 package mcc.yml;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 
+import mcc.config.LocationListSelector;
 import mcc.utils.Pair;
 import mcc.utils.Vector3i;
 
@@ -13,6 +18,8 @@ import mcc.utils.Vector3i;
  * This class represents the configuration section for the Decision-dome implementing {@link MCCConfigSerializable}.
  */
 public class HubDecisiondomeConfig implements MCCConfigSerializable {
+	
+	private String worldName = "WORLD_NAME";
 	
 	private HubDecisiondomeSingleFieldConfig[] fields = new HubDecisiondomeSingleFieldConfig[0];
 	
@@ -25,7 +32,7 @@ public class HubDecisiondomeConfig implements MCCConfigSerializable {
 	private int maxAdditionalTickDelay = 20;
 	
 	private HubDecisiondomeFieldTypeConfig enabledState = new HubDecisiondomeFieldTypeConfig(Material.WHITE_WOOL);
-	private HubDecisiondomeFieldTypeConfig disabledState = new HubDecisiondomeFieldTypeConfig(Material.LIGHT_GRAY_WOOL);
+	private HubDecisiondomeFieldTypeConfig disabledState = new HubDecisiondomeFieldTypeConfig(Material.RED_WOOL);
 	private HubDecisiondomeFieldTypeConfig highlightedState = new HubDecisiondomeFieldTypeConfig(Material.LIME_WOOL);
 	private HubDecisiondomeFieldTypeConfig selectedState = new HubDecisiondomeFieldTypeConfig(Material.GREEN_WOOL);
 	
@@ -56,12 +63,14 @@ public class HubDecisiondomeConfig implements MCCConfigSerializable {
 		boolean valuesChanged = false;
 		
 		// Fields
+		config.createSection("fields");
 		Set<String> stringFields = config.getConfigurationSection("fields").getKeys(false);
 		HubDecisiondomeSingleFieldConfig[] newFields = new HubDecisiondomeSingleFieldConfig[stringFields.size()];
 
 		int i = 0;
 		for (String key : stringFields) {
 			HubDecisiondomeSingleFieldConfig newConfig = new HubDecisiondomeSingleFieldConfig();
+			config.createSection("fields." + key);
 			newConfig.load(config.getConfigurationSection("fields." + key));
 			newFields[i] = newConfig;
 			i++;
@@ -69,16 +78,16 @@ public class HubDecisiondomeConfig implements MCCConfigSerializable {
 		this.fields = newFields;
 		
 		// Timers
-		var gameSelection = loadTimerPair("gameselection", TimeUnit.SECONDS, 30, config);
+		var gameSelection = loadTimerPair("selection", TimeUnit.SECONDS, 30, config);
 		this.gameSelectionTimer = gameSelection.getA();
 		
-		var gameSelectionFinal = loadTimerPair("gameselectionfinal", TimeUnit.SECONDS, 5, config);
+		var gameSelectionFinal = loadTimerPair("selection-final", TimeUnit.SECONDS, 5, config);
 		this.gameSelectionFinalTimer = gameSelectionFinal.getA();
 		
-		var gameSelected = loadTimerPair("gameselected", TimeUnit.SECONDS, 10, config);
+		var gameSelected = loadTimerPair("selected", TimeUnit.SECONDS, 10, config);
 		this.gameSelectedTimer = gameSelected.getA();
 		
-		var gameSelectedAwaitTeleport = loadTimerPair("awaitteleport", TimeUnit.HOURS, 10, config);
+		var gameSelectedAwaitTeleport = loadTimerPair("await-teleport", TimeUnit.HOURS, 10, config);
 		this.gameSelectedAwaitTeleportTimer = gameSelectedAwaitTeleport.getA();
 		
 		valuesChanged = valuesChanged || gameSelection.getB() || gameSelectionFinal.getB() || gameSelected.getB() || gameSelectedAwaitTeleport.getB();
@@ -90,10 +99,18 @@ public class HubDecisiondomeConfig implements MCCConfigSerializable {
 		else { this.maxAdditionalTickDelay = 20; valuesChanged = true; }
 		
 		// Field States
+		config.createSection("states.enabled");
+		config.createSection("states.disabled");
+		config.createSection("states.highlighted");
+		config.createSection("states.selected");
 		valuesChanged = valuesChanged || this.enabledState.load(config.getConfigurationSection("states.enabled"));
 		valuesChanged = valuesChanged || this.disabledState.load(config.getConfigurationSection("states.disabled"));
 		valuesChanged = valuesChanged || this.highlightedState.load(config.getConfigurationSection("states.highlighted"));
-		valuesChanged = valuesChanged || this.selectedState.load(config.getConfigurationSection("state.selected"));
+		valuesChanged = valuesChanged || this.selectedState.load(config.getConfigurationSection("states.selected"));
+		
+		// World
+		if (config.contains("world")) { this.worldName = config.getString("world"); }
+		else { this.worldName = "WORLD_NAME"; valuesChanged = true; }
 		
 		return valuesChanged;
 	}
@@ -103,31 +120,117 @@ public class HubDecisiondomeConfig implements MCCConfigSerializable {
 		// Fields
 		for (int i = 0; i < this.fields.length; i++) {
 			HubDecisiondomeSingleFieldConfig fieldConfig = this.fields[i];
+			config.createSection("fields." + i);
 			fieldConfig.save(config.getConfigurationSection("fields." + i));
 		}
 		
 		// Timers
-		config.set("timer.gameselection.unit", gameSelectionTimer.getA().name());
-		config.set("timer.gameselection.amount", gameSelectionTimer.getB());
+		config.set("timer.selection.unit", gameSelectionTimer.getA().name());
+		config.set("timer.selection.amount", gameSelectionTimer.getB());
 		
-		config.set("timer.gameselectionfinal.unit", gameSelectionFinalTimer.getA().name());
-		config.set("timer.gameselectionfinal.amount", gameSelectionFinalTimer.getB());
+		config.set("timer.selection-final.unit", gameSelectionFinalTimer.getA().name());
+		config.set("timer.selection-final.amount", gameSelectionFinalTimer.getB());
 		
-		config.set("timer.gameselected.unit", gameSelectedTimer.getA().name());
-		config.set("timer.gameselected.amount", gameSelectedTimer.getB());
+		config.set("timer.selected.unit", gameSelectedTimer.getA().name());
+		config.set("timer.selected.amount", gameSelectedTimer.getB());
 		
-		config.set("timer.awaitteleport.unit", gameSelectedAwaitTeleportTimer.getA().name());
-		config.set("timer.awaitteleport.amount", gameSelectedAwaitTeleportTimer.getB());
+		config.set("timer.await-teleport.unit", gameSelectedAwaitTeleportTimer.getA().name());
+		config.set("timer.await-teleport.amount", gameSelectedAwaitTeleportTimer.getB());
 		
 		// Delays
 		config.set("min-delay", this.minTickDelay);
 		config.set("max-additional-delay", this.maxAdditionalTickDelay);
 		
 		// Field States
+		config.createSection("states.enabled");
+		config.createSection("states.disabled");
+		config.createSection("states.highlighted");
+		config.createSection("states.selected");
 		this.enabledState.save(config.getConfigurationSection("states.enabled"));
 		this.disabledState.save(config.getConfigurationSection("states.disabled"));
 		this.highlightedState.save(config.getConfigurationSection("states.highlighted"));
-		this.selectedState.save(config.getConfigurationSection("state.selected"));
+		this.selectedState.save(config.getConfigurationSection("states.selected"));
+		
+		// World
+		config.set("world", this.worldName);
+	}
+	
+	// Getters
+	public Pair<TimeUnit, Integer> getGameSelectionTimer() {
+		return gameSelectionTimer;
+	}
+	
+	public Pair<TimeUnit, Integer> getGameSelectionFinalTimer() {
+		return gameSelectionFinalTimer;
+	}
+	
+	public Pair<TimeUnit, Integer> getGameSelectedTimer() {
+		return gameSelectedTimer;
+	}
+	
+	public Pair<TimeUnit, Integer> getGameSelectedAwaitTeleportTimer() {
+		return gameSelectedAwaitTeleportTimer;
+	}
+	
+	public int getMinTickDelay() {
+		return minTickDelay;
+	}
+	
+	public int getMaxAdditionalTickDelay() {
+		return maxAdditionalTickDelay;
+	}
+	
+	public HubDecisiondomeFieldTypeConfig getEnabledState() {
+		return enabledState;
+	}
+	
+	public HubDecisiondomeFieldTypeConfig getDisabledState() {
+		return disabledState;
+	}
+	
+	public HubDecisiondomeFieldTypeConfig getHighlightedState() {
+		return highlightedState;
+	}
+	
+	public HubDecisiondomeFieldTypeConfig getSelectedState() {
+		return selectedState;
+	}
+	
+	public HubDecisiondomeSingleFieldConfig[] getFields() {
+		return fields;
+	}
+	
+	public String getWorldName() {
+		return worldName;
+	}
+	
+	// Setters
+	public Optional<String> addFieldFromSelector(LocationListSelector selector) {
+		List<String> locationIndexList = new ArrayList<>();
+		
+		List<Vector3i> positionList = new ArrayList<>();
+		for (Location location : selector.build()) {
+			if (!this.worldName.equals(location.getWorld().getName())) {
+				return Optional.of("At least one block was placed in a diffrent world");
+			}
+			
+			if (!locationIndexList.contains(location.getBlockX() + "_" + location.getBlockY() + "_" + location.getBlockZ())) {
+				positionList.add(new Vector3i(location.getBlockX(), location.getBlockY(), location.getBlockZ()));
+			}
+		}
+		
+		Vector3i[] positions = positionList.toArray(new Vector3i[positionList.size()]);
+		HubDecisiondomeSingleFieldConfig fieldConfig = new HubDecisiondomeSingleFieldConfig();
+		fieldConfig.positions = positions;
+		
+		HubDecisiondomeSingleFieldConfig[] newFields = new HubDecisiondomeSingleFieldConfig[this.fields.length + 1];
+		for (int i = 0; i < this.fields.length; i++) {
+			newFields[i] = this.fields[i];
+		}
+		
+		newFields[newFields.length - 1] = fieldConfig;
+		
+		return Optional.empty();
 	}
 	
 	/**

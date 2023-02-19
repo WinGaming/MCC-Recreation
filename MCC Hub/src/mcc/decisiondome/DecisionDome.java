@@ -1,17 +1,24 @@
 package mcc.decisiondome;
 
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
 
 import mcc.MCCTest;
 import mcc.decisiondome.DecisionField.DecisionFieldState;
+import mcc.utils.Pair;
 import mcc.utils.Timer;
+import mcc.utils.Vector3i;
+import mcc.yml.HubDecisiondomeConfig;
 
 public class DecisionDome {
 	
 	private DecisionField[] fields;
 	
+	private boolean validLoad = false;
 	private boolean active = false;
 	
 	private Timer currentTimer;
@@ -22,41 +29,72 @@ public class DecisionDome {
 	
 	private int chosenPosition = -1;
 	
-	public DecisionDome(MCCTest pluginInstance, DecisionDomeTemplate template) {
-		this.loadFromTemplate(template);
+	private HubDecisiondomeConfig config;
+	
+	public DecisionDome(MCCTest pluginInstance, HubDecisiondomeConfig config) {
+		this.config = config;
+		
+		Optional<String> fieldLoadError = this.reloadFieldsFromConfig();
+		if (fieldLoadError.isPresent()) {
+			this.validLoad = false;
+			System.err.println(fieldLoadError.get());
+		} else {
+			this.validLoad = true;
+		}
 		
 		this.state = DecisionDomeState.WAITING;
 	}
 	
-	public boolean loadFromTemplate(DecisionDomeTemplate template) {
+	private Optional<String> reloadFieldsFromConfig() {
 		if (this.active) {
-			return false;
+			return Optional.of("Can't reload as decisiondome is currently active");
 		}
 		
-		this.fields = new DecisionField[template.getFields().size()];
+		World world = Bukkit.getWorld(this.config.getWorldName());
+		
+		if (world == null) {
+			return Optional.of("Failed to reload: Could not find world \"" + this.config.getWorldName() + "\"");
+		}
+		
+		this.fields = new DecisionField[this.config.getFields().length];
 		for (int i = 0; i < this.fields.length; i++) {
-			this.fields[i] = new DecisionField(template.getFields().get(i), DecisionFieldState.ENABLED);
+			Vector3i[] positions = this.config.getFields()[i].getPositions();
+			Location[] locations = new Location[positions.length];
+			
+			for (int j = 0; j < positions.length; j++) {
+				locations[j] = new Location(world, positions[j].getX(), positions[j].getY(), positions[j].getZ());
+			}
+			
+			this.fields[i] = new DecisionField(locations, DecisionFieldState.ENABLED, this.config);
 		}
 		
-		return true;
+		return Optional.empty();
 	}
 
+	private Timer createNewTimer(Pair<TimeUnit, Integer> timer) {
+		return new Timer(timer.getA(), timer.getB());
+	}
+	
 	private void setState(DecisionDomeState newState) {
 		if (this.state != newState) {
 			this.state = newState;
 			switch (newState) {
 			case WAITING: this.currentTimer = null; break;
-			case GAME_SELECTION: this.currentTimer = new Timer(TimeUnit.SECONDS, 30); this.ticksWaited = 0; break;
-			case GAME_SELECTION_FINAL: this.currentTimer = new Timer(TimeUnit.SECONDS, 5); break;
+			case GAME_SELECTION: this.currentTimer = createNewTimer(config.getGameSelectionTimer()); this.ticksWaited = 0; break;
+			case GAME_SELECTION_FINAL: this.currentTimer = createNewTimer(config.getGameSelectionFinalTimer()); break;
 			case GAME_SELECTION_AWAIT_CHOSEN_POSITION_HIGHLIGHT: this.currentTimer = null; break;
-			case GAME_SELECTED: this.currentTimer = new Timer(TimeUnit.SECONDS, 10); break;
-			case GAME_SELECTED_AWAIT_TELEPORT: this.currentTimer = new Timer(TimeUnit.HOURS, 10); break;
+			case GAME_SELECTED: this.currentTimer = createNewTimer(config.getGameSelectedTimer()); break;
+			case GAME_SELECTED_AWAIT_TELEPORT: this.currentTimer = createNewTimer(config.getGameSelectedAwaitTeleportTimer()); break;
 			}
 			if (this.currentTimer != null) this.currentTimer.start(System.currentTimeMillis());
 		}
 	}
 	
 	public void start() {
+		if (!this.validLoad) {
+			System.err.println("Can not start decision dome, no valid configuration loaded");
+		}
+		
 		if (this.state == DecisionDomeState.WAITING) {
 			this.setState(DecisionDomeState.GAME_SELECTION);
 			this.active = true;
@@ -69,10 +107,18 @@ public class DecisionDome {
 		if (this.active) {
 			if (this.state == DecisionDomeState.GAME_SELECTION || this.state == DecisionDomeState.GAME_SELECTION_FINAL) {
 				double totalRemaining = (double) this.currentTimer.remaining(System.currentTimeMillis());
-				if (state == DecisionDomeState.GAME_SELECTION) totalRemaining += 5d * 1000d;
-				double percentage = totalRemaining / ((30d + 5d) * 1000d);
-				double minDelay = 2; // in ticks
-				double maxAddedDelay = 20; // in ticks
+				
+				Pair<TimeUnit, Integer> selectionFinalTimes = this.config.getGameSelectionFinalTimer();
+				double selectionFinalTimer = selectionFinalTimes.getA().toMillis(selectionFinalTimes.getB());
+				
+				Pair<TimeUnit, Integer> selectionTimes = this.config.getGameSelectionTimer();
+				double selectionTimer = selectionTimes.getA().toMillis(selectionTimes.getB());
+				
+				if (state == DecisionDomeState.GAME_SELECTION) totalRemaining += selectionFinalTimer;
+				
+				double percentage = totalRemaining / (selectionFinalTimer + selectionTimer);
+				double minDelay = this.config.getMinTickDelay();
+				double maxAddedDelay = this.config.getMaxAdditionalTickDelay();
 				int ticksToWait = (int) Math.ceil(minDelay + maxAddedDelay * percentage);
 				if (this.ticksWaited >= ticksToWait) {
 					this.currentSelectionIndex++;
@@ -82,7 +128,7 @@ public class DecisionDome {
 					this.ticksWaited++;
 				}
 			} else if (this.state == DecisionDomeState.GAME_SELECTION_AWAIT_CHOSEN_POSITION_HIGHLIGHT) {
-				double delay = 2; // minDelay
+				double delay = this.config.getMinTickDelay();
 				int ticksToWait = (int) delay;
 				if (this.ticksWaited >= ticksToWait) {
 					this.currentSelectionIndex++;

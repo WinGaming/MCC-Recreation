@@ -2,6 +2,7 @@ package mcc.decisiondome;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Map.Entry;
 
 import org.bukkit.ChatColor;
@@ -14,15 +15,20 @@ import mcc.MCCTest;
 import mcc.config.LocationListSelector;
 import mcc.indicator.ParticleIndicator;
 import mcc.utils.Pair;
+import mcc.yml.HubConfig;
 
 public class DecisionDomeCommand implements CommandExecutor {
 
 	private MCCTest pluginInstance;
+	
+	private HubConfig config;
 
 	private Map<Player, Pair<DecisionCommandSelectorType, LocationListSelector>> currentSelector;
 	
-	public DecisionDomeCommand(MCCTest pluginInstance) {
+	public DecisionDomeCommand(MCCTest pluginInstance, HubConfig config) {
 		this.pluginInstance = pluginInstance;
+		
+		this.config = config;
 		
 		this.currentSelector = new HashMap<>();
 	}
@@ -59,10 +65,14 @@ public class DecisionDomeCommand implements CommandExecutor {
 				if (currentSelector.containsKey(player)) {
 					switch (currentSelector.get(player).getA()) {
 						case CREATE_FIELD: {
-							this.pluginInstance.getDecisionDomeTemplate().addField(this.currentSelector.get(player).getB().build());
-							sender.sendMessage("Field added to template");
-							currentSelector.remove(player);
-							pluginInstance.getConfigBuilder().setSelector(player, null);
+							Optional<String> error = this.config.getDecisiondome().addFieldFromSelector(this.currentSelector.get(player).getB());
+							if (error.isEmpty()) {
+								sender.sendMessage("Field added to template");
+								currentSelector.remove(player);
+								pluginInstance.getConfigBuilder().setSelector(player, null);
+							} else {
+								sender.sendMessage(error.get());
+							}
 							break;
 						}
 					}
@@ -73,11 +83,12 @@ public class DecisionDomeCommand implements CommandExecutor {
 				sender.sendMessage("TODO:");
 			}
 		} else if (args[0].equalsIgnoreCase("reload")) {
-			if (this.pluginInstance.getDecisionDome().loadFromTemplate(this.pluginInstance.getDecisionDomeTemplate())) {
-				sender.sendMessage("Decision-dome reloaded from template");
-			} else {
-				sender.sendMessage("Failed to reload decision-dome. This can happen if the decision dome is active");
-			}
+			sender.sendMessage("TODO: Remove?");
+//			if (this.pluginInstance.getDecisionDome().loadFromTemplate(this.pluginInstance.getDecisionDomeTemplate())) {
+//				sender.sendMessage("Decision-dome reloaded from template");
+//			} else {
+//				sender.sendMessage("Failed to reload decision-dome. This can happen if the decision dome is active");
+//			}
 		} else if (args[0].equalsIgnoreCase("start")) {
 			this.pluginInstance.getDecisionDome().start();
 		} else {

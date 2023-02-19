@@ -1,31 +1,34 @@
 package mcc.decisiondome;
 
-import java.util.List;
-
 import org.bukkit.Location;
-import org.bukkit.Material;
+
+import mcc.yml.HubDecisiondomeConfig;
 
 public class DecisionField {
 
-	private List<Location> blockLocations;
+	private Location[] blockLocations;
 	
 	private DecisionFieldState state;
 	
 	private boolean dirty = true;
 	
-	public DecisionField(List<Location> blockLocations, DecisionFieldState state) {
+	private HubDecisiondomeConfig decisiondomeConfig;
+	
+	public DecisionField(Location[] blockLocations, DecisionFieldState state, HubDecisiondomeConfig config) {
 		this.blockLocations = blockLocations;
 		this.state = state;
+		
+		this.decisiondomeConfig = config;
 	}
 	
 	public void tick() {
 		if (this.dirty) {
 			for (Location location : this.blockLocations) {
 				switch (this.state) {
-				case ENABLED: location.getBlock().setType(Material.WHITE_WOOL); break;
-				case DISABLED: location.getBlock().setType(Material.RED_WOOL); break;
-				case HIGHLIGHTED: location.getBlock().setType(Material.LIME_WOOL); break;
-				case SELECTED: location.getBlock().setType(Material.GREEN_WOOL); break;
+				case ENABLED: location.getBlock().setType(this.decisiondomeConfig.getEnabledState().getMaterial()); break;
+				case DISABLED: location.getBlock().setType(this.decisiondomeConfig.getDisabledState().getMaterial()); break;
+				case HIGHLIGHTED: location.getBlock().setType(this.decisiondomeConfig.getHighlightedState().getMaterial()); break;
+				case SELECTED: location.getBlock().setType(this.decisiondomeConfig.getSelectedState().getMaterial()); break;
 				}
 			}
 		}
