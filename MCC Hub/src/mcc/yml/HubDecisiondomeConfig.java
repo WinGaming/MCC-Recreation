@@ -78,16 +78,16 @@ public class HubDecisiondomeConfig implements MCCConfigSerializable {
 		this.fields = newFields;
 		
 		// Timers
-		var gameSelection = loadTimerPair("selection", TimeUnit.SECONDS, 30, config);
+		Pair<Pair<TimeUnit, Integer>, Boolean> gameSelection = loadTimerPair("selection", TimeUnit.SECONDS, 30, config);
 		this.gameSelectionTimer = gameSelection.getA();
 		
-		var gameSelectionFinal = loadTimerPair("selection-final", TimeUnit.SECONDS, 5, config);
+		Pair<Pair<TimeUnit, Integer>, Boolean> gameSelectionFinal = loadTimerPair("selection-final", TimeUnit.SECONDS, 5, config);
 		this.gameSelectionFinalTimer = gameSelectionFinal.getA();
 		
-		var gameSelected = loadTimerPair("selected", TimeUnit.SECONDS, 10, config);
+		Pair<Pair<TimeUnit, Integer>, Boolean> gameSelected = loadTimerPair("selected", TimeUnit.SECONDS, 10, config);
 		this.gameSelectedTimer = gameSelected.getA();
 		
-		var gameSelectedAwaitTeleport = loadTimerPair("await-teleport", TimeUnit.HOURS, 10, config);
+		Pair<Pair<TimeUnit, Integer>, Boolean> gameSelectedAwaitTeleport = loadTimerPair("await-teleport", TimeUnit.HOURS, 10, config);
 		this.gameSelectedAwaitTeleportTimer = gameSelectedAwaitTeleport.getA();
 		
 		valuesChanged = valuesChanged || gameSelection.getB() || gameSelectionFinal.getB() || gameSelected.getB() || gameSelectedAwaitTeleport.getB();
