@@ -8,6 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import mcc.config.ConfigBuilder;
 import mcc.decisiondome.DecisionDome;
 import mcc.decisiondome.DecisionDomeCommand;
+import mcc.teams.TeamManager;
 import mcc.yml.HubConfig;
 
 public class MCCTest extends JavaPlugin {
@@ -21,6 +22,8 @@ public class MCCTest extends JavaPlugin {
 	private int schedulerId;
 	
 	private HubConfig config;
+
+	private TeamManager teamManager;
 	
 	@Override
 	public void onEnable() {
@@ -45,6 +48,9 @@ public class MCCTest extends JavaPlugin {
 		
 		getServer().getPluginManager().registerEvents(this.configBuilder, this);
 		
+		this.teamManager = new TeamManager();
+		getServer().getPluginManager().registerEvents(this.teamManager, this);
+
 		this.schedulerId = Bukkit.getScheduler().scheduleSyncRepeatingTask(this, this::tick, 0, 1);
 	}
 	
