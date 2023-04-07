@@ -15,6 +15,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 
 import net.minecraft.network.chat.ChatHexColor;
 import net.minecraft.network.chat.ChatMessageContent;
@@ -52,31 +53,15 @@ public class TeamManager implements Listener {
         // event.getPlayer().setDisplayName("Test");
         // event.getPlayer().setPlayerListName("ListName");
 
-        ChatModifier test = ChatModifier.EMPTY.withColor(ChatHexColor.parseColor("#FFD700"));
-        ChatModifier test2 = ChatModifier.EMPTY.withBold(true);
-        IChatBaseComponent message = IChatBaseComponent.translatable("test", "Steve").setStyle(test);
-        message = message.copy().append(IChatBaseComponent.literal("literal").copy().withStyle(test2));
-        ChatMessageContent content = new ChatMessageContent("pre", message);
-
-        MessageSigner signer = MessageSigner.create(new UUID(0, 0));
-        MessageSignature signature = MessageSignature.EMPTY;
-        SignedMessageHeader header = new SignedMessageHeader(signature, event.getPlayer().getUniqueId());
-        SignedMessageBody body = new SignedMessageBody(content, signer.timeStamp(), signer.salt(), new LastSeenMessages(Arrays.asList()));
-
-        // PlayerChatMessage mesa = new PlayerChatMessage(header, signature, body, Optional.empty(), FilterMask.FULLY_FILTERED);
         // PacketPlayOutPlayerInfo info = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, ((CraftPlayer) event.getPlayer()).getHandle());
         // ((CraftPlayer) event.getPlayer()).getHandle().connection.send(info);
-
-        GameProfile g2 = new GameProfile(UUID.fromString("069a79f4-44e9-4726-a5be-fca90e38aaf5"), "Steve");
-        System.out.println(g2.isComplete());
-        System.out.println(g2.getProperties().size());
-        g2.getProperties().asMap().forEach((a, b) -> {
-            System.out.println(a);
-            b.forEach(c -> {
-                System.out.println(c.getName());
-                System.out.println(c.getValue());
-            });
-        });
+// 069a79f4-44e9-4726-a5be-fca90e38aaf5
+        GameProfile g2 = new GameProfile(UUID.fromString("000a00a0-00a0-0000-a0aa-aaa00a00aaa0"), "Orange");
+        String tex = "ewogICJ0aW1lc3RhbXAiIDogMTY4MDkwMTQ3ODA3OSwKICAicHJvZmlsZUlkIiA6ICIyYzA3NmUzNDU0N2M0OWU2OTMwYzQzZDE2MDZmYjI1ZCIsCiAgInByb2ZpbGVOYW1lIiA6ICJsUmVzdSIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IGZhbHNlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWU4MjdmOTUyZDc4MTlkNDVmMmU0Zjg2NTY2OTNlYjgxMzUzZjMzODBmNDhhZjYyMDZkY2YyZGUzNDI1M2YwMiIsCiAgICAgICJtZXRhZGF0YSIgOiB7CiAgICAgICAgIm1vZGVsIiA6ICJzbGltIgogICAgICB9CiAgICB9CiAgfQp9";
+        String sig = "VXETljTM8oNN2bvSbzIamW4dsVF0oSpyJKBt2jcECMClsedzDj3TUu+FfKzEW9BG6TmZrS+DF9r/9mNbv4/YIxuUQnHX3/ROXWwzcZ3GVyA7FcP6qycF03iwSnAWPlTQvCErR9I1sA/hm5iu0Wi69tfi0mPGaSZnto/5uYWaD5q538sTGZo+JL7jxOgnLQe8dOyKQYcB8vlJP+5XiGuC1Ss0JKSvXl/C0YoZ8G27Q31Z/id7Wo4KyNZ7zUMFIC98Mh5tp8URBK5vcgx3X9eqylPord8uIaMg1ysuoRMlU7+ZRayiUqqT2H63Vdn06cG5xImjiHhrd5Pd6WF2J5SSyo89KcTlslW9fsLE3GI57r4QYbPp0bNoBYjGvra6qnC1b9SE8Fhu3N9apShJqPaqOFLDIJf2US6g32JVxzvP6lGRzKs2uOlN7M4sLypvDKH1qrxpE6YriS4/h8G7Mu3ecqdNHE81g+9mERzqZOVTJdATFGq5rTyb6y0ycKeG/WLzg6Ku8IjvDgntf2925sVUfb7Jckd3OVT51AQJqEcnuyMhpiaCn5mRrvOnbYuK/E6YdXE2iLsK+cazbugFvQN8BsERN9qfA6xPD3zRkSPa5eMVQd51MMVzt7VYBilpPNkzEQY8879laxkjj1KZi/Og6nf5MkAOOI81ymfH3UGxmpE=";
+        g2.getProperties().put("textures", new Property("textures", tex, sig));
+        Bukkit.broadcastMessage(tex);
+        System.out.println("mmmm");
         GameProfile g3 = new GameProfile(UUID.fromString("069a79f4-44e9-4726-a5be-fca90e38aaf5"), "Steven");
         EntityPlayer p2 = new EntityPlayer(MinecraftServer.getServer(), MinecraftServer.getServer().getLevel(World.OVERWORLD), MinecraftServer.ANONYMOUS_PLAYER_PROFILE, null);
         EntityPlayer p3 = new EntityPlayer(MinecraftServer.getServer(), MinecraftServer.getServer().getLevel(World.OVERWORLD), g2, null);
@@ -90,9 +75,21 @@ public class TeamManager implements Listener {
         PacketPlayOutPlayerInfo info3 = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, p4);
         ((CraftPlayer) event.getPlayer()).getHandle().connection.send(info3);
 
-        // // TranslatableComponent test = new TranslatableComponent();
-        // PacketPlayOutPlayerListHeaderFooter asd = new PacketPlayOutPlayerListHeaderFooter(mesa.serverContent(), mesa.serverContent());
-        // // ClientboundSystemChatPacket chat = new ClientboundSystemChatPacket(mesa.serverContent(), false);
-        // ((CraftPlayer) event.getPlayer()).getHandle().connection.send(asd);
+        ChatModifier test = ChatModifier.EMPTY.withColor(ChatHexColor.parseColor("#FFD700"));
+        ChatModifier test2 = ChatModifier.EMPTY.withBold(true);
+        IChatBaseComponent message = IChatBaseComponent.translatable("test", "Steve").setStyle(test);
+        message = message.copy().append(IChatBaseComponent.literal("literal").copy().withStyle(test2));
+        ChatMessageContent content = new ChatMessageContent("pre", message);
+
+        MessageSigner signer = MessageSigner.create(new UUID(0, 0));
+        MessageSignature signature = MessageSignature.EMPTY;
+        SignedMessageHeader header = new SignedMessageHeader(signature, event.getPlayer().getUniqueId());
+        SignedMessageBody body = new SignedMessageBody(content, signer.timeStamp(), signer.salt(), new LastSeenMessages(Arrays.asList()));
+
+        PlayerChatMessage mesa = new PlayerChatMessage(header, signature, body, Optional.empty(), FilterMask.FULLY_FILTERED);
+        // TranslatableComponent test = new TranslatableComponent();
+        PacketPlayOutPlayerListHeaderFooter asd = new PacketPlayOutPlayerListHeaderFooter(mesa.serverContent(), mesa.serverContent());
+        // ClientboundSystemChatPacket chat = new ClientboundSystemChatPacket(mesa.serverContent(), false);
+        ((CraftPlayer) event.getPlayer()).getHandle().connection.send(asd);
     }
 }
