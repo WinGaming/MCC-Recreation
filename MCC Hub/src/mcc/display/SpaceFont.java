@@ -142,6 +142,7 @@ public class SpaceFont {
         if (c == '|') return 2;
         if (c == '}') return 4;
         if (c == '~') return 7;
+        if (c == ' ') return 4;
 
         return 8;
     }
