@@ -1,5 +1,7 @@
 package mcc.display;
 
+import org.bukkit.ChatColor;
+
 // https://github.com/AmberWat/NegativeSpaceFont
 
 public class SpaceFont {
@@ -7,6 +9,11 @@ public class SpaceFont {
     public static int getWidthOf(String text) {
         int width = 0;
         for (int i = 0; i < text.length(); i++) {
+            if (text.charAt(i) == ChatColor.COLOR_CHAR) { // Skip color codes
+                i++;
+                continue;
+            }
+
             width += getWidthOf(text.charAt(i));
         }
         
