@@ -13,6 +13,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
 
 import mcc.display.SpaceFont;
+import mcc.utils.LengthLimitedString;
+import mcc.utils.WidthLimitedString;
 import net.minecraft.network.chat.ChatHexColor;
 import net.minecraft.network.chat.ChatMessageContent;
 import net.minecraft.network.chat.ChatModifier;
@@ -37,7 +39,7 @@ public class TeamManager implements Listener {
         this.teams.add(new Team(new TeamTemplate("Golden Gold", ChatColor.GOLD, '#')));
     }
 
-    private String generateTeamText(int totalLength, int index) {
+    private String generateTeamText(int totalLength, int index, int longestIndexWidth) {
         String indexString = index + ".";
         String teamIcon = "#";
         String teamName = "Golden Gold";
@@ -45,25 +47,31 @@ public class TeamManager implements Listener {
         String coinString = "1000~";
         int coinStringLength = SpaceFont.getWidthOf(coinString);
 
-        String teamString = indexString + " " + teamIcon + " " + teamName;
+        String teamString = indexString + " " + teamIcon + " " + ChatColor.GOLD + teamName + ChatColor.RESET;
         int teamStringLength = SpaceFont.getWidthOf(teamString);
 
-        System.out.println(SpaceFont.getWidthOf(indexString) + "   " + SpaceFont.getWidthOf(teamIcon) + "   " + SpaceFont.getWidthOf(teamName));
-        System.out.println(teamStringLength + "   " + coinStringLength);
-        System.out.println((totalLength - teamStringLength - coinStringLength) + "   " +  SpaceFont.getWidthOf(" ") + "   " +  totalLength);
-        return teamString + SpaceFont.getSpaceString(totalLength - teamStringLength - coinStringLength) + coinString;
+        String nameString = teamString + SpaceFont.getSpaceString(totalLength - teamStringLength - coinStringLength) + coinString;
+
+        int indexWidth = SpaceFont.getWidthOf(indexString + " ");
+        String membersString = SpaceFont.getSpaceString(indexWidth) + WidthLimitedString.buildString(totalLength - indexWidth, "SiegerSpieler", "Notch", "Herobrine", "Grian");
+
+        return nameString + "\n" + ChatColor.GOLD + membersString + ChatColor.RESET;
     }
 
     @EventHandler
     public void onPlayerJoin(PlayerToggleFlightEvent event) {
         // event.getPlayer().setDisplayName("Test");
 
+        int longestIndexWidth = Math.max(SpaceFont.getWidthOf("1."), SpaceFont.getWidthOf("2.")); // TODO:
+
         String headerTemplate = ChatColor.GOLD + "MCC CHAMPIONSHIP" + ChatColor.RESET;
         headerTemplate += "\n" + ChatColor.YELLOW + "Presented by " + ChatColor.RED + "@Noxcrew" + ChatColor.YELLOW + " & " + ChatColor.AQUA + "@Smajor1995";
-        headerTemplate += "\n" + ChatColor.RED + "-".repeat(100);
+        headerTemplate += "\n" + ChatColor.RED + ChatColor.STRIKETHROUGH + SpaceFont.getSpaceString(SpaceFont.getWidthOf('-') * 100);
         headerTemplate += "\n" + ChatColor.WHITE + "Grid Runners - GAME COINS";
         headerTemplate += "\n";
-        headerTemplate += "\n" + this.generateTeamText(SpaceFont.getWidthOf("-".repeat(100)), 1);
+        headerTemplate += "\n" + this.generateTeamText(SpaceFont.getWidthOf("-".repeat(100)), 1, longestIndexWidth);
+        headerTemplate += "\n";
+        headerTemplate += "\n" + this.generateTeamText(SpaceFont.getWidthOf("-".repeat(100)), 2, longestIndexWidth);
 
         // ChatModifier test = ChatModifier.EMPTY.withColor(ChatHexColor.parseColor("#FFD700"));
         // ChatModifier test2 = ChatModifier.EMPTY.withBold(true);
