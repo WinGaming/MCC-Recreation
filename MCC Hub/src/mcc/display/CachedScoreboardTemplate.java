@@ -3,6 +3,7 @@ package mcc.display;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
@@ -34,9 +35,11 @@ public class CachedScoreboardTemplate {
 	public void show(Player player) {
 		final String objectiveId = "objective_id";
 		
-		if (this.objective == null) {
-			this.objective = new ScoreboardObjective(new Scoreboard(), objectiveId, IScoreboardCriteria.DUMMY, title, EnumScoreboardHealthDisplay.INTEGER);
+		if (this.objective != null) {
+			PacketPlayOutScoreboardObjective objectivePacket = new PacketPlayOutScoreboardObjective(this.objective, PacketPlayOutScoreboardObjective.METHOD_REMOVE);
+			((CraftPlayer) player).getHandle().connection.send(objectivePacket);
 		}
+		this.objective = new ScoreboardObjective(new Scoreboard(), objectiveId, IScoreboardCriteria.DUMMY, title, EnumScoreboardHealthDisplay.INTEGER);
 
 		PacketPlayOutScoreboardObjective objectivePacket = new PacketPlayOutScoreboardObjective(objective, PacketPlayOutScoreboardObjective.METHOD_ADD);
 		((CraftPlayer) player).getHandle().connection.send(objectivePacket);
