@@ -2,6 +2,7 @@ package mcc.display;
 
 import java.util.UUID;
 
+import mcc.utils.Pair;
 import mcc.utils.Timer;
 
 public class TimerScoreboardPartProvider implements ScoreboardPartProvider {
@@ -15,7 +16,7 @@ public class TimerScoreboardPartProvider implements ScoreboardPartProvider {
     }
 
     @Override
-    public String[] getLines(UUID viewer) {
-        return new String[] { title, timer == null ? "Waiting..." : timer.buildText(System.currentTimeMillis()) };
+    public Pair<String[], Long> getLines(UUID viewer) {
+        return new Pair<>(new String[] { title, timer == null ? "Waiting..." : timer.buildText(System.currentTimeMillis()) }, System.currentTimeMillis());
     }
 }

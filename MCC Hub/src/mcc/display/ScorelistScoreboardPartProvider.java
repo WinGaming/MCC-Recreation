@@ -47,7 +47,7 @@ public class ScorelistScoreboardPartProvider<T extends Score<T, V>, V> implement
     }
 
     @Override
-    public String[] getLines(UUID viewer) {
+    public Pair<String[], Long> getLines(UUID viewer) {
         List<Pair<UUID, T>> sortedScores = scores.sortScores();
         
         Optional<T> viewerScore = Optional.empty();
@@ -92,6 +92,6 @@ public class ScorelistScoreboardPartProvider<T extends Score<T, V>, V> implement
             }
         }
 
-        return lines;
+        return new Pair<String[],Long>(lines, System.currentTimeMillis()); // TODO: Not always update?
     }
 }

@@ -1,12 +1,9 @@
 package mcc.display;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
+import mcc.utils.Pair;
 import net.minecraft.network.chat.IChatBaseComponent;
 import net.minecraft.network.protocol.game.PacketPlayOutScoreboardDisplayObjective;
 import net.minecraft.network.protocol.game.PacketPlayOutScoreboardObjective;
@@ -19,27 +16,31 @@ import net.minecraft.world.scores.criteria.IScoreboardCriteria.EnumScoreboardHea
 
 public class CachedScoreboardTemplate {
 	
-    private ScoreboardObjective objective;
-    // private int[] lastPartSizes;
-    // private int lastPartCount;
+	public class ScoreboardPartCache {
+		public String[] lines;
+		public long lastUpdate;
+	}
 
-	private IChatBaseComponent title;
+    private ScoreboardObjective objective;
 	
+	private IChatBaseComponent title;
 	private ScoreboardPartProvider[] parts;
+
+    private ScoreboardPartCache[] partCaches;
 
 	public CachedScoreboardTemplate(IChatBaseComponent title, ScoreboardPartProvider[] parts) {
 		this.title = title;
 		this.parts = parts;
+
+		this.partCaches = new ScoreboardPartCache[parts.length];
 	}
 
 	public void show(Player player) {
 		final String objectiveId = "objective_id";
 		
-		if (this.objective != null) {
-			PacketPlayOutScoreboardObjective objectivePacket = new PacketPlayOutScoreboardObjective(this.objective, PacketPlayOutScoreboardObjective.METHOD_REMOVE);
-			((CraftPlayer) player).getHandle().connection.send(objectivePacket);
+		if (this.objective == null) {
+			this.objective = new ScoreboardObjective(new Scoreboard(), objectiveId, IScoreboardCriteria.DUMMY, title, EnumScoreboardHealthDisplay.INTEGER);
 		}
-		this.objective = new ScoreboardObjective(new Scoreboard(), objectiveId, IScoreboardCriteria.DUMMY, title, EnumScoreboardHealthDisplay.INTEGER);
 
 		PacketPlayOutScoreboardObjective objectivePacket = new PacketPlayOutScoreboardObjective(objective, PacketPlayOutScoreboardObjective.METHOD_ADD);
 		((CraftPlayer) player).getHandle().connection.send(objectivePacket);
@@ -47,28 +48,72 @@ public class CachedScoreboardTemplate {
 		PacketPlayOutScoreboardDisplayObjective displayPacket = new PacketPlayOutScoreboardDisplayObjective(Scoreboard.getDisplaySlotByName("sidebar"), objective);
 		((CraftPlayer) player).getHandle().connection.send(displayPacket);
 
-		// TODO: Check if the parts need to update
-
 		if (this.parts.length == 0) {
+			// Remove all current lines
+			for (int i = 0; i < this.partCaches.length; i++) {
+				for (int j = 0; j < this.partCaches[i].lines.length; j++) {
+					PacketPlayOutScoreboardScore scorePacket = new PacketPlayOutScoreboardScore(Action.REMOVE, objectiveId, this.partCaches[i].lines[j], 0);
+					((CraftPlayer) player).getHandle().connection.send(scorePacket);
+				}
+			}
+			this.partCaches = new ScoreboardPartCache[] {};
+
 			PacketPlayOutScoreboardScore scorePacket = new PacketPlayOutScoreboardScore(Action.CHANGE, objectiveId, " ", 0);
 			((CraftPlayer) player).getHandle().connection.send(scorePacket);
 		}
 
-		String lastSpaceString = " ";
-		List<String> allLines = new ArrayList<>();
-		for (ScoreboardPartProvider part : parts) {
-			String lines[] = part.getLines(player.getUniqueId());
-			for (String line : lines) allLines.add(line);
-			allLines.add(lastSpaceString);
-			lastSpaceString += " ";
-		}
+		int currentScore = 0;
+		String lastSpaceString = "";
+		boolean requireScoreUpdate = this.partCaches.length != this.parts.length;
+		for (int forwardPartIndex = 0; forwardPartIndex < this.parts.length; forwardPartIndex++) {
+			int partIndex = this.parts.length - 1 - forwardPartIndex;
+			ScoreboardPartCache partCache = this.partCaches[partIndex];
 
-		// All lines but the last one, because the last one is a spacer
-		for (int i = 0; i < allLines.size() - 1; i++) {
-			String line = allLines.get(i);
+			ScoreboardPartProvider partProvider = this.parts[partIndex];
+			Pair<String[], Long> linesResult = partProvider.getLines(player.getUniqueId());
+			String[] lines = linesResult.getA();
 
-			PacketPlayOutScoreboardScore scorePacket = new PacketPlayOutScoreboardScore(Action.CHANGE, objectiveId, line, allLines.size() - 1 - i);
-			((CraftPlayer) player).getHandle().connection.send(scorePacket);
+			if (partCache == null || lines.length != partCache.lines.length) {
+				requireScoreUpdate = true;
+			}
+
+			if (!requireScoreUpdate && partCache != null && partCache.lastUpdate >= linesResult.getB()) {
+				currentScore += lines.length + 1;
+				lastSpaceString += " ";
+				continue;
+			}
+
+			// Update cache
+			if (partCache == null) {
+				partCache = new ScoreboardPartCache();
+				this.partCaches[partIndex] = partCache;
+			} else {
+				for (String line : partCache.lines) {
+					PacketPlayOutScoreboardScore scorePacket = new PacketPlayOutScoreboardScore(Action.REMOVE, objectiveId, line, 0);
+					((CraftPlayer) player).getHandle().connection.send(scorePacket);	
+				}
+			}
+
+			partCache.lines = lines;
+			partCache.lastUpdate = linesResult.getB();
+
+			// Send lines
+			for (int forwardLineIndex = 0; forwardLineIndex < lines.length; forwardLineIndex++) {
+				int lineIndex = lines.length - 1 - forwardLineIndex;
+
+				String line = lines[lineIndex];
+
+				final int score = currentScore++;
+				PacketPlayOutScoreboardScore scorePacket = new PacketPlayOutScoreboardScore(Action.CHANGE, objectiveId, line, score);
+				((CraftPlayer) player).getHandle().connection.send(scorePacket);
+			}
+
+			if (forwardPartIndex != this.parts.length - 1) {
+				// Send spacer
+				final int score = currentScore++;
+				PacketPlayOutScoreboardScore scorePacket = new PacketPlayOutScoreboardScore(Action.CHANGE, objectiveId, lastSpaceString += " ", score);
+				((CraftPlayer) player).getHandle().connection.send(scorePacket);
+			}
 		}
 	}
 }

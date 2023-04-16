@@ -20,6 +20,7 @@ import mcc.display.SpaceFont;
 import mcc.display.TablistDisplay;
 import mcc.display.TimerScoreboardPartProvider;
 import mcc.utils.LengthLimitedString;
+import mcc.utils.Pair;
 import mcc.utils.Timer;
 import mcc.utils.WidthLimitedString;
 import net.minecraft.network.chat.ChatHexColor;
@@ -67,15 +68,15 @@ public class TeamManager implements Listener {
 
         CachedScoreboardTemplate template = new CachedScoreboardTemplate(IChatBaseComponent.literal(ChatColor.YELLOW + "" + ChatColor.BOLD + "MC Championship Pride 22"), new ScoreboardPartProvider[] {
             new TimerScoreboardPartProvider(ChatColor.RED + "" + ChatColor.BOLD + "Event begins in:", timer),
-            (e) -> new String[] { ChatColor.GREEN + "" + ChatColor.BOLD + "Players: " + ChatColor.RESET +  "0/40"},
-            (e) -> new String[] {
+            (e) -> new Pair<>(new String[] { ChatColor.GREEN + "" + ChatColor.BOLD + "Players: " + ChatColor.RESET +  "0/40"}, 0L),
+            (e) -> new Pair<>(new String[] {
                 ChatColor.WHITE + "" + ChatColor.BOLD + "Your Team:",
                 ChatColor.RESET + "" + temaplte.getIcon() + " " + temaplte.getName() // We need to add reset, because minecraft hides names that start with #
-            },
-            (e) -> new String[] {
+            }, 0L),
+            (e) -> new Pair<>(new String[] {
                 ChatColor.GREEN + "" + ChatColor.BOLD + "Last Event Coins: " + ChatColor.RESET + "1866~",
                 ChatColor.GREEN + "" + ChatColor.BOLD + "Lifetime Coins: " + ChatColor.RESET + "28420~"
-            },
+            }, 0L),
         });
         template.show(event.getPlayer());
 
