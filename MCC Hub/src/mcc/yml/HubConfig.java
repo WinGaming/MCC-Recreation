@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -35,7 +36,7 @@ public class HubConfig implements MCCConfigSerializable {
 		File file = new File(configDir.getAbsolutePath() + "/hub.yml");
 		
 		File parentDir = file.getParentFile();
-		if(parentDir != null && !parentDir.exists()) {
+		if (parentDir != null && !parentDir.exists()) {
 			parentDir.mkdirs();
 		}
 		
@@ -77,6 +78,10 @@ public class HubConfig implements MCCConfigSerializable {
 			boolean unchanged = this.lastEdited == this.configFile.lastModified();
 			if (unchanged || force) {
 				config.save(configFile);
+
+				this.configFile = new File(this.configFile.getAbsolutePath());
+				this.lastEdited = this.configFile.lastModified();
+
 				return unchanged ? FileSaveResponse.SUCCESS : FileSaveResponse.SUCCESS_FORCED;
 			}
 			
@@ -89,13 +94,13 @@ public class HubConfig implements MCCConfigSerializable {
 	
 	@Override
 	public boolean load(ConfigurationSection config) {
-		config.createSection("decisiondome");
+		if (!config.contains("decisiondome")) config.createSection("decisiondome");
 		return this.decisiondome.load(config.getConfigurationSection("decisiondome"));
 	}
 	
 	@Override
 	public void save(ConfigurationSection config) {
-		config.createSection("decisiondome");
+		if (!config.contains("decisiondome")) config.createSection("decisiondome");
 		this.decisiondome.save(config.getConfigurationSection("decisiondome"));
 	}
 	

@@ -80,6 +80,7 @@ public class DecisionDome {
 			this.state = newState;
 			switch (newState) {
 			case WAITING: this.currentTimer = null; break;
+			case GAME_SELECTION_INTRO: this.currentTimer = createNewTimer(config.getGameSelectionPreVoteTimer()); this.ticksWaited = 0; break;
 			case GAME_SELECTION: this.currentTimer = createNewTimer(config.getGameSelectionTimer()); this.ticksWaited = 0; break;
 			case GAME_SELECTION_FINAL: this.currentTimer = createNewTimer(config.getGameSelectionFinalTimer()); break;
 			case GAME_SELECTION_AWAIT_CHOSEN_POSITION_HIGHLIGHT: this.currentTimer = null; break;
@@ -116,6 +117,7 @@ public class DecisionDome {
 				
 				if (state == DecisionDomeState.GAME_SELECTION) totalRemaining += selectionFinalTimer;
 				
+				Bukkit.broadcastMessage("Total remaining: " + totalRemaining + " (" + selectionFinalTimer + " + " + selectionTimer + ")");
 				double percentage = totalRemaining / (selectionFinalTimer + selectionTimer);
 				double minDelay = this.config.getMinTickDelay();
 				double maxAddedDelay = this.config.getMaxAdditionalTickDelay();
@@ -144,10 +146,11 @@ public class DecisionDome {
 			}
 			
 			if (this.currentTimer != null || this.state.shouldUpdateFieldsWithoutActiveTimer()) {
-				if (this.currentTimer != null) Bukkit.broadcastMessage(this.currentTimer.buildText(System.currentTimeMillis()));
+				if (this.currentTimer != null) System.out.println(this.currentTimer.buildText(System.currentTimeMillis()));
 				
 				switch (this.state) {
 				case WAITING:
+				case GAME_SELECTION_INTRO:
 					for (int i = 0; i < this.fields.length; i++) this.fields[i].setState(DecisionFieldState.DISABLED);
 					break;
 				case GAME_SELECTION:
@@ -164,6 +167,7 @@ public class DecisionDome {
 			if (this.currentTimer != null && this.currentTimer.remaining(System.currentTimeMillis()) <= 0) {
 				switch (this.state) {
 				case WAITING: System.err.println("A timer run out where it shouldn't!"); break;
+				case GAME_SELECTION_INTRO: Bukkit.broadcastMessage("Finished GAME_SELECTION_INTRO"); setState(DecisionDomeState.GAME_SELECTION); break;
 				case GAME_SELECTION: Bukkit.broadcastMessage("Finished GAME_SELECTION"); setState(DecisionDomeState.GAME_SELECTION_FINAL); break;
 				case GAME_SELECTION_FINAL: Bukkit.broadcastMessage("Finished GAME_SELECTION_FINAL"); setState(DecisionDomeState.GAME_SELECTION_AWAIT_CHOSEN_POSITION_HIGHLIGHT); break;
 				case GAME_SELECTION_AWAIT_CHOSEN_POSITION_HIGHLIGHT: System.err.println("A timer run out where it shouldn't!"); break;
@@ -177,10 +181,20 @@ public class DecisionDome {
 			}
 		}
 	}
+
+	public DecisionDomeState getState() {
+		return state;
+	}
+
+	public Timer getCurrentTimer() {
+		return currentTimer;
+	}
 	
-	private enum DecisionDomeState {
+	public enum DecisionDomeState {
 		/** Paused or any other state where no countdown is active */
 		WAITING,
+		/** Timer before voting allowing for explanation */
+		GAME_SELECTION_INTRO,
 		/** Teams can use items to change the result */
 		GAME_SELECTION,
 		/** Teams can't use any items anymore */

@@ -95,6 +95,8 @@ public class DecisionDomeCommand implements CommandExecutor {
 								sender.sendMessage("Field added to template");
 								currentSelector.remove(player);
 								pluginInstance.getConfigBuilder().setSelector(player, null);
+
+								Bukkit.broadcastMessage(this.config.saveToFile(false).name());
 							} else {
 								sender.sendMessage(error.get());
 							}

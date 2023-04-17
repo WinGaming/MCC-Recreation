@@ -23,6 +23,7 @@ public class HubDecisiondomeConfig implements MCCConfigSerializable {
 	
 	private HubDecisiondomeSingleFieldConfig[] fields = new HubDecisiondomeSingleFieldConfig[0];
 	
+	private Pair<TimeUnit, Integer> gameSelectionPreVoteTimer = new Pair<>(TimeUnit.SECONDS, 60);
 	private Pair<TimeUnit, Integer> gameSelectionTimer = new Pair<>(TimeUnit.SECONDS, 30);
 	private Pair<TimeUnit, Integer> gameSelectionFinalTimer = new Pair<>(TimeUnit.SECONDS, 5);
 	private Pair<TimeUnit, Integer> gameSelectedTimer = new Pair<>(TimeUnit.SECONDS, 10);
@@ -61,16 +62,16 @@ public class HubDecisiondomeConfig implements MCCConfigSerializable {
 	@Override
 	public boolean load(ConfigurationSection config) throws IllegalArgumentException {
 		boolean valuesChanged = false;
-		
+
 		// Fields
-		config.createSection("fields");
+		if (!config.contains("fields")) config.createSection("fields");
 		Set<String> stringFields = config.getConfigurationSection("fields").getKeys(false);
 		HubDecisiondomeSingleFieldConfig[] newFields = new HubDecisiondomeSingleFieldConfig[stringFields.size()];
 
 		int i = 0;
 		for (String key : stringFields) {
 			HubDecisiondomeSingleFieldConfig newConfig = new HubDecisiondomeSingleFieldConfig();
-			config.createSection("fields." + key);
+			if (!config.contains("fields." + key)) config.createSection("fields." + key);
 			newConfig.load(config.getConfigurationSection("fields." + key));
 			newFields[i] = newConfig;
 			i++;
@@ -78,6 +79,9 @@ public class HubDecisiondomeConfig implements MCCConfigSerializable {
 		this.fields = newFields;
 		
 		// Timers
+		Pair<Pair<TimeUnit, Integer>, Boolean> gameSelectionPreVote = loadTimerPair("intro", TimeUnit.SECONDS, 60, config);
+		this.gameSelectionPreVoteTimer = gameSelectionPreVote.getA();
+
 		Pair<Pair<TimeUnit, Integer>, Boolean> gameSelection = loadTimerPair("selection", TimeUnit.SECONDS, 30, config);
 		this.gameSelectionTimer = gameSelection.getA();
 		
@@ -99,10 +103,10 @@ public class HubDecisiondomeConfig implements MCCConfigSerializable {
 		else { this.maxAdditionalTickDelay = 20; valuesChanged = true; }
 		
 		// Field States
-		config.createSection("states.enabled");
-		config.createSection("states.disabled");
-		config.createSection("states.highlighted");
-		config.createSection("states.selected");
+		if (!config.contains("states.enabled")) config.createSection("states.enabled");
+		if (!config.contains("states.disabled")) config.createSection("states.disabled");
+		if (!config.contains("states.highlighted")) config.createSection("states.highlighted");
+		if (!config.contains("states.selected")) config.createSection("states.selected");
 		valuesChanged = valuesChanged || this.enabledState.load(config.getConfigurationSection("states.enabled"));
 		valuesChanged = valuesChanged || this.disabledState.load(config.getConfigurationSection("states.disabled"));
 		valuesChanged = valuesChanged || this.highlightedState.load(config.getConfigurationSection("states.highlighted"));
@@ -120,11 +124,14 @@ public class HubDecisiondomeConfig implements MCCConfigSerializable {
 		// Fields
 		for (int i = 0; i < this.fields.length; i++) {
 			HubDecisiondomeSingleFieldConfig fieldConfig = this.fields[i];
-			config.createSection("fields." + i);
+			if (!config.contains("fields." + i)) config.createSection("fields." + i);
 			fieldConfig.save(config.getConfigurationSection("fields." + i));
 		}
 		
 		// Timers
+		config.set("timer.intro.unit", gameSelectionPreVoteTimer.getA().name());
+		config.set("timer.intro.amount", gameSelectionPreVoteTimer.getB());
+
 		config.set("timer.selection.unit", gameSelectionTimer.getA().name());
 		config.set("timer.selection.amount", gameSelectionTimer.getB());
 		
@@ -142,10 +149,10 @@ public class HubDecisiondomeConfig implements MCCConfigSerializable {
 		config.set("max-additional-delay", this.maxAdditionalTickDelay);
 		
 		// Field States
-		config.createSection("states.enabled");
-		config.createSection("states.disabled");
-		config.createSection("states.highlighted");
-		config.createSection("states.selected");
+		if (!config.contains("states.enabled")) config.createSection("states.enabled");
+		if (!config.contains("states.disabled")) config.createSection("states.disabled");
+		if (!config.contains("states.highlighted")) config.createSection("states.highlighted");
+		if (!config.contains("states.selected")) config.createSection("states.selected");
 		this.enabledState.save(config.getConfigurationSection("states.enabled"));
 		this.disabledState.save(config.getConfigurationSection("states.disabled"));
 		this.highlightedState.save(config.getConfigurationSection("states.highlighted"));
@@ -156,6 +163,10 @@ public class HubDecisiondomeConfig implements MCCConfigSerializable {
 	}
 	
 	// Getters
+	public Pair<TimeUnit, Integer> getGameSelectionPreVoteTimer() {
+		return gameSelectionPreVoteTimer;
+	}
+
 	public Pair<TimeUnit, Integer> getGameSelectionTimer() {
 		return gameSelectionTimer;
 	}
@@ -221,7 +232,7 @@ public class HubDecisiondomeConfig implements MCCConfigSerializable {
 		
 		Vector3i[] positions = positionList.toArray(new Vector3i[positionList.size()]);
 		HubDecisiondomeSingleFieldConfig fieldConfig = new HubDecisiondomeSingleFieldConfig();
-		fieldConfig.positions = positions;
+		fieldConfig.setPositions(positions);
 		
 		HubDecisiondomeSingleFieldConfig[] newFields = new HubDecisiondomeSingleFieldConfig[this.fields.length + 1];
 		for (int i = 0; i < this.fields.length; i++) {
@@ -229,6 +240,7 @@ public class HubDecisiondomeConfig implements MCCConfigSerializable {
 		}
 		
 		newFields[newFields.length - 1] = fieldConfig;
+		this.fields = newFields;
 		
 		return Optional.empty();
 	}
@@ -260,48 +272,6 @@ public class HubDecisiondomeConfig implements MCCConfigSerializable {
 		
 		public Material getMaterial() {
 			return material;
-		}
-	}
-	
-	/**
-	 * This class represents the configuration section for a single field in the Decision-dome implementing {@link MCCConfigSerializable}.
-	 */
-	public class HubDecisiondomeSingleFieldConfig implements MCCConfigSerializable {
-		
-		private Vector3i[] positions = new Vector3i[0];
-
-		@Override
-		public boolean load(ConfigurationSection config) {
-			Set<String> stringPositions = config.getConfigurationSection("positions").getKeys(false);
-			Vector3i[] newPositions = new Vector3i[stringPositions.size()];
-
-			int i = 0;
-			for (String key : stringPositions) {
-				int x = config.getInt("positions." + key + ".x");
-				int y = config.getInt("positions." + key + ".y");
-				int z = config.getInt("positions." + key + ".z");
-				newPositions[i] = new Vector3i(x, y, z);
-				
-				i++;
-			}
-			
-			this.positions = newPositions;
-			return false;
-		}
-		
-		@Override
-		public void save(ConfigurationSection config) {
-			config.set("positions", null); // Make sure all old positions are deleted
-			
-			for (int i = 0; i < this.positions.length; i++) {
-				config.set("positions." + i + ".x", positions[i].getX());
-				config.set("positions." + i + ".y", positions[i].getY());
-				config.set("positions." + i + ".z", positions[i].getZ());
-			}
-		}
-		
-		public Vector3i[] getPositions() {
-			return positions;
 		}
 	}
 }
