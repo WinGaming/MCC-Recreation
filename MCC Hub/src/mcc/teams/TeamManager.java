@@ -2,8 +2,10 @@ package mcc.teams;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
@@ -27,6 +29,18 @@ public class TeamManager implements Listener {
         this.teams.get(1).addTempNameVar("_Jeb");
         this.teams.get(1).addTempNameVar("Steve");
         this.teams.get(1).addTempNameVar("Alex");
+    }
+
+    public Team getTeam(UUID player) {
+        return teams.get(0);
+    }
+
+    public int getPlayersCount() {
+        return 2;
+    }
+
+    public int getTotalPlayersCount() {
+        return 40;
     }
 
     @EventHandler

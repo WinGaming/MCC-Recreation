@@ -25,4 +25,8 @@ public class TeamTemplate {
     public char getIcon() {
         return icon;
     }
+
+    public String buildLongString() {
+        return this.color + "" + this.icon + " " + this.name;
+    }
 }

@@ -1,20 +1,29 @@
 package mcc;
 
+import static mcc.stats.PlayerStatsManager.getEventCoins;
+import static mcc.stats.PlayerStatsManager.getLifetimeCoins;
+import static org.bukkit.ChatColor.BOLD;
+import static org.bukkit.ChatColor.GREEN;
+import static org.bukkit.ChatColor.RED;
+import static org.bukkit.ChatColor.RESET;
+import static org.bukkit.ChatColor.YELLOW;
+
 import java.io.IOException;
 import java.util.function.Supplier;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import mcc.config.ConfigBuilder;
 import mcc.decisiondome.DecisionDome;
-import mcc.decisiondome.DecisionDomeCommand;
 import mcc.decisiondome.DecisionDome.DecisionDomeState;
+import mcc.decisiondome.DecisionDomeCommand;
 import mcc.display.CachedScoreboardTemplate;
 import mcc.display.ScoreboardPartProvider;
 import mcc.display.SuppliedTimerScoreboardPartProvider;
+import mcc.display.TeamScoreboardPartProvider;
+import mcc.display.TeamsPlayerCountScoreboardPartProvider;
 import mcc.teams.TeamManager;
 import mcc.utils.Pair;
 import mcc.utils.Timer;
@@ -35,31 +44,35 @@ public class MCCTest extends JavaPlugin {
 	private TeamManager teamManager;
 	
 	private Timer lobbyTimer = null;
-	private MCCState state = MCCState.DECISIONDOME_RUNNING;
+	private MCCState state = MCCState.EVENT_NOT_STARTED;
+
+	// TODO:
+	private String lastEventId;
+	private String currentEventId;
 
 	private Pair<Supplier<String>, Supplier<Timer>> generateScoreboardDisplaySuppliers() {
 		Supplier<String> titleSupplier = () -> {
 			switch (this.state) {
 				case EVENT_NOT_STARTED:
 				case EVENT_STARTING:
-					return ChatColor.RED + "" + ChatColor.BOLD + "Event begins in:";
+					return RED + "" + BOLD + "Event begins in:";
 				case DECISIONDOME_COUNTDOWN:
-					return ChatColor.RED + "" + ChatColor.BOLD + "Decision Dome in:";
+					return RED + "" + BOLD + "Decision Dome in:";
 				case DECISIONDOME_RUNNING: {
 					DecisionDomeState decisionDomeState = this.decisionDome.getState();
 					switch (decisionDomeState) {
 						case WAITING:
 							return "null";
 						case GAME_SELECTION_INTRO:
-							return ChatColor.RED + "" + ChatColor.BOLD + "Voting begins in:";
+							return RED + "" + BOLD + "Voting begins in:";
 						case GAME_SELECTION:
-							return ChatColor.RED + "" + ChatColor.BOLD + "Voting closes in:";
+							return RED + "" + BOLD + "Voting closes in:";
 						case GAME_SELECTION_FINAL:
 						case GAME_SELECTION_AWAIT_CHOSEN_POSITION_HIGHLIGHT:
 						case GAME_SELECTED:
-							return ChatColor.RED + "" + ChatColor.BOLD + "Game chosen in:";
+							return RED + "" + BOLD + "Game chosen in:";
 						case GAME_SELECTED_AWAIT_TELEPORT:
-							return ChatColor.RED + "" + ChatColor.BOLD + "Teleporting to Game in:";
+							return RED + "" + BOLD + "Teleporting to Game in:";
 						default:
 							return "null";
 					}
@@ -115,17 +128,22 @@ public class MCCTest extends JavaPlugin {
 		this.schedulerId = Bukkit.getScheduler().scheduleSyncRepeatingTask(this, this::tick, 0, 1);
 
 		Pair<Supplier<String>, Supplier<Timer>> scoreboardDisplaySuppliers = this.generateScoreboardDisplaySuppliers();
-		this.lobbyTemplate = new CachedScoreboardTemplate(IChatBaseComponent.literal(ChatColor.YELLOW + "" + ChatColor.BOLD + "MC Championship Pride 22"), new ScoreboardPartProvider[] {
+		this.lobbyTemplate = new CachedScoreboardTemplate(IChatBaseComponent.literal(YELLOW + "" + BOLD + "MC Championship Pride 22"), new ScoreboardPartProvider[] {
             new SuppliedTimerScoreboardPartProvider(scoreboardDisplaySuppliers.getA(), scoreboardDisplaySuppliers.getB()),
-            // (e) -> new Pair<>(new String[] { ChatColor.GREEN + "" + ChatColor.BOLD + "Players: " + ChatColor.RESET +  "0/40"}, 0L),
-            // (e) -> new Pair<>(new String[] {
-            //     ChatColor.WHITE + "" + ChatColor.BOLD + "Your Team:",
-            //     ChatColor.RESET + "" + temaplte.getIcon() + " " + temaplte.getName() // We need to add reset, because minecraft hides names that start with #
-            // }, 0L),
-            // (e) -> new Pair<>(new String[] {
-            //     ChatColor.GREEN + "" + ChatColor.BOLD + "Last Event Coins: " + ChatColor.RESET + "1866~",
-            //     ChatColor.GREEN + "" + ChatColor.BOLD + "Lifetime Coins: " + ChatColor.RESET + "28420~"
-            // }, 0L),
+            new TeamsPlayerCountScoreboardPartProvider(this.teamManager),
+            new TeamScoreboardPartProvider(this.teamManager),
+			(uuid) -> {
+				String eventCoinsString;
+				if (this.state == MCCState.EVENT_NOT_STARTED) {
+					eventCoinsString = GREEN + "" + BOLD + "Last Event Coins: " + RESET + "" + getEventCoins(this.lastEventId, uuid) + "~";
+				} else {
+					eventCoinsString = GREEN + "" + BOLD + "Event Coins: " + RESET + "" + getEventCoins(this.currentEventId, uuid) + "~";
+				}
+
+				String lifetimeString = GREEN + "" + BOLD + "Lifetime Coins: " + RESET + getLifetimeCoins(uuid) + "~";
+
+				return new Pair<>(new String[] { eventCoinsString, lifetimeString }, System.currentTimeMillis());
+			},
         });
 	}
 	
