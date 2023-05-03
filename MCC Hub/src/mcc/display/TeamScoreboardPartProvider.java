@@ -4,8 +4,8 @@ import java.util.UUID;
 
 import org.bukkit.ChatColor;
 
+import mcc.stats.record.TeamTemplateRecord;
 import mcc.teams.TeamManager;
-import mcc.teams.TeamTemplate;
 import mcc.utils.Pair;
 
 public class TeamScoreboardPartProvider implements ScoreboardPartProvider {
@@ -18,7 +18,7 @@ public class TeamScoreboardPartProvider implements ScoreboardPartProvider {
 
     @Override
     public Pair<String[], Long> getLines(UUID viewer) {
-        TeamTemplate template = this.teamManager.getTeam(viewer) == null ? null : this.teamManager.getTeam(viewer).getTemplate();
+        TeamTemplateRecord template = this.teamManager.getTeam(viewer) == null ? null : this.teamManager.getTeam(viewer).getTemplate();
         String teamString = null;
         if (template == null) {
             teamString = ChatColor.RED + "None";

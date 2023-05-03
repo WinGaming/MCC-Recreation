@@ -7,12 +7,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-import mcc.MCCTest;
 import mcc.decisiondome.DecisionField.DecisionFieldState;
 import mcc.utils.Pair;
 import mcc.utils.Timer;
 import mcc.utils.Vector3i;
-import mcc.yml.HubDecisiondomeConfig;
+import mcc.yml.hub.HubDecisiondomeConfig;
+
+import static org.bukkit.ChatColor.BOLD;
+import static org.bukkit.ChatColor.RED;
 
 public class DecisionDome {
 	
@@ -31,7 +33,7 @@ public class DecisionDome {
 	
 	private HubDecisiondomeConfig config;
 	
-	public DecisionDome(MCCTest pluginInstance, HubDecisiondomeConfig config) {
+	public DecisionDome(HubDecisiondomeConfig config) {
 		this.config = config;
 		
 		Optional<String> fieldLoadError = this.reloadFieldsFromConfig();
@@ -184,6 +186,25 @@ public class DecisionDome {
 
 	public DecisionDomeState getState() {
 		return state;
+	}
+
+	public String getTimerTitle() {
+		switch (this.state) {
+			case WAITING:
+				return "null";
+			case GAME_SELECTION_INTRO:
+				return RED + "" + BOLD + "Voting begins in:";
+			case GAME_SELECTION:
+				return RED + "" + BOLD + "Voting closes in:";
+			case GAME_SELECTION_FINAL:
+			case GAME_SELECTION_AWAIT_CHOSEN_POSITION_HIGHLIGHT:
+			case GAME_SELECTED:
+				return RED + "" + BOLD + "Game chosen in:";
+			case GAME_SELECTED_AWAIT_TELEPORT:
+				return RED + "" + BOLD + "Teleporting to Game in:";
+			default:
+				return "null";
+		}
 	}
 
 	public Timer getCurrentTimer() {

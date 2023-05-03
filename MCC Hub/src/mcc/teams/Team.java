@@ -5,15 +5,17 @@ import java.util.List;
 
 import org.bukkit.entity.Player;
 
+import mcc.stats.record.TeamTemplateRecord;
+
 public class Team {
     
-    private TeamTemplate template;
+    private TeamTemplateRecord template;
 
     private List<Player> players;
 
     private List<String> tempNameVar;
 
-    public Team(TeamTemplate template) {
+    public Team(TeamTemplateRecord template) {
         this.template = template;
         this.tempNameVar = new ArrayList<>();
     }
@@ -34,7 +36,7 @@ public class Team {
         players.remove(player);
     }
 
-    public TeamTemplate getTemplate() {
+    public TeamTemplateRecord getTemplate() {
         return template;
     }
 }

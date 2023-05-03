@@ -1,0 +1,17 @@
+event:
+    teams[]:
+        - template-ref              // refrence to template
+        - players[]: player-ref     
+    games[]:
+        - gamerecord-ref | null
+        - coinmultiplier
+
+gamerecord:
+    gameid
+
+template:
+    name: string
+    color: string
+    icon: string
+
+player:

@@ -2,7 +2,7 @@ package mcc.decisiondome;
 
 import org.bukkit.Location;
 
-import mcc.yml.HubDecisiondomeConfig;
+import mcc.yml.hub.HubDecisiondomeConfig;
 
 public class DecisionField {
 

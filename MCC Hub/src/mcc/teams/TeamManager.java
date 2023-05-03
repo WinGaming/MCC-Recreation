@@ -5,10 +5,11 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
+
+import mcc.stats.record.TeamTemplateRecord;
 
 public class TeamManager implements Listener {
     
@@ -18,8 +19,8 @@ public class TeamManager implements Listener {
         this.teams = new ArrayList<>();
 
         // TODO: Load teams from file
-        this.teams.add(new Team(new TeamTemplate("Golden Gold", ChatColor.GOLD, '#')));
-        this.teams.add(new Team(new TeamTemplate("Ironing Iron", ChatColor.GRAY, '#')));
+        this.teams.add(new Team(new TeamTemplateRecord("Golden Gold", ChatColor.GOLD, '#')));
+        this.teams.add(new Team(new TeamTemplateRecord("Ironing Iron", ChatColor.GRAY, '#')));
 
         this.teams.get(0).addTempNameVar("SiegerSpieler");
         this.teams.get(0).addTempNameVar("Notch");

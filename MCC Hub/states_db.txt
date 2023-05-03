@@ -1,0 +1,9 @@
+event_team_player:
+ - event_id
+ - team_id
+ - player_id
+
+team:
+ - id
+ - template_id
+ 

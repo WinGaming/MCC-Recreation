@@ -1,4 +1,4 @@
-package mcc.yml;
+package mcc.yml.hub;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,6 +10,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import mcc.Constants;
+import mcc.yml.MCCConfigSerializable;
 
 /**
  * This class represents the configuration implementing {@link MCCConfigSerializable}.

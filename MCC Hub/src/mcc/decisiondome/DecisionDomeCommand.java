@@ -22,7 +22,7 @@ import mcc.indicator.ParticleIndicator;
 import mcc.scores.Scorelist;
 import mcc.scores.TimeScore;
 import mcc.utils.Pair;
-import mcc.yml.HubConfig;
+import mcc.yml.hub.HubConfig;
 import net.minecraft.network.chat.CommonComponents;
 
 public class DecisionDomeCommand implements CommandExecutor {

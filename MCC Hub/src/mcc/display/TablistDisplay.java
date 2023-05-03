@@ -5,8 +5,8 @@ import java.util.function.Function;
 
 import org.bukkit.ChatColor;
 
+import mcc.stats.record.TeamTemplateRecord;
 import mcc.teams.Team;
-import mcc.teams.TeamTemplate;
 import mcc.utils.WidthLimitedString;
 import net.minecraft.network.chat.IChatBaseComponent;
 import net.minecraft.network.protocol.game.PacketPlayOutPlayerListHeaderFooter;
@@ -47,7 +47,7 @@ public class TablistDisplay {
             Team team = sortedTeams.get(i);
 
             String indexString = this.indexStringBuilder.apply(i);
-            TeamTemplate template = team.getTemplate();
+            TeamTemplateRecord template = team.getTemplate();
             
             String coinString = "1000~";
             int coinStringLength = SpaceFont.getWidthOf(coinString);

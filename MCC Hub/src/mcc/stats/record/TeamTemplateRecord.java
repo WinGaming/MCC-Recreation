@@ -1,14 +1,17 @@
-package mcc.teams;
+package mcc.stats.record;
 
 import org.bukkit.ChatColor;
 
-public class TeamTemplate {
+public class TeamTemplateRecord {
     
+    /** The displayed name */
     private String name;
+    /** The primary color */
     private ChatColor color;
+    /** The icon */
     private char icon;
 
-    public TeamTemplate(String name, ChatColor color, char icon) {
+    public TeamTemplateRecord(String name, ChatColor color, char icon) {
         this.name = name;
         this.color = color;
         this.icon = icon;

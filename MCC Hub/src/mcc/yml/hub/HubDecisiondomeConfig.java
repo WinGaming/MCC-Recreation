@@ -1,4 +1,4 @@
-package mcc.yml;
+package mcc.yml.hub;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +13,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import mcc.config.LocationListSelector;
 import mcc.utils.Pair;
 import mcc.utils.Vector3i;
+import mcc.yml.ConfigUtils;
+import mcc.yml.MCCConfigSerializable;
 
 /**
  * This class represents the configuration section for the Decision-dome implementing {@link MCCConfigSerializable}.

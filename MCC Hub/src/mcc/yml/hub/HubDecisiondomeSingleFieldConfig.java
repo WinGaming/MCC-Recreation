@@ -1,10 +1,11 @@
-package mcc.yml;
+package mcc.yml.hub;
 
 import java.util.Set;
 
 import org.bukkit.configuration.ConfigurationSection;
 
 import mcc.utils.Vector3i;
+import mcc.yml.MCCConfigSerializable;
 
 /**
  * This class represents the configuration section for a single field in the
