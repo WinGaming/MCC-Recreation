@@ -1,49 +1,28 @@
 package mcc;
 
-import static mcc.stats.PlayerStatsManager.getEventCoins;
-import static mcc.stats.PlayerStatsManager.getLifetimeCoins;
-import static org.bukkit.ChatColor.BOLD;
-import static org.bukkit.ChatColor.GREEN;
-import static org.bukkit.ChatColor.RED;
-import static org.bukkit.ChatColor.RESET;
-import static org.bukkit.ChatColor.YELLOW;
-
 import java.io.IOException;
-import java.util.function.Supplier;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import mcc.commands.DecisionDomeCommand;
 import mcc.config.ConfigBuilder;
-import mcc.decisiondome.DecisionDome;
-import mcc.decisiondome.DecisionDome.DecisionDomeState;
-import mcc.decisiondome.DecisionDomeCommand;
-import mcc.display.CachedScoreboardTemplate;
-import mcc.display.ScoreboardPartProvider;
-import mcc.display.SuppliedTimerScoreboardPartProvider;
-import mcc.display.TeamScoreboardPartProvider;
-import mcc.display.TeamsPlayerCountScoreboardPartProvider;
 import mcc.event.Event;
-import mcc.teams.TeamManager;
-import mcc.utils.Pair;
-import mcc.utils.Timer;
 import mcc.yml.hub.HubConfig;
-import net.minecraft.network.chat.IChatBaseComponent;
 
-public class MCCTest extends JavaPlugin {
+public class MCC extends JavaPlugin {
 	
+	// Event instances
 	private Event eventInstance;
-
+	
+	// final instances
+	private int schedulerId;
 	private ConfigBuilder configBuilder;
 	private DecisionDomeCommand domeCommand;
 	
-	private int schedulerId;
-	
+	// Config instances
 	private HubConfig config;
-
-	private TeamManager teamManager;
-
+	
 	@Override
 	public void onEnable() {
 		this.configBuilder = new ConfigBuilder();
@@ -65,9 +44,6 @@ public class MCCTest extends JavaPlugin {
 		
 		getServer().getPluginManager().registerEvents(this.configBuilder, this);
 		
-		this.teamManager = new TeamManager();
-		getServer().getPluginManager().registerEvents(this.teamManager, this);
-
 		this.schedulerId = Bukkit.getScheduler().scheduleSyncRepeatingTask(this, this::tick, 0, 1);
 	}
 	

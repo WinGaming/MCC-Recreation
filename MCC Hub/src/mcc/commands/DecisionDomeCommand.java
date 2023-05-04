@@ -1,4 +1,4 @@
-package mcc.decisiondome;
+package mcc.commands;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +13,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import mcc.MCCTest;
+import mcc.MCC;
 import mcc.config.LocationListSelector;
 import mcc.display.CachedScoreboardTemplate;
 import mcc.display.ScoreboardPartProvider;
@@ -27,13 +27,13 @@ import net.minecraft.network.chat.CommonComponents;
 
 public class DecisionDomeCommand implements CommandExecutor {
 
-	private MCCTest pluginInstance;
+	private MCC pluginInstance;
 	
 	private HubConfig config;
 
 	private Map<Player, Pair<DecisionCommandSelectorType, LocationListSelector>> currentSelector;
 	
-	public DecisionDomeCommand(MCCTest pluginInstance, HubConfig config) {
+	public DecisionDomeCommand(MCC pluginInstance, HubConfig config) {
 		this.pluginInstance = pluginInstance;
 		
 		this.config = config;

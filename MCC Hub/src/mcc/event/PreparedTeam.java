@@ -22,4 +22,8 @@ public class PreparedTeam {
     public TeamTemplateRecord getTemplate() {
         return template;
     }
+
+    public String buildLongString() {
+        return this.template.getColor() + "" + this.template.getIcon() + " " + this.template.getName();
+    }
 }

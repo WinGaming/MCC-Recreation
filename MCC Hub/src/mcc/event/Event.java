@@ -25,20 +25,22 @@ import net.minecraft.network.chat.IChatBaseComponent;
 
 public class Event {
     
+    private Timer lobbyTimer;
     private EventState currentState;
-    private CachedScoreboardTemplate lobbyTemplate;
+    
+	private final String eventId;
+	private final String lastEventId;
+    
+    private final TeamManager teamManager;
+    private final DecisionDome decisionDome;
+    
+    private final CachedScoreboardTemplate lobbyTemplate;
 
-    private Timer lobbyTimer = null;
-    private DecisionDome decisionDome;
-
-	private String eventId;
-	private String lastEventId;
-
-    private TeamManager teamManager;
-
-    private Event(TeamManager teamManager, HubConfig config) {
-        this.teamManager = teamManager;
-
+    private Event(String id, String lastEvent, TeamManager teamManager, HubConfig config) {
+        this.eventId = id;
+        this.lastEventId = lastEvent;
+        
+        this.teamManager = new TeamManager();
         this.currentState = EventState.NOT_STARTED;
         this.decisionDome = new DecisionDome(config.getDecisiondome());
 
@@ -67,6 +69,14 @@ public class Event {
         for (Player player : Bukkit.getOnlinePlayers()) {
 			this.lobbyTemplate.show(player);
 		}
+    }
+
+    public void start() {
+        if (this.currentState == EventState.NOT_STARTED) {
+            this.currentState = EventState.STARTING;
+        } else {
+            throw new IllegalStateException("Cannot start event as it is already running");
+        }
     }
 
     public String getId() {

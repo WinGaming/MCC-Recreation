@@ -1,7 +1,7 @@
 event_team_player:
  - event_id
  - team_id
- - player_id
+ - player_uuid
 
 team:
  - id

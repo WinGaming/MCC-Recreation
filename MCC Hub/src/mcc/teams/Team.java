@@ -1,31 +1,20 @@
 package mcc.teams;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.entity.Player;
 
+import mcc.event.PreparedTeam;
 import mcc.stats.record.TeamTemplateRecord;
 
 public class Team {
-    
-    private TeamTemplateRecord template;
+
+    private final PreparedTeam team;
 
     private List<Player> players;
 
-    private List<String> tempNameVar;
-
-    public Team(TeamTemplateRecord template) {
-        this.template = template;
-        this.tempNameVar = new ArrayList<>();
-    }
-
-    public List<String> getTempNameVar() {
-        return tempNameVar;
-    }
-    
-    public void addTempNameVar(String name) {
-        tempNameVar.add(name);
+    public Team(PreparedTeam team) {
+        this.team = team;
     }
 
     public void addPlayer(Player player) {
@@ -37,6 +26,14 @@ public class Team {
     }
 
     public TeamTemplateRecord getTemplate() {
-        return template;
+        return this.team.getTemplate();
+    }
+
+    public PreparedTeam getTeam() {
+        return team;
+    }
+
+    public List<Player> getPlayers() {
+        return players;
     }
 }
