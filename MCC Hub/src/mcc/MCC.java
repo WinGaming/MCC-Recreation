@@ -45,6 +45,10 @@ public class MCC extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(this.configBuilder, this);
 		
 		this.schedulerId = Bukkit.getScheduler().scheduleSyncRepeatingTask(this, this::tick, 0, 1);
+
+		// TODO: Start from command?
+		this.eventInstance = Event.fromStats("test", new ExampleEventStats(), config);
+		this.eventInstance.start();
 	}
 	
 	@Override

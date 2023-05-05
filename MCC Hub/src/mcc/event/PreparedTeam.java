@@ -7,12 +7,19 @@ import mcc.stats.record.TeamTemplateRecord;
 
 public class PreparedTeam {
     
+    private String id;
+
     private List<UUID> players;
     private TeamTemplateRecord template;
 
-    public PreparedTeam(List<UUID> players, TeamTemplateRecord teamplate) {
+    public PreparedTeam(String id, List<UUID> players, TeamTemplateRecord teamplate) {
+        this.id = id;
         this.players = players;
         this.template = teamplate;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public List<UUID> getPlayers() {
