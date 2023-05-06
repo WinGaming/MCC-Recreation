@@ -4,6 +4,10 @@ import java.util.concurrent.TimeUnit;
 
 public class Timer {
 
+	public static Timer fromPair(Pair<TimeUnit, Integer> pair) {
+		return new Timer(pair.getA(), pair.getB());
+	}
+
 	private long milliseconds;
 	
 	private long activeTarget;

@@ -15,6 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import mcc.decisiondome.DecisionDome;
+import mcc.decisiondome.DecisionDomeUtils;
 import mcc.display.CachedScoreboardTemplate;
 import mcc.display.ScoreboardPartProvider;
 import mcc.display.SuppliedTimerScoreboardPartProvider;
@@ -58,7 +59,7 @@ public class Event {
         
         this.teamManager = teamManager;
         this.currentState = EventState.NOT_STARTED;
-        this.decisionDome = new DecisionDome(config.getDecisiondome());
+        this.decisionDome = DecisionDomeUtils.loadFromConfig(config.getDecisiondome());
 
         this.lobbyTemplate = new CachedScoreboardTemplate(IChatBaseComponent.literal(YELLOW + "" + BOLD + "MC Championship Pride 22"), new ScoreboardPartProvider[] {
             new SuppliedTimerScoreboardPartProvider(this::getTimerTitle, this::getTimer),

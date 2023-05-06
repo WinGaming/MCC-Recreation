@@ -1,26 +1,22 @@
 package mcc.decisiondome;
 
-import java.util.Optional;
+import static org.bukkit.ChatColor.BOLD;
+import static org.bukkit.ChatColor.RED;
+
 import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
 
 import mcc.decisiondome.DecisionField.DecisionFieldState;
 import mcc.utils.Pair;
 import mcc.utils.Timer;
-import mcc.utils.Vector3i;
 import mcc.yml.hub.HubDecisiondomeConfig;
-
-import static org.bukkit.ChatColor.BOLD;
-import static org.bukkit.ChatColor.RED;
 
 public class DecisionDome {
 	
-	private DecisionField[] fields;
+	private final DecisionField[] fields;
+	private final HubDecisiondomeConfig config;
 	
-	private boolean validLoad = false;
 	private boolean active = false;
 	
 	private Timer currentTimer;
@@ -31,50 +27,10 @@ public class DecisionDome {
 	
 	private int chosenPosition = -1;
 	
-	private HubDecisiondomeConfig config;
-	
-	public DecisionDome(HubDecisiondomeConfig config) {
+	protected DecisionDome(DecisionField[] fields, HubDecisiondomeConfig config) {
 		this.config = config;
-		
-		Optional<String> fieldLoadError = this.reloadFieldsFromConfig();
-		if (fieldLoadError.isPresent()) {
-			this.validLoad = false;
-			System.err.println(fieldLoadError.get());
-		} else {
-			this.validLoad = true;
-		}
-		
+		this.fields = fields;
 		this.state = DecisionDomeState.WAITING;
-	}
-	
-	private Optional<String> reloadFieldsFromConfig() {
-		if (this.active) {
-			return Optional.of("Can't reload as decisiondome is currently active");
-		}
-		
-		World world = Bukkit.getWorld(this.config.getWorldName());
-		
-		if (world == null) {
-			return Optional.of("Failed to reload: Could not find world \"" + this.config.getWorldName() + "\"");
-		}
-		
-		this.fields = new DecisionField[this.config.getFields().length];
-		for (int i = 0; i < this.fields.length; i++) {
-			Vector3i[] positions = this.config.getFields()[i].getPositions();
-			Location[] locations = new Location[positions.length];
-			
-			for (int j = 0; j < positions.length; j++) {
-				locations[j] = new Location(world, positions[j].getX(), positions[j].getY(), positions[j].getZ());
-			}
-			
-			this.fields[i] = new DecisionField(locations, DecisionFieldState.ENABLED, this.config);
-		}
-		
-		return Optional.empty();
-	}
-
-	private Timer createNewTimer(Pair<TimeUnit, Integer> timer) {
-		return new Timer(timer.getA(), timer.getB());
 	}
 	
 	private void setState(DecisionDomeState newState) {
@@ -82,22 +38,18 @@ public class DecisionDome {
 			this.state = newState;
 			switch (newState) {
 			case WAITING: this.currentTimer = null; break;
-			case GAME_SELECTION_INTRO: this.currentTimer = createNewTimer(config.getGameSelectionPreVoteTimer()); this.ticksWaited = 0; break;
-			case GAME_SELECTION: this.currentTimer = createNewTimer(config.getGameSelectionTimer()); this.ticksWaited = 0; break;
-			case GAME_SELECTION_FINAL: this.currentTimer = createNewTimer(config.getGameSelectionFinalTimer()); break;
+			case GAME_SELECTION_INTRO: this.currentTimer = Timer.fromPair(config.getGameSelectionPreVoteTimer()); this.ticksWaited = 0; break;
+			case GAME_SELECTION: this.currentTimer = Timer.fromPair(config.getGameSelectionTimer()); this.ticksWaited = 0; break;
+			case GAME_SELECTION_FINAL: this.currentTimer = Timer.fromPair(config.getGameSelectionFinalTimer()); break;
 			case GAME_SELECTION_AWAIT_CHOSEN_POSITION_HIGHLIGHT: this.currentTimer = null; break;
-			case GAME_SELECTED: this.currentTimer = createNewTimer(config.getGameSelectedTimer()); break;
-			case GAME_SELECTED_AWAIT_TELEPORT: this.currentTimer = createNewTimer(config.getGameSelectedAwaitTeleportTimer()); break;
+			case GAME_SELECTED: this.currentTimer = Timer.fromPair(config.getGameSelectedTimer()); break;
+			case GAME_SELECTED_AWAIT_TELEPORT: this.currentTimer = Timer.fromPair(config.getGameSelectedAwaitTeleportTimer()); break;
 			}
 			if (this.currentTimer != null) this.currentTimer.start(System.currentTimeMillis());
 		}
 	}
 	
 	public void start() {
-		if (!this.validLoad) {
-			System.err.println("Can not start decision dome, no valid configuration loaded");
-		}
-		
 		if (this.state == DecisionDomeState.WAITING) {
 			this.setState(DecisionDomeState.GAME_SELECTION);
 			this.active = true;
@@ -190,18 +142,17 @@ public class DecisionDome {
 
 	public String getTimerTitle() {
 		switch (this.state) {
-			case WAITING:
-				return "null";
 			case GAME_SELECTION_INTRO:
-				return RED + "" + BOLD + "Voting begins in:";
+			return RED + "" + BOLD + "Voting begins in:";
 			case GAME_SELECTION:
-				return RED + "" + BOLD + "Voting closes in:";
+			return RED + "" + BOLD + "Voting closes in:";
 			case GAME_SELECTION_FINAL:
 			case GAME_SELECTION_AWAIT_CHOSEN_POSITION_HIGHLIGHT:
 			case GAME_SELECTED:
-				return RED + "" + BOLD + "Game chosen in:";
+			return RED + "" + BOLD + "Game chosen in:";
 			case GAME_SELECTED_AWAIT_TELEPORT:
-				return RED + "" + BOLD + "Teleporting to Game in:";
+			return RED + "" + BOLD + "Teleporting to Game in:";
+			case WAITING:
 			default:
 				return "null";
 		}
@@ -210,59 +161,4 @@ public class DecisionDome {
 	public Timer getCurrentTimer() {
 		return currentTimer;
 	}
-	
-	public enum DecisionDomeState {
-		/** Paused or any other state where no countdown is active */
-		WAITING,
-		/** Timer before voting allowing for explanation */
-		GAME_SELECTION_INTRO,
-		/** Teams can use items to change the result */
-		GAME_SELECTION,
-		/** Teams can't use any items anymore */
-		GAME_SELECTION_FINAL,
-		/** Waiting for selected field to reach chosen */
-		GAME_SELECTION_AWAIT_CHOSEN_POSITION_HIGHLIGHT(true),
-		/** A game was selected */
-		GAME_SELECTED,
-		/** A game was selected and players should teleport currently or have been teleported */
-		GAME_SELECTED_AWAIT_TELEPORT;
-		
-		private boolean updateFieldsWithoutActiveTimer;
-
-		private DecisionDomeState() {
-			this(false);
-		}
-		
-		private DecisionDomeState(boolean updateFieldsWithoutActiveTimer) {
-			this.updateFieldsWithoutActiveTimer = updateFieldsWithoutActiveTimer;
-		}
-		
-		public boolean shouldUpdateFieldsWithoutActiveTimer() {
-			return updateFieldsWithoutActiveTimer;
-		}
-	}
-	
-//	private class SelectableGame {
-//		
-//		private final Game game;
-//		
-//		private boolean disabled;
-//		
-//		public SelectableGame(Game game, boolean disabled) {
-//			this.game = game;
-//			this.disabled = disabled;
-//		}
-//		
-//		public Game getGame() {
-//			return game;
-//		}
-//		
-//		public void setDisabled(boolean disabled) {
-//			this.disabled = disabled;
-//		}
-//		
-//		public boolean isDisabled() {
-//			return disabled;
-//		}
-//	}
 }
