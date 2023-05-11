@@ -3,6 +3,7 @@ package mcc.decisiondome;
 import static org.bukkit.ChatColor.BOLD;
 import static org.bukkit.ChatColor.RED;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Bukkit;
@@ -26,10 +27,13 @@ public class DecisionDome {
 	private int currentSelectionIndex;
 	
 	private int chosenPosition = -1;
+
+	private List<TeamBox> teamBoxes;
 	
-	protected DecisionDome(DecisionField[] fields, HubDecisiondomeConfig config) {
+	protected DecisionDome(DecisionField[] fields, HubDecisiondomeConfig config, List<TeamBox> teamBoxes) {
 		this.config = config;
 		this.fields = fields;
+		this.teamBoxes = teamBoxes;
 		this.state = DecisionDomeState.WAITING;
 	}
 	
@@ -50,6 +54,11 @@ public class DecisionDome {
 	}
 	
 	public void start() {
+		// Teleporting all players...
+		for (TeamBox box : this.teamBoxes) {
+			box.teleportPlayers();
+		}
+
 		if (this.state == DecisionDomeState.WAITING) {
 			this.setState(DecisionDomeState.GAME_SELECTION);
 			this.active = true;

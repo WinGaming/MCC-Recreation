@@ -10,6 +10,7 @@ import static org.bukkit.ChatColor.YELLOW;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -87,7 +88,7 @@ public class Event {
             switch (this.currentState) {
                 case STARTING:
                     this.currentState = EventState.DECISIONDOME_COUNTDOWN;
-                    this.decisionDome.start();
+                    this.lobbyTimer = new Timer(TimeUnit.SECONDS, 60); // TODO: Config
                     break;
                 case DECISIONDOME_COUNTDOWN:
                     this.currentState = EventState.DECISIONDOME_RUNNING;
@@ -110,6 +111,7 @@ public class Event {
     public void start() {
         if (this.currentState == EventState.NOT_STARTED) {
             this.currentState = EventState.STARTING;
+            this.lobbyTimer = new Timer(TimeUnit.SECONDS, 60); // TODO: Config
         } else {
             throw new IllegalStateException("Cannot start event as it is already running");
         }
