@@ -3,7 +3,6 @@ package mcc.decisiondome;
 import static org.bukkit.ChatColor.BOLD;
 import static org.bukkit.ChatColor.RED;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Bukkit;
