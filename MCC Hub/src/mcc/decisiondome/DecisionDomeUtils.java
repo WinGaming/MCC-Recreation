@@ -1,16 +1,22 @@
 package mcc.decisiondome;
 
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 
 import mcc.decisiondome.DecisionField.DecisionFieldState;
+import mcc.locationprovider.LocationProvider;
+import mcc.teams.Team;
+import mcc.teams.TeamManager;
 import mcc.utils.Vector3i;
 import mcc.yml.hub.HubDecisiondomeConfig;
+import mcc.yml.hub.TeamBoxConfig;
 
 public class DecisionDomeUtils {
     
-	public static DecisionDome loadFromConfig(HubDecisiondomeConfig config) throws IllegalArgumentException {
+	public static DecisionDome loadFromConfig(HubDecisiondomeConfig config, TeamManager teamManager) throws IllegalArgumentException {
 		World world = Bukkit.getWorld(config.getWorldName());
 		
 		if (world == null) {
@@ -29,6 +35,19 @@ public class DecisionDomeUtils {
 			fields[i] = new DecisionField(locations, DecisionFieldState.ENABLED, config);
 		}
 		
-		return new DecisionDome(fields, config);
+		List<Team> teams = teamManager.getTeams();
+		if (teams.size() > config.getTeamBoxes().length) {
+			throw new IllegalStateException("Not enough team boxes configurated: " + config.getTeamBoxes().length + " configurated, but " + teamManager.getTeamCount() + " needed");
+		}
+
+		TeamBox[] teamBoxes = new TeamBox[config.getTeamBoxes().length];
+		for (int i = 0; i < teamBoxes.length; i++) {
+			TeamBoxConfig boxConfig = config.getTeamBoxes()[i];
+			Team team = i >= teams.size() ? null : teams.get(i);
+			LocationProvider spawnProvider = boxConfig.getSpawnLocationProviderConfig().getProvider();
+			teamBoxes[i] = new TeamBox(team, spawnProvider, boxConfig.getCornerA(), boxConfig.getCornerB());
+		}
+
+		return new DecisionDome(fields, config, teamBoxes);
 	}
 }

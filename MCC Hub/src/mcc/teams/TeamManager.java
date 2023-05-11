@@ -21,6 +21,14 @@ public class TeamManager {
         return null;
     }
 
+    public List<Team> getTeams() {
+        return teams;
+    }
+
+    public int getTeamCount() {
+        return this.teams.size();
+    }
+
     /** Gets the total number of currently online players in all teams */
     public int getPlayersCount() {
         return this.teams.stream().mapToInt(team -> team.getPlayers().size()).sum();

@@ -39,6 +39,8 @@ public class HubDecisiondomeConfig implements MCCConfigSerializable {
 	private HubDecisiondomeFieldTypeConfig highlightedState = new HubDecisiondomeFieldTypeConfig(Material.LIME_WOOL);
 	private HubDecisiondomeFieldTypeConfig selectedState = new HubDecisiondomeFieldTypeConfig(Material.GREEN_WOOL);
 	
+	private TeamBoxConfig[] teamBoxes = new TeamBoxConfig[0];
+
 	/**
 	 * Loads and returns the stored timer values and a {@link Boolean} if default values were used.
 	 * The data is loaded under the key <code>"timer." + timerKey</code>
@@ -79,6 +81,21 @@ public class HubDecisiondomeConfig implements MCCConfigSerializable {
 			i++;
 		}
 		this.fields = newFields;
+
+		// Team boxes
+		if (!config.contains("teamboxes")) config.createSection("teamboxes");
+		Set<String> stringBoxes = config.getConfigurationSection("teamboxes").getKeys(false);
+		TeamBoxConfig[] newBoxes = new TeamBoxConfig[stringBoxes.size()];
+
+		int j = 0;
+		for (String key : stringBoxes) {
+			TeamBoxConfig newConfig = new TeamBoxConfig();
+			if (!config.contains("teamboxes." + key)) config.createSection("teamboxes." + key);
+			newConfig.load(config.getConfigurationSection("teamboxes." + key));
+			newBoxes[j] = newConfig;
+			j++;
+		}
+		this.teamBoxes = newBoxes;
 		
 		// Timers
 		Pair<Pair<TimeUnit, Integer>, Boolean> gameSelectionPreVote = loadTimerPair("intro", TimeUnit.SECONDS, 60, config);
@@ -128,6 +145,13 @@ public class HubDecisiondomeConfig implements MCCConfigSerializable {
 			HubDecisiondomeSingleFieldConfig fieldConfig = this.fields[i];
 			if (!config.contains("fields." + i)) config.createSection("fields." + i);
 			fieldConfig.save(config.getConfigurationSection("fields." + i));
+		}
+
+		// Team boxes
+		for (int i = 0; i < this.teamBoxes.length; i++) {
+			TeamBoxConfig boxConfig = this.teamBoxes[i];
+			if (!config.contains("teamboxes." + i)) config.createSection("teamboxes." + i);
+			boxConfig.save(config.getConfigurationSection("teamboxes." + i));
 		}
 		
 		// Timers
@@ -211,6 +235,10 @@ public class HubDecisiondomeConfig implements MCCConfigSerializable {
 	
 	public HubDecisiondomeSingleFieldConfig[] getFields() {
 		return fields;
+	}
+
+	public TeamBoxConfig[] getTeamBoxes() {
+		return teamBoxes;
 	}
 	
 	public String getWorldName() {

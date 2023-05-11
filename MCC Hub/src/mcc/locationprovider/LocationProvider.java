@@ -10,7 +10,4 @@ public interface LocationProvider {
     
     Location next();
 
-    public static LocationProvider createStaticProvider(Location location) {
-        return () -> location.clone();
-    }
 }

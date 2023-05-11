@@ -28,9 +28,9 @@ public class DecisionDome {
 	
 	private int chosenPosition = -1;
 
-	private List<TeamBox> teamBoxes;
+	private TeamBox[] teamBoxes;
 	
-	protected DecisionDome(DecisionField[] fields, HubDecisiondomeConfig config, List<TeamBox> teamBoxes) {
+	protected DecisionDome(DecisionField[] fields, HubDecisiondomeConfig config, TeamBox[] teamBoxes) {
 		this.config = config;
 		this.fields = fields;
 		this.teamBoxes = teamBoxes;
