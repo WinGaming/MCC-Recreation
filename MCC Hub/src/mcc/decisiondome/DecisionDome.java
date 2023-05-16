@@ -8,6 +8,9 @@ import java.util.concurrent.TimeUnit;
 import org.bukkit.Bukkit;
 
 import mcc.decisiondome.DecisionField.DecisionFieldState;
+import mcc.decisiondome.selector.FieldSelector;
+import mcc.game.Game;
+import mcc.game.GameTask;
 import mcc.utils.Pair;
 import mcc.utils.Timer;
 import mcc.yml.hub.HubDecisiondomeConfig;
@@ -16,7 +19,7 @@ public class DecisionDome {
 	
 	private final DecisionField[] fields;
 	private final HubDecisiondomeConfig config;
-	
+
 	private boolean active = false;
 	
 	private Timer currentTimer;
@@ -28,11 +31,17 @@ public class DecisionDome {
 	private int chosenPosition = -1;
 
 	private TeamBox[] teamBoxes;
+
+	private GameTask gameTask;
+
+	private FieldSelector fieldSelector;
 	
-	protected DecisionDome(DecisionField[] fields, HubDecisiondomeConfig config, TeamBox[] teamBoxes) {
+	protected DecisionDome(DecisionField[] fields, HubDecisiondomeConfig config, TeamBox[] teamBoxes, FieldSelector selector, GameTask gametask) {
 		this.config = config;
 		this.fields = fields;
+		this.gameTask = gametask;
 		this.teamBoxes = teamBoxes;
+		this.fieldSelector = selector;
 		this.state = DecisionDomeState.WAITING;
 	}
 	
@@ -57,6 +66,8 @@ public class DecisionDome {
 		for (TeamBox box : this.teamBoxes) {
 			box.teleportPlayers();
 		}
+
+		this.chosenPosition = -1;
 
 		if (this.state == DecisionDomeState.WAITING) {
 			this.setState(DecisionDomeState.GAME_SELECTION);
@@ -131,10 +142,41 @@ public class DecisionDome {
 				case WAITING: System.err.println("A timer run out where it shouldn't!"); break;
 				case GAME_SELECTION_INTRO: Bukkit.broadcastMessage("Finished GAME_SELECTION_INTRO"); setState(DecisionDomeState.GAME_SELECTION); break;
 				case GAME_SELECTION: Bukkit.broadcastMessage("Finished GAME_SELECTION"); setState(DecisionDomeState.GAME_SELECTION_FINAL); break;
-				case GAME_SELECTION_FINAL: Bukkit.broadcastMessage("Finished GAME_SELECTION_FINAL"); setState(DecisionDomeState.GAME_SELECTION_AWAIT_CHOSEN_POSITION_HIGHLIGHT); break;
+				case GAME_SELECTION_FINAL:
+					Bukkit.broadcastMessage("Finished GAME_SELECTION_FINAL");
+
+					int gameSelection = this.fieldSelector.select(this.fields);
+					if (gameSelection < 0) {
+						setState(DecisionDomeState.WAITING);
+						Bukkit.broadcastMessage("Failed to select a game. The event is now paused until the error gets resolved");
+						return;
+					}
+
+					this.chosenPosition = gameSelection;
+
+					if (this.fields.length <= this.chosenPosition || this.chosenPosition < 0) {
+						setState(DecisionDomeState.WAITING);
+						Bukkit.broadcastMessage("Tried to setup game from invalid index: " + this.chosenPosition);
+						return;
+					}
+
+					if (!this.gameTask.startGame(this.fields[this.chosenPosition].getGameKey())) {
+						setState(DecisionDomeState.WAITING);
+						Bukkit.broadcastMessage("Failed to prepare game. The event is now paused until the error gets resolved");
+						return;
+					}
+
+					setState(DecisionDomeState.GAME_SELECTION_AWAIT_CHOSEN_POSITION_HIGHLIGHT);
+					break;
 				case GAME_SELECTION_AWAIT_CHOSEN_POSITION_HIGHLIGHT: System.err.println("A timer run out where it shouldn't!"); break;
 				case GAME_SELECTED: Bukkit.broadcastMessage("Finished GAME_SELECTED"); setState(DecisionDomeState.GAME_SELECTED_AWAIT_TELEPORT); break;
-				case GAME_SELECTED_AWAIT_TELEPORT: Bukkit.broadcastMessage("Finished GAME_SELECTED_AWAIT_TELEPORT"); setState(DecisionDomeState.WAITING); break;
+				case GAME_SELECTED_AWAIT_TELEPORT:
+					Bukkit.broadcastMessage("Finished GAME_SELECTED_AWAIT_TELEPORT");
+
+					this.gameTask.teleportPlayers();
+
+					setState(DecisionDomeState.WAITING);
+					break;
 				}
 			}
 			

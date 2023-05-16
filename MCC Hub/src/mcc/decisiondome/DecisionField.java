@@ -13,6 +13,8 @@ public class DecisionField {
 	private boolean dirty = true;
 	
 	private HubDecisiondomeConfig decisiondomeConfig;
+
+	private String gameKey = null;
 	
 	public DecisionField(Location[] blockLocations, DecisionFieldState state, HubDecisiondomeConfig config) {
 		this.blockLocations = blockLocations;
@@ -20,7 +22,7 @@ public class DecisionField {
 		
 		this.decisiondomeConfig = config;
 	}
-	
+
 	public void tick() {
 		if (this.dirty) {
 			for (Location location : this.blockLocations) {
@@ -32,6 +34,26 @@ public class DecisionField {
 				}
 			}
 		}
+	}
+
+	public boolean hasGameKey() {
+		return this.gameKey == null;
+	}
+
+	public void setGameKey(String gameKey) {
+		this.gameKey = gameKey;
+	}
+
+	public String getGameKey() {
+		return gameKey;
+	}
+
+	public boolean isDisabled() {
+		return this.state == DecisionFieldState.DISABLED;
+	}
+
+	public Location[] getBlockLocations() {
+		return blockLocations;
 	}
 	
 	public void setState(DecisionFieldState state) {

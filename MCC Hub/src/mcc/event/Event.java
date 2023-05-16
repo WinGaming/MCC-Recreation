@@ -22,6 +22,7 @@ import mcc.display.ScoreboardPartProvider;
 import mcc.display.SuppliedTimerScoreboardPartProvider;
 import mcc.display.TeamScoreboardPartProvider;
 import mcc.display.TeamsPlayerCountScoreboardPartProvider;
+import mcc.game.GameTask;
 import mcc.stats.EventStats;
 import mcc.stats.record.EventRecord;
 import mcc.teams.TeamManager;
@@ -38,6 +39,7 @@ public class Event {
 	private final String eventId;
 	private final String lastEventId;
     
+    private final GameTask gameTask;
     private final TeamManager teamManager;
     private final DecisionDome decisionDome;
     
@@ -58,6 +60,8 @@ public class Event {
         this.eventId = id;
         this.lastEventId = lastEvent;
         
+        this.gameTask = new GameTask();
+
         this.teamManager = teamManager;
         this.currentState = EventState.NOT_STARTED;
         this.decisionDome = DecisionDomeUtils.loadFromConfig(config.getDecisiondome());
@@ -102,6 +106,7 @@ public class Event {
         }
 
         this.decisionDome.tick();
+        this.gameTask.tick();
 
         for (Player player : Bukkit.getOnlinePlayers()) {
 			this.lobbyTemplate.show(player);
