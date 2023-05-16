@@ -1,6 +1,5 @@
 package mcc.yml.hub;
 
-import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 
 import mcc.utils.Vector3i;
@@ -12,14 +11,8 @@ import mcc.yml.MCCConfigSerializable;
  */
 public class TeamBoxConfig implements MCCConfigSerializable {
 
-    private World world;
-
     private Vector3i cornerA, cornerB;
     private LocationProviderConfig spawnLocationProviderConfig;
-
-    public TeamBoxConfig(World world) {
-        this.world = world;
-    }
 
     @Override
     public boolean load(ConfigurationSection config) throws IllegalArgumentException {
@@ -34,7 +27,7 @@ public class TeamBoxConfig implements MCCConfigSerializable {
         this.cornerA = new Vector3i(ax, ay, az);
         this.cornerB = new Vector3i(bx, by, bz);
 
-        LocationProviderConfig locationProviderConfig = new LocationProviderConfig(this.world);
+        LocationProviderConfig locationProviderConfig = new LocationProviderConfig();
         locationProviderConfig.load(config.getConfigurationSection("spawnprovider"));
         this.spawnLocationProviderConfig = locationProviderConfig;
 

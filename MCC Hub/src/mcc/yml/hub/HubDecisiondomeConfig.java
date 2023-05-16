@@ -67,6 +67,10 @@ public class HubDecisiondomeConfig implements MCCConfigSerializable {
 	public boolean load(ConfigurationSection config) throws IllegalArgumentException {
 		boolean valuesChanged = false;
 
+		// World
+		if (config.contains("world")) { this.worldName = config.getString("world"); }
+		else { this.worldName = "WORLD_NAME"; valuesChanged = true; }
+
 		// Fields
 		if (!config.contains("fields")) config.createSection("fields");
 		Set<String> stringFields = config.getConfigurationSection("fields").getKeys(false);
@@ -130,10 +134,6 @@ public class HubDecisiondomeConfig implements MCCConfigSerializable {
 		valuesChanged = valuesChanged || this.disabledState.load(config.getConfigurationSection("states.disabled"));
 		valuesChanged = valuesChanged || this.highlightedState.load(config.getConfigurationSection("states.highlighted"));
 		valuesChanged = valuesChanged || this.selectedState.load(config.getConfigurationSection("states.selected"));
-		
-		// World
-		if (config.contains("world")) { this.worldName = config.getString("world"); }
-		else { this.worldName = "WORLD_NAME"; valuesChanged = true; }
 		
 		return valuesChanged;
 	}

@@ -1,9 +1,11 @@
 package mcc.decisiondome;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import mcc.locationprovider.LocationProvider;
 import mcc.teams.Team;
+import mcc.utils.Vector3d;
 import mcc.utils.Vector3i;
 
 public class TeamBox {
@@ -27,7 +29,8 @@ public class TeamBox {
     /** Teleports all players of the team into the box */
     public void teleportPlayers() {
         for (Player player : this.team.getPlayers()) {
-            player.teleport(this.locationProvider.next());
+            Vector3d pos = this.locationProvider.next();
+            player.teleport(new Location(player.getWorld(), pos.getX(), pos.getY(), pos.getZ()));
         }
     }
 

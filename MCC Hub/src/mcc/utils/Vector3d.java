@@ -19,6 +19,10 @@ public class Vector3d {
 		return this;
 	}
 
+	public Vector3d clone() {
+		return new Vector3d(x, y, z);
+	}
+
 	public void setX(double x) {
 		this.x = x;
 	}

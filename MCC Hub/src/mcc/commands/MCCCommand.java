@@ -5,15 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import mcc.MCC;
-
 public class MCCCommand implements CommandExecutor {
-
-    private MCC pluginInstance;
-
-    public MCCCommand(MCC pluginInstance) {
-        this.pluginInstance = pluginInstance;
-    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {

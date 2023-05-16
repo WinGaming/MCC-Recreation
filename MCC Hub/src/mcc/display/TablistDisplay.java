@@ -58,7 +58,7 @@ public class TablistDisplay {
             String nameString = teamString + SpaceFont.getSpaceString(totalWidth - teamStringLength - coinStringLength) + coinString;
 
             int indexWidth = SpaceFont.getWidthOf(indexString + " ");
-            String membersString = SpaceFont.getSpaceString(indexWidth) + WidthLimitedString.buildString(totalWidth - indexWidth, team.getTempNameVar().toArray(new String[team.getTempNameVar().size()]));
+            String membersString = SpaceFont.getSpaceString(indexWidth) + WidthLimitedString.buildString(totalWidth - indexWidth, (String[]) team.getPlayers().stream().map(player -> player.getDisplayName()).toArray());
 
             headerTemplate += "\n" + nameString + "\n" + template.getColor() + membersString + ChatColor.RESET;
 

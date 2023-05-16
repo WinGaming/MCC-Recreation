@@ -9,7 +9,6 @@ import org.bukkit.Bukkit;
 
 import mcc.decisiondome.DecisionField.DecisionFieldState;
 import mcc.decisiondome.selector.FieldSelector;
-import mcc.game.Game;
 import mcc.game.GameTask;
 import mcc.utils.Pair;
 import mcc.utils.Timer;

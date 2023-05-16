@@ -1,21 +1,21 @@
 package mcc.locationprovider;
 
-import org.bukkit.Location;
+import mcc.utils.Vector3d;
 
 public class StaticLocationProvider implements LocationProvider {
 
-    private Location location;
+    private Vector3d location;
 
-    public StaticLocationProvider(Location location) {
+    public StaticLocationProvider(Vector3d location) {
         this.location = location;
     }
 
     @Override
-    public Location next() {
+    public Vector3d next() {
         return this.location.clone();
     }
 
-    public Location getOriginalLocation() {
+    public Vector3d getOriginalLocation() {
         return location;
     }
 }

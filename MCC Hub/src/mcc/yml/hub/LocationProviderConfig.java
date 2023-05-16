@@ -1,11 +1,10 @@
 package mcc.yml.hub;
 
-import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 
 import mcc.locationprovider.LocationProvider;
 import mcc.locationprovider.StaticLocationProvider;
+import mcc.utils.Vector3d;
 import mcc.yml.MCCConfigSerializable;
 
 /**
@@ -14,13 +13,7 @@ import mcc.yml.MCCConfigSerializable;
  */
 public class LocationProviderConfig implements MCCConfigSerializable {
 
-    private World world;
-
     private LocationProvider provider;
-
-    public LocationProviderConfig(World world) {
-        this.world = world;
-    }
 
     @Override
     public boolean load(ConfigurationSection config) throws IllegalArgumentException {
@@ -31,7 +24,7 @@ public class LocationProviderConfig implements MCCConfigSerializable {
             double y = config.getDouble("config.location.y");
             double z = config.getDouble("config.location.z");
 
-            this.provider = new StaticLocationProvider(new Location(this.world, x, y, z));
+            this.provider = new StaticLocationProvider(new Vector3d(x, y, z));
         } else {
             throw new IllegalArgumentException("Unknown location-provider type in config: \"" + type + "\"");
         }
