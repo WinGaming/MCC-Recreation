@@ -7,7 +7,7 @@ author: SpiForge
 
 prefix: MCCTest
 
-main: mcc.MCCTest
+main: mcc.MCC
 
 commands:
   decisiondome:

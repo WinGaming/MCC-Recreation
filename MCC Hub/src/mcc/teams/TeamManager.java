@@ -1,5 +1,6 @@
 package mcc.teams;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -10,7 +11,10 @@ public class TeamManager {
     private List<Team> teams;
 
     public TeamManager(List<PreparedTeam> preparedTeams) {
-        this.teams = preparedTeams.stream().map(Team::new).toList();
+        this.teams = new ArrayList<>();
+        for (PreparedTeam preparedTeam : preparedTeams) {
+            this.teams.add(new Team(preparedTeam));
+        }
     }
 
     public Team getTeam(UUID player) {

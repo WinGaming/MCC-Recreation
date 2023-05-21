@@ -56,7 +56,10 @@ public class MCC extends JavaPlugin {
 	}
 	
 	private void tick() {
-		this.eventInstance.tick();
+		if (this.eventInstance != null) {
+			this.eventInstance.tick();
+		}
+		
 		this.configBuilder.tick();
 	}
 	
