@@ -2,22 +2,47 @@ package mcc.config;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
+import mcc.utils.Pair;
+
 public class ConfigBuilder implements Listener {
 	
 	private Map<Player, ConfigSelector<?>> currentSelection;
+	private Map<Player, ConfigAction> currentAction;
 	
 	public ConfigBuilder() {
+		this.currentAction = new HashMap<>();
 		this.currentSelection = new HashMap<>();
 	}
 	
-	public void setSelector(Player player, ConfigSelector<?> selector) {
+	public void tick() {
+		for (Entry<Player, ConfigSelector<?>> selectorPair : this.currentSelection.entrySet()) {
+			Player player = selectorPair.getKey();
+			selectorPair.getValue().displayTick(player);
+		}
+	}
+
+	public void setSelector(Player player, ConfigAction action, ConfigSelector<?> selector) {
+		if (action == null || selector == null) {
+			throw new IllegalArgumentException("Both ConfigAction and ConfigSelector must not be null");
+		}
+
 		this.currentSelection.put(player, selector); // TODO: Do something with the old selector?
+	}
+
+	public Pair<ConfigAction, ConfigSelector<?>> getCurrentSelection(Player player) {
+		return new Pair<>(this.currentAction.get(player), this.currentSelection.get(player));
+	}
+
+	public void cancelSelector(Player player) {
+		this.currentAction.remove(player);
+		this.currentSelection.remove(player);
 	}
 	
 	@EventHandler

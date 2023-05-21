@@ -64,4 +64,8 @@ public class MCC extends JavaPlugin {
 	public ConfigBuilder getConfigBuilder() {
 		return configBuilder;
 	}
+
+	public Event getEventInstance() {
+		return eventInstance;
+	}
 }

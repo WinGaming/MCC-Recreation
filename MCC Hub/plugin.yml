@@ -13,3 +13,6 @@ commands:
   decisiondome:
     description: Manage all decisiondome relevant commands
     usage: "Usage: /<command> [fields] [add|remove|list]"
+  mcc:
+    description: Manage all general related commands
+    usage: "Usage: /<command> [start|stop]"
