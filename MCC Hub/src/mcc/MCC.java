@@ -18,7 +18,6 @@ public class MCC extends JavaPlugin {
 	// final instances
 	private int schedulerId;
 	private ConfigBuilder configBuilder;
-	private DecisionDomeCommand domeCommand;
 	
 	// Config instances
 	private HubConfig config;
@@ -40,7 +39,7 @@ public class MCC extends JavaPlugin {
 			return;
 		}
 		
-		getCommand("decisiondome").setExecutor(this.domeCommand = new DecisionDomeCommand(this, this.config));
+		getCommand("decisiondome").setExecutor(new DecisionDomeCommand(this.configBuilder, this.config));
 		
 		getServer().getPluginManager().registerEvents(this.configBuilder, this);
 		
@@ -58,7 +57,7 @@ public class MCC extends JavaPlugin {
 	
 	private void tick() {
 		this.eventInstance.tick();
-		this.domeCommand.tick();
+		this.configBuilder.tick();
 	}
 	
 	public ConfigBuilder getConfigBuilder() {
