@@ -21,4 +21,23 @@ public class Vector3i {
 	public int getZ() {
 		return z;
 	}
+
+	public Vector3i setX(int x) {
+		this.x = x;
+		return this;
+	}
+
+	public Vector3i setY(int y) {
+		this.y = y;
+		return this;
+	}
+
+	public Vector3i setZ(int z) {
+		this.z = z;
+		return this;
+	}
+
+	public Vector3i clone() {
+		return new Vector3i(x, y, z);
+	}
 }

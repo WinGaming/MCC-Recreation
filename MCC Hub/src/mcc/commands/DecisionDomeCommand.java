@@ -58,8 +58,12 @@ public class DecisionDomeCommand implements CommandExecutor {
 					sender.sendMessage("You currently have no open selection in decisiondome");
 				}
 			} else {
-				sender.sendMessage("TODO:");
+				sender.sendMessage(String.format(ChatColor.RED + "Unknown \"fields\"-sub-command \"%s\"", args[1]));
 			}
+		} else if (args[0].equalsIgnoreCase("teambox")) {
+			Player player = (Player) sender;
+
+			player.sendMessage("TODO:");
 		} else {
 			sender.sendMessage(String.format(ChatColor.RED + "Unknown sub-command \"%s\"", args[0]));
 		}

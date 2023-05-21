@@ -60,6 +60,20 @@ public class ParticleIndicator {
 		}
 	}
 	
+	private static Location fromVector(World world, Vector3i vector) {
+		return new Location(world, vector.getX(), vector.getY(), vector.getZ());
+	}
+
+	public static final void highlightArea(Player player, World world, Vector3i cornerA, Vector3i cornerB) {
+		Vector3i min = new Vector3i(Math.min(cornerA.getX(), cornerB.getX()), Math.min(cornerA.getY(), cornerB.getY()), Math.min(cornerA.getZ(), cornerB.getZ()));
+		Vector3i max = new Vector3i(Math.max(cornerA.getX(), cornerB.getX()), Math.max(cornerA.getY(), cornerB.getY()), Math.max(cornerA.getZ(), cornerB.getZ()));
+
+		
+
+
+
+	}
+
 	public static final void highlightBlocks(World world, List<Location> locations) {
 		IndexedBlockPositionList blockPositionList = new IndexedBlockPositionList(locations);
 		
