@@ -35,6 +35,7 @@ public class ConfigBuilder implements Listener {
 			throw new IllegalArgumentException("Both ConfigAction and ConfigSelector must not be null");
 		}
 
+		this.currentAction.put(player, action);
 		this.currentSelection.put(player, selector); // TODO: Do something with the old selector?
 	}
 

@@ -65,13 +65,31 @@ public class ParticleIndicator {
 	}
 
 	public static final void highlightArea(Player player, World world, Vector3i cornerA, Vector3i cornerB) {
-		Vector3i min = new Vector3i(Math.min(cornerA.getX(), cornerB.getX()), Math.min(cornerA.getY(), cornerB.getY()), Math.min(cornerA.getZ(), cornerB.getZ()));
-		Vector3i max = new Vector3i(Math.max(cornerA.getX(), cornerB.getX()), Math.max(cornerA.getY(), cornerB.getY()), Math.max(cornerA.getZ(), cornerB.getZ()));
-
+		int minX = Math.min(cornerA.getX(), cornerB.getX());
+		int minY = Math.min(cornerA.getY(), cornerB.getY());
+		int minZ = Math.min(cornerA.getZ(), cornerB.getZ());
 		
+		int maxX = Math.max(cornerA.getX(), cornerB.getX()) + 1; // adding 1 to make it inclusive
+		int maxY = Math.max(cornerA.getY(), cornerB.getY()) + 1;
+		int maxZ = Math.max(cornerA.getZ(), cornerB.getZ()) + 1;
 
+		// draw bottom to top lines
+		drawLine(player, world, new Vector3i(minX, minY, minZ), new Vector3i(minX, maxY, minZ), 0.25f, Color.FUCHSIA);
+		drawLine(player, world, new Vector3i(minX, minY, maxZ), new Vector3i(minX, maxY, maxZ), 0.25f, Color.FUCHSIA);
+		drawLine(player, world, new Vector3i(maxX, minY, minZ), new Vector3i(maxX, maxY, minZ), 0.25f, Color.FUCHSIA);
+		drawLine(player, world, new Vector3i(maxX, minY, maxZ), new Vector3i(maxX, maxY, maxZ), 0.25f, Color.FUCHSIA);
 
+		// draw left to right lines
+		drawLine(player, world, new Vector3i(minX, minY, minZ), new Vector3i(maxX, minY, minZ), 0.25f, Color.FUCHSIA);
+		drawLine(player, world, new Vector3i(minX, minY, maxZ), new Vector3i(maxX, minY, maxZ), 0.25f, Color.FUCHSIA);
+		drawLine(player, world, new Vector3i(minX, maxY, minZ), new Vector3i(maxX, maxY, minZ), 0.25f, Color.FUCHSIA);
+		drawLine(player, world, new Vector3i(minX, maxY, maxZ), new Vector3i(maxX, maxY, maxZ), 0.25f, Color.FUCHSIA);
 
+		// draw front to back lines
+		drawLine(player, world, new Vector3i(minX, minY, minZ), new Vector3i(minX, minY, maxZ), 0.25f, Color.FUCHSIA);
+		drawLine(player, world, new Vector3i(minX, maxY, minZ), new Vector3i(minX, maxY, maxZ), 0.25f, Color.FUCHSIA);
+		drawLine(player, world, new Vector3i(maxX, minY, minZ), new Vector3i(maxX, minY, maxZ), 0.25f, Color.FUCHSIA);
+		drawLine(player, world, new Vector3i(maxX, maxY, minZ), new Vector3i(maxX, maxY, maxZ), 0.25f, Color.FUCHSIA);
 	}
 
 	public static final void highlightBlocks(World world, List<Location> locations) {
@@ -90,6 +108,10 @@ public class ParticleIndicator {
 		}
 	}
 	
+	private static final void drawLine(Player player, World world, Vector3i start, Vector3i end, float stepSize, Color color) {
+		drawLine(player, fromVector(world, start), fromVector(world, end), stepSize, color);
+	}
+
 	public static final void drawLine(Player player, Location start, Location end, float stepSize, Color color) {
 		if (stepSize == 0) throw new IllegalStateException("stepSize can not be 0!");
 		

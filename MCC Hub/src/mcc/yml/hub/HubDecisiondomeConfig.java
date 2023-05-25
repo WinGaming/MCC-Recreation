@@ -10,11 +10,14 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 
+import mcc.config.AreaSelector;
 import mcc.config.LocationListSelector;
 import mcc.utils.Pair;
 import mcc.utils.Vector3i;
 import mcc.yml.ConfigUtils;
 import mcc.yml.MCCConfigSerializable;
+
+import static mcc.yml.hub.LocationUtils.toVector3i;
 
 /**
  * This class represents the configuration section for the Decision-dome implementing {@link MCCConfigSerializable}.
@@ -252,7 +255,7 @@ public class HubDecisiondomeConfig implements MCCConfigSerializable {
 		List<Vector3i> positionList = new ArrayList<>();
 		for (Location location : selector.build()) {
 			if (!this.worldName.equals(location.getWorld().getName())) {
-				return Optional.of("At least one block was placed in a diffrent world");
+				return Optional.of("At least one block was placed in a diffrent world than the decisiondome");
 			}
 			
 			if (!locationIndexList.contains(location.getBlockX() + "_" + location.getBlockY() + "_" + location.getBlockZ())) {
@@ -271,6 +274,33 @@ public class HubDecisiondomeConfig implements MCCConfigSerializable {
 		
 		newFields[newFields.length - 1] = fieldConfig;
 		this.fields = newFields;
+		
+		return Optional.empty();
+	}
+
+	public Optional<String> addTeamboxFromSelector(AreaSelector selector) {
+		var selectorResult = selector.build();
+
+		if (!this.worldName.equals(selectorResult.getA().getWorld().getName()) || !this.worldName.equals(selectorResult.getB().getWorld().getName())) {
+			return Optional.of("At least one corner is in a diffrent world than the decisiondome");
+		}
+
+		if (selectorResult.getA() == null || selectorResult.getB() == null) {
+			return Optional.of("At least one corner is not selected");
+		}
+
+		TeamBoxConfig teamboxConfig = new TeamBoxConfig();
+		teamboxConfig.setCornerA(toVector3i(selectorResult.getA()));
+		teamboxConfig.setCornerB(toVector3i(selectorResult.getB()));
+		teamboxConfig.setSpawnLocationProviderConfig(new LocationProviderConfig());
+		
+		TeamBoxConfig[] newBoxes = new TeamBoxConfig[this.teamBoxes.length + 1];
+		for (int i = 0; i < this.teamBoxes.length; i++) {
+			newBoxes[i] = this.teamBoxes[i];
+		}
+		
+		newBoxes[newBoxes.length - 1] = teamboxConfig;
+		this.teamBoxes = newBoxes;
 		
 		return Optional.empty();
 	}

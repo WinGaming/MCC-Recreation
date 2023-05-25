@@ -9,6 +9,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import mcc.config.AreaSelector;
 import mcc.config.ConfigAction;
 import mcc.config.ConfigBuilder;
 import mcc.config.LocationListSelector;
@@ -30,6 +31,8 @@ public class DecisionDomeCommand implements CommandExecutor {
 			sender.sendMessage("Command can only be executed as a player");
 			return true;
 		}
+
+		sender.sendMessage(args);
 		
 		if (args.length == 0) {
 			sender.sendMessage("/decisiondome fields [add|save]");
@@ -63,7 +66,30 @@ public class DecisionDomeCommand implements CommandExecutor {
 		} else if (args[0].equalsIgnoreCase("teambox")) {
 			Player player = (Player) sender;
 
-			player.sendMessage("TODO:");
+			if (args.length == 1) {
+				sender.sendMessage("/decisiondome teambox add");
+				sender.sendMessage("/decisiondome teambox save");
+			} else if (args[1].equalsIgnoreCase("add")) {
+				this.configBuilder.setSelector(player, ConfigAction.DECISIONDOME_CREATE_TEAMBOX, new AreaSelector());
+				sender.sendMessage("Started selecting blocks for a teambox");
+			} else if (args[1].equalsIgnoreCase("save")) {
+				var currentSelection = this.configBuilder.getCurrentSelection(player);
+				if (currentSelection.getA() == ConfigAction.DECISIONDOME_CREATE_TEAMBOX) {
+					Optional<String> error = this.config.getDecisiondome().addTeamboxFromSelector((AreaSelector) currentSelection.getB());
+					if (!error.isPresent()) {
+						sender.sendMessage("Teambox added to template");
+						this.configBuilder.cancelSelector(player);
+						
+						Bukkit.broadcastMessage(this.config.saveToFile(false).name());
+					} else {
+						sender.sendMessage(error.get());
+					}
+				} else {
+					sender.sendMessage("You currently have no open selection in decisiondome");
+				}
+			} else {
+				sender.sendMessage(String.format(ChatColor.RED + "Unknown \"teambox\"-sub-command \"%s\"", args[1]));
+			}
 		} else {
 			sender.sendMessage(String.format(ChatColor.RED + "Unknown sub-command \"%s\"", args[0]));
 		}

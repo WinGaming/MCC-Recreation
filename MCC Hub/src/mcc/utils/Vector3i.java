@@ -9,6 +9,13 @@ public class Vector3i {
 		this.y = y;
 		this.z = z;
 	}
+
+	public Vector3i add(int x, int y, int z) {
+		this.x += x;
+		this.y += y;
+		this.z += z;
+		return this;
+	}
 	
 	public int getX() {
 		return x;

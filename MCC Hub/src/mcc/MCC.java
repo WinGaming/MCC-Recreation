@@ -3,6 +3,7 @@ package mcc;
 import java.io.IOException;
 
 import org.bukkit.Bukkit;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import mcc.commands.DecisionDomeCommand;
@@ -10,7 +11,7 @@ import mcc.config.ConfigBuilder;
 import mcc.event.Event;
 import mcc.yml.hub.HubConfig;
 
-public class MCC extends JavaPlugin {
+public class MCC extends JavaPlugin implements Listener {
 	
 	// Event instances
 	private Event eventInstance;
@@ -21,7 +22,7 @@ public class MCC extends JavaPlugin {
 	
 	// Config instances
 	private HubConfig config;
-	
+
 	@Override
 	public void onEnable() {
 		this.configBuilder = new ConfigBuilder();
@@ -44,10 +45,6 @@ public class MCC extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(this.configBuilder, this);
 		
 		this.schedulerId = Bukkit.getScheduler().scheduleSyncRepeatingTask(this, this::tick, 0, 1);
-
-		// TODO: Start from command?
-		this.eventInstance = Event.fromStats("test", new ExampleEventStats(), config);
-		this.eventInstance.start();
 	}
 	
 	@Override

@@ -33,7 +33,7 @@ public class HubConfig implements MCCConfigSerializable {
 	 */
 	public void reload() throws IOException {
 		File configDir = new File(new File("").getAbsolutePath() + "/" + Constants.FOLDER_CONFIGS);
-		File file = new File(configDir.getAbsolutePath() + "/hub.yml");
+		File file = new File(configDir.getAbsolutePath() + "/decisiondome.yml");
 		
 		File parentDir = file.getParentFile();
 		if (parentDir != null && !parentDir.exists()) {
@@ -53,7 +53,7 @@ public class HubConfig implements MCCConfigSerializable {
 		
 		YamlConfiguration config = YamlConfiguration.loadConfiguration(new InputStreamReader(new FileInputStream(file), "UTF-8"));
 		if (this.load(config)) {
-			System.out.println("Detected patches in config, force saving changed version...");
+			System.out.println("Detected patches in decisiondome-config, force saving changed version...");
 			this.save(config);
 			config.save(file);
 		}

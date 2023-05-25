@@ -47,6 +47,18 @@ public class TeamBoxConfig implements MCCConfigSerializable {
         this.spawnLocationProviderConfig.save(config.getConfigurationSection("spawnprovider"));   
     }
 
+    public void setCornerA(Vector3i cornerA) {
+        this.cornerA = cornerA;
+    }
+
+    public void setCornerB(Vector3i cornerB) {
+        this.cornerB = cornerB;
+    }
+
+    public void setSpawnLocationProviderConfig(LocationProviderConfig spawnLocationProviderConfig) {
+        this.spawnLocationProviderConfig = spawnLocationProviderConfig;
+    }
+
     public Vector3i getCornerA() {
         return cornerA;
     }
