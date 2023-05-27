@@ -249,6 +249,10 @@ public class HubDecisiondomeConfig implements MCCConfigSerializable {
 	}
 	
 	// Setters
+	public void setWorldName(String worldName) {
+		this.worldName = worldName;
+	}
+
 	public Optional<String> addFieldFromSelector(LocationListSelector selector) {
 		List<String> locationIndexList = new ArrayList<>();
 		

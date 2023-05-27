@@ -7,6 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import mcc.commands.DecisionDomeCommand;
+import mcc.commands.MCCCommand;
 import mcc.config.ConfigBuilder;
 import mcc.event.Event;
 import mcc.yml.hub.HubConfig;
@@ -41,6 +42,7 @@ public class MCC extends JavaPlugin implements Listener {
 		}
 		
 		getCommand("decisiondome").setExecutor(new DecisionDomeCommand(this.configBuilder, this.config));
+		getCommand("mcc").setExecutor(new MCCCommand(this.config));
 		
 		getServer().getPluginManager().registerEvents(this.configBuilder, this);
 		

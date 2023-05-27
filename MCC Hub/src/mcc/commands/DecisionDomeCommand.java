@@ -33,8 +33,6 @@ public class DecisionDomeCommand implements CommandExecutor {
 			return true;
 		}
 
-		sender.sendMessage(args);
-		
 		if (args.length == 0) {
 			sender.sendMessage("/decisiondome fields [add|save]");
 			sender.sendMessage("/decisiondome teambox [add|save]");
@@ -96,6 +94,15 @@ public class DecisionDomeCommand implements CommandExecutor {
 		} else if (args[0].equalsIgnoreCase("config")) {
 			if (args.length == 1) {
 				sender.sendMessage("/decisiondome config validate");
+				sender.sendMessage("/decisiondome config world <worldname>");
+			} else if (args[1].equalsIgnoreCase("world")) {
+				if (args.length == 2) {
+					sender.sendMessage("/decisiondome config world <worldname>");
+				} else {
+					this.config.getDecisiondome().setWorldName(args[2]);
+					Bukkit.broadcastMessage(this.config.saveToFile(false).name());
+					sender.sendMessage(String.format("Set world to \"%s\"", args[2]));
+				}
 			} else if (args[1].equalsIgnoreCase("validate")) {
 				DecisionDomeUtils.sendConfigValidationResult(sender, DecisionDomeUtils.validateConfig(this.config.getDecisiondome()));
 			}
