@@ -42,11 +42,15 @@ public class MCC extends JavaPlugin implements Listener {
 		}
 		
 		getCommand("decisiondome").setExecutor(new DecisionDomeCommand(this.configBuilder, this.config));
-		getCommand("mcc").setExecutor(new MCCCommand(this.config));
+		getCommand("mcc").setExecutor(new MCCCommand(this, this.config));
 		
 		getServer().getPluginManager().registerEvents(this.configBuilder, this);
 		
 		this.schedulerId = Bukkit.getScheduler().scheduleSyncRepeatingTask(this, this::tick, 0, 1);
+	}
+
+	public void startEvent(String eventId) { // TODO: Return boolean state
+		this.eventInstance = Event.fromStats(eventId, new ExampleEventStats(), this.config); // TODO: Use real stats
 	}
 	
 	@Override

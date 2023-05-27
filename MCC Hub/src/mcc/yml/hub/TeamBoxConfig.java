@@ -28,6 +28,7 @@ public class TeamBoxConfig implements MCCConfigSerializable {
         this.cornerB = new Vector3i(bx, by, bz);
 
         LocationProviderConfig locationProviderConfig = new LocationProviderConfig();
+        if (!config.contains("spawnprovider")) config.createSection("spawnprovider");
         locationProviderConfig.load(config.getConfigurationSection("spawnprovider"));
         this.spawnLocationProviderConfig = locationProviderConfig;
 
@@ -44,6 +45,7 @@ public class TeamBoxConfig implements MCCConfigSerializable {
         config.set("corner.b.y", this.cornerB.getY());
         config.set("corner.b.z", this.cornerB.getZ());
 
+        if (!config.contains("spawnprovider")) config.createSection("spawnprovider");
         this.spawnLocationProviderConfig.save(config.getConfigurationSection("spawnprovider"));   
     }
 

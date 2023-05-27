@@ -34,12 +34,17 @@ public class LocationProviderConfig implements MCCConfigSerializable {
 
     @Override
     public void save(ConfigurationSection config) {
+        System.out.println(config);
+        System.out.println(provider);
+
         if (provider instanceof StaticLocationProvider) {
             StaticLocationProvider staticProvider = (StaticLocationProvider) provider;
             config.set("config.location.x", staticProvider.getOriginalLocation().getX());
             config.set("config.location.y", staticProvider.getOriginalLocation().getY());
             config.set("config.location.z", staticProvider.getOriginalLocation().getZ());
             config.set("type", "static");
+        } else {
+            config.set("type", "unknown");
         }
     }   
     
