@@ -19,6 +19,14 @@ public class TeamManager {
         }
     }
 
+    public void handleQuit(Player player) {
+        for (Team team : this.teams) {
+            if (team.getPlayers().contains(player)) {
+                team.removePlayer(player);
+            }
+        }
+    }
+
     public boolean joinIfRegistered(Player player) {
         for (Team team : this.teams) {
             if (team.getPlayers().contains(player)) return true;

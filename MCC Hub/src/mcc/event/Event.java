@@ -18,6 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import mcc.decisiondome.DecisionDome;
 import mcc.decisiondome.DecisionDomeUtils;
@@ -121,6 +122,11 @@ public class Event implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         this.handlePlayerJoin(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        this.teamManager.handleQuit(event.getPlayer());
     }
 
     public void handlePlayerJoin(Player player) {
