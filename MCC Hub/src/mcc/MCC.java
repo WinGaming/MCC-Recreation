@@ -4,15 +4,19 @@ import java.io.IOException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import mcc.commands.DecisionDomeCommand;
 import mcc.commands.MCCCommand;
 import mcc.config.ConfigBuilder;
 import mcc.event.Event;
+import mcc.utils.PlayerTagCache;
 import mcc.yml.hub.HubConfig;
 
-public class MCC extends JavaPlugin {
+public class MCC extends JavaPlugin implements Listener {
 	
 	// Event instances
 	private Event eventInstance;
@@ -45,8 +49,14 @@ public class MCC extends JavaPlugin {
 		getCommand("mcc").setExecutor(new MCCCommand(this, this.config));
 		
 		getServer().getPluginManager().registerEvents(this.configBuilder, this);
+		getServer().getPluginManager().registerEvents(this, this);
 		
 		this.schedulerId = Bukkit.getScheduler().scheduleSyncRepeatingTask(this, this::tick, 0, 1);
+	}
+
+	@EventHandler
+	public void onPlayerQuit(PlayerQuitEvent event) {
+		PlayerTagCache.clearTags(event.getPlayer().getUniqueId());
 	}
 
 	public void startEvent(String eventId) { // TODO: Return boolean state

@@ -4,6 +4,7 @@ import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import mcc.utils.Pair;
+import mcc.utils.PlayerTagCache;
 import net.minecraft.network.chat.IChatBaseComponent;
 import net.minecraft.network.protocol.game.PacketPlayOutScoreboardDisplayObjective;
 import net.minecraft.network.protocol.game.PacketPlayOutScoreboardObjective;
@@ -42,11 +43,15 @@ public class CachedScoreboardTemplate {
 			this.objective = new ScoreboardObjective(new Scoreboard(), objectiveId, IScoreboardCriteria.DUMMY, title, EnumScoreboardHealthDisplay.INTEGER);
 		}
 
-		PacketPlayOutScoreboardObjective objectivePacket = new PacketPlayOutScoreboardObjective(objective, PacketPlayOutScoreboardObjective.METHOD_ADD);
-		((CraftPlayer) player).getHandle().connection.send(objectivePacket);
-		
-		PacketPlayOutScoreboardDisplayObjective displayPacket = new PacketPlayOutScoreboardDisplayObjective(Scoreboard.getDisplaySlotByName("sidebar"), objective);
-		((CraftPlayer) player).getHandle().connection.send(displayPacket);
+		if (!PlayerTagCache.hasTag(player.getUniqueId(), "scoreboard_objective")) {
+			PacketPlayOutScoreboardObjective objectivePacket = new PacketPlayOutScoreboardObjective(objective, PacketPlayOutScoreboardObjective.METHOD_ADD);
+			((CraftPlayer) player).getHandle().connection.send(objectivePacket);
+			
+			PacketPlayOutScoreboardDisplayObjective displayPacket = new PacketPlayOutScoreboardDisplayObjective(Scoreboard.getDisplaySlotByName("sidebar"), objective);
+			((CraftPlayer) player).getHandle().connection.send(displayPacket);
+
+			PlayerTagCache.addTag(player.getUniqueId(), "scoreboard_objective");
+		}
 
 		if (this.parts.length == 0) {
 			// Remove all current lines
