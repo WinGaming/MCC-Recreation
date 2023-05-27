@@ -32,5 +32,4 @@ public class TeamScoreboardPartProvider implements ScoreboardPartProvider {
                 teamString
         }, 0L);
     }
-    
 }

@@ -43,6 +43,7 @@ public class CachedScoreboardTemplate {
 			this.objective = new ScoreboardObjective(new Scoreboard(), objectiveId, IScoreboardCriteria.DUMMY, title, EnumScoreboardHealthDisplay.INTEGER);
 		}
 
+		boolean ignoreCacheForPlayer = !PlayerTagCache.hasTag(player.getUniqueId(), "scoreboard_objective");
 		if (!PlayerTagCache.hasTag(player.getUniqueId(), "scoreboard_objective")) {
 			PacketPlayOutScoreboardObjective objectivePacket = new PacketPlayOutScoreboardObjective(objective, PacketPlayOutScoreboardObjective.METHOD_ADD);
 			((CraftPlayer) player).getHandle().connection.send(objectivePacket);
@@ -82,7 +83,7 @@ public class CachedScoreboardTemplate {
 				requireScoreUpdate = true;
 			}
 
-			if (!requireScoreUpdate && partCache != null && partCache.lastUpdate >= linesResult.getB()) {
+			if (!requireScoreUpdate && partCache != null && partCache.lastUpdate >= linesResult.getB() && !ignoreCacheForPlayer) {
 				currentScore += lines.length + 1;
 				lastSpaceString += " ";
 				continue;
