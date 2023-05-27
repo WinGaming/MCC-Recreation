@@ -94,14 +94,12 @@ public class HubConfig implements MCCConfigSerializable {
 	
 	@Override
 	public boolean load(ConfigurationSection config) {
-		if (!config.contains("decisiondome")) config.createSection("decisiondome");
-		return this.decisiondome.load(config.getConfigurationSection("decisiondome"));
+		return this.decisiondome.load(config);
 	}
 	
 	@Override
 	public void save(ConfigurationSection config) {
-		if (!config.contains("decisiondome")) config.createSection("decisiondome");
-		this.decisiondome.save(config.getConfigurationSection("decisiondome"));
+		this.decisiondome.save(config);
 	}
 	
 	public HubDecisiondomeConfig getDecisiondome() {

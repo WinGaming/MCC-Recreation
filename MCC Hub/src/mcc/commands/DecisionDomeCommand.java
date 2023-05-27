@@ -13,6 +13,7 @@ import mcc.config.AreaSelector;
 import mcc.config.ConfigAction;
 import mcc.config.ConfigBuilder;
 import mcc.config.LocationListSelector;
+import mcc.decisiondome.DecisionDomeUtils;
 import mcc.yml.hub.HubConfig;
 
 public class DecisionDomeCommand implements CommandExecutor {
@@ -36,6 +37,8 @@ public class DecisionDomeCommand implements CommandExecutor {
 		
 		if (args.length == 0) {
 			sender.sendMessage("/decisiondome fields [add|save]");
+			sender.sendMessage("/decisiondome teambox [add|save]");
+			sender.sendMessage("/decisiondome config validate");
 		} else if (args[0].equalsIgnoreCase("fields")) {
 			Player player = (Player) sender;
 			
@@ -89,6 +92,12 @@ public class DecisionDomeCommand implements CommandExecutor {
 				}
 			} else {
 				sender.sendMessage(String.format(ChatColor.RED + "Unknown \"teambox\"-sub-command \"%s\"", args[1]));
+			}
+		} else if (args[0].equalsIgnoreCase("config")) {
+			if (args.length == 1) {
+				sender.sendMessage("/decisiondome config validate");
+			} else if (args[1].equalsIgnoreCase("validate")) {
+				DecisionDomeUtils.sendConfigValidationResult(sender, DecisionDomeUtils.validateConfig(this.config.getDecisiondome()));
 			}
 		} else {
 			sender.sendMessage(String.format(ChatColor.RED + "Unknown sub-command \"%s\"", args[0]));
