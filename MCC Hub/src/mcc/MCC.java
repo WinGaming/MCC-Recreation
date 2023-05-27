@@ -3,7 +3,7 @@ package mcc;
 import java.io.IOException;
 
 import org.bukkit.Bukkit;
-import org.bukkit.event.Listener;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import mcc.commands.DecisionDomeCommand;
@@ -12,7 +12,7 @@ import mcc.config.ConfigBuilder;
 import mcc.event.Event;
 import mcc.yml.hub.HubConfig;
 
-public class MCC extends JavaPlugin implements Listener {
+public class MCC extends JavaPlugin {
 	
 	// Event instances
 	private Event eventInstance;
@@ -51,6 +51,11 @@ public class MCC extends JavaPlugin implements Listener {
 
 	public void startEvent(String eventId) { // TODO: Return boolean state
 		this.eventInstance = Event.fromStats(eventId, new ExampleEventStats(), this.config); // TODO: Use real stats
+		getServer().getPluginManager().registerEvents(this.eventInstance, this);
+
+		for (Player player : getServer().getOnlinePlayers()) {
+			this.eventInstance.handlePlayerJoin(player);
+		}
 	}
 	
 	@Override

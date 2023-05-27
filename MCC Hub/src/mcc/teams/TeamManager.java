@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.bukkit.entity.Player;
+
 import mcc.event.PreparedTeam;
 
 public class TeamManager {
@@ -15,6 +17,18 @@ public class TeamManager {
         for (PreparedTeam preparedTeam : preparedTeams) {
             this.teams.add(new Team(preparedTeam));
         }
+    }
+
+    public boolean joinIfRegistered(Player player) {
+        for (Team team : this.teams) {
+            if (team.getPlayers().contains(player)) return true;
+            if (team.getTeam().getPlayers().contains(player.getUniqueId())) {
+                team.addPlayer(player);
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public Team getTeam(UUID player) {

@@ -13,7 +13,11 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 
 import mcc.decisiondome.DecisionDome;
 import mcc.decisiondome.DecisionDomeUtils;
@@ -32,7 +36,7 @@ import mcc.utils.Timer;
 import mcc.yml.hub.HubConfig;
 import net.minecraft.network.chat.IChatBaseComponent;
 
-public class Event {
+public class Event implements Listener {
     
     private Timer lobbyTimer;
     private EventState currentState;
@@ -112,6 +116,19 @@ public class Event {
         for (Player player : Bukkit.getOnlinePlayers()) {
 			this.lobbyTemplate.show(player);
 		}
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        this.handlePlayerJoin(event.getPlayer());
+    }
+
+    public void handlePlayerJoin(Player player) {
+        boolean joinResult = this.teamManager.joinIfRegistered(player);
+        if (!joinResult) {
+            player.sendMessage("You are not registered for this event");
+            player.setGameMode(GameMode.SPECTATOR);
+        }
     }
 
     public void start() {
