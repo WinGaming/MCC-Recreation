@@ -1,5 +1,6 @@
 package mcc.teams;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.entity.Player;
@@ -15,6 +16,8 @@ public class Team {
 
     public Team(PreparedTeam team) {
         this.team = team;
+
+        this.players = new ArrayList<>();
     }
 
     public void addPlayer(Player player) {
