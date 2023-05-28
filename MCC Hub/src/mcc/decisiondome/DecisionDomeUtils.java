@@ -15,8 +15,8 @@ import mcc.locationprovider.LocationProvider;
 import mcc.teams.Team;
 import mcc.teams.TeamManager;
 import mcc.utils.Vector3i;
-import mcc.yml.hub.HubDecisiondomeConfig;
-import mcc.yml.hub.TeamBoxConfig;
+import mcc.yml.decisiondome.HubDecisiondomeConfig;
+import mcc.yml.decisiondome.TeamBoxConfig;
 
 public class DecisionDomeUtils {
     

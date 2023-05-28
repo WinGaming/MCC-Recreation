@@ -1,4 +1,4 @@
-package mcc.yml.hub;
+package mcc.yml.decisiondome;
 
 import java.io.File;
 import java.io.FileInputStream;

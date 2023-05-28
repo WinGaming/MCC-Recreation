@@ -14,8 +14,8 @@ import mcc.config.ConfigAction;
 import mcc.config.ConfigBuilder;
 import mcc.config.LocationListSelector;
 import mcc.decisiondome.DecisionDomeUtils;
-import mcc.yml.hub.FileConfig;
-import mcc.yml.hub.HubDecisiondomeConfig;
+import mcc.yml.decisiondome.FileConfig;
+import mcc.yml.decisiondome.HubDecisiondomeConfig;
 
 public class DecisionDomeCommand implements CommandExecutor {
 

@@ -14,8 +14,8 @@ import mcc.commands.MCCCommand;
 import mcc.config.ConfigBuilder;
 import mcc.event.Event;
 import mcc.utils.PlayerTagCache;
-import mcc.yml.hub.FileConfig;
-import mcc.yml.hub.HubDecisiondomeConfig;
+import mcc.yml.decisiondome.FileConfig;
+import mcc.yml.decisiondome.HubDecisiondomeConfig;
 
 public class MCC extends JavaPlugin implements Listener {
 	

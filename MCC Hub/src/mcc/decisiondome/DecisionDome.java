@@ -12,7 +12,7 @@ import mcc.decisiondome.selector.FieldSelector;
 import mcc.game.GameTask;
 import mcc.utils.Pair;
 import mcc.utils.Timer;
-import mcc.yml.hub.HubDecisiondomeConfig;
+import mcc.yml.decisiondome.HubDecisiondomeConfig;
 
 public class DecisionDome {
 	

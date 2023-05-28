@@ -1,4 +1,6 @@
-package mcc.yml.hub;
+package mcc.yml.decisiondome;
+
+import static mcc.yml.decisiondome.LocationUtils.toVector3i;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +18,6 @@ import mcc.utils.Pair;
 import mcc.utils.Vector3i;
 import mcc.yml.ConfigUtils;
 import mcc.yml.MCCConfigSerializable;
-
-import static mcc.yml.hub.LocationUtils.toVector3i;
 
 /**
  * This class represents the configuration section for the Decision-dome implementing {@link MCCConfigSerializable}.

@@ -34,8 +34,8 @@ import mcc.stats.record.EventRecord;
 import mcc.teams.TeamManager;
 import mcc.utils.Pair;
 import mcc.utils.Timer;
-import mcc.yml.hub.FileConfig;
-import mcc.yml.hub.HubDecisiondomeConfig;
+import mcc.yml.decisiondome.FileConfig;
+import mcc.yml.decisiondome.HubDecisiondomeConfig;
 import net.minecraft.network.chat.IChatBaseComponent;
 
 public class Event implements Listener {
