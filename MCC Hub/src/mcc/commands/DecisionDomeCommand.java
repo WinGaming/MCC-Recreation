@@ -14,6 +14,7 @@ import mcc.config.ConfigAction;
 import mcc.config.ConfigBuilder;
 import mcc.config.LocationListSelector;
 import mcc.decisiondome.DecisionDomeUtils;
+import mcc.yml.ConfigValidation;
 import mcc.yml.decisiondome.FileConfig;
 import mcc.yml.decisiondome.HubDecisiondomeConfig;
 
@@ -105,7 +106,7 @@ public class DecisionDomeCommand implements CommandExecutor {
 					sender.sendMessage(String.format("Set world to \"%s\"", args[2]));
 				}
 			} else if (args[1].equalsIgnoreCase("validate")) {
-				DecisionDomeUtils.sendConfigValidationResult(sender, DecisionDomeUtils.validateConfig(this.config.getConfigInstance()));
+				ConfigValidation.sendConfigValidationResult(sender, ConfigValidation.validateDecisiondomeConfig(this.config.getConfigInstance()));
 			}
 		} else {
 			sender.sendMessage(String.format(ChatColor.RED + "Unknown sub-command \"%s\"", args[0]));

@@ -16,6 +16,7 @@ import mcc.event.Event;
 import mcc.utils.PlayerTagCache;
 import mcc.yml.decisiondome.FileConfig;
 import mcc.yml.decisiondome.HubDecisiondomeConfig;
+import mcc.yml.lobby.HubLobbyConfig;
 
 public class MCC extends JavaPlugin implements Listener {
 	
@@ -28,6 +29,7 @@ public class MCC extends JavaPlugin implements Listener {
 	
 	// Config instances
 	private FileConfig<HubDecisiondomeConfig> decisiondomeConfig;
+	private FileConfig<HubLobbyConfig> lobbyConfig;
 
 	@Override
 	public void onEnable() {
@@ -35,6 +37,7 @@ public class MCC extends JavaPlugin implements Listener {
 		
 		try {
 			this.decisiondomeConfig = new FileConfig<HubDecisiondomeConfig>("decisiondome", new HubDecisiondomeConfig());
+			this.lobbyConfig = new FileConfig<HubLobbyConfig>("lobby", new HubLobbyConfig());
 		} catch (IOException e) {
 			System.err.println("Failed to load config-files! See error message for more details");
 			
@@ -61,7 +64,7 @@ public class MCC extends JavaPlugin implements Listener {
 	}
 
 	public void startEvent(String eventId) { // TODO: Return boolean state
-		this.eventInstance = Event.fromStats(eventId, new ExampleEventStats(), this.decisiondomeConfig); // TODO: Use real stats
+		this.eventInstance = Event.fromStats(eventId, new ExampleEventStats(), this.decisiondomeConfig, this.lobbyConfig); // TODO: Use real stats
 		getServer().getPluginManager().registerEvents(this.eventInstance, this);
 
 		for (Player player : getServer().getOnlinePlayers()) {

@@ -14,6 +14,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -34,8 +36,10 @@ import mcc.stats.record.EventRecord;
 import mcc.teams.TeamManager;
 import mcc.utils.Pair;
 import mcc.utils.Timer;
+import mcc.utils.Vector3d;
 import mcc.yml.decisiondome.FileConfig;
 import mcc.yml.decisiondome.HubDecisiondomeConfig;
+import mcc.yml.lobby.HubLobbyConfig;
 import net.minecraft.network.chat.IChatBaseComponent;
 
 public class Event implements Listener {
@@ -52,7 +56,9 @@ public class Event implements Listener {
     
     private final CachedScoreboardTemplate lobbyTemplate;
 
-    public static Event fromStats(String eventId, EventStats stats, FileConfig<HubDecisiondomeConfig> config) {
+    private Location spawnLocation;
+
+    public static Event fromStats(String eventId, EventStats stats, FileConfig<HubDecisiondomeConfig> config, FileConfig<HubLobbyConfig> lobbyConfig) {
         Optional<List<PreparedTeam>> teams = stats.getTeamsForEvent(eventId);
         Optional<EventRecord> lastEvent = stats.getLastEventBefore(eventId);
 
@@ -60,12 +66,22 @@ public class Event implements Listener {
             throw new IllegalArgumentException("No teams found for event " + eventId);
         }
 
-        return new Event(eventId, lastEvent.isPresent() ? lastEvent.get().getEventId() : null, new TeamManager(teams.get()), config);
+        return new Event(eventId, lastEvent.isPresent() ? lastEvent.get().getEventId() : null, new TeamManager(teams.get()), config, lobbyConfig);
     }
 
-    private Event(String id, String lastEvent, TeamManager teamManager, FileConfig<HubDecisiondomeConfig> config) {
+    private Event(String id, String lastEvent, TeamManager teamManager, FileConfig<HubDecisiondomeConfig> config, FileConfig<HubLobbyConfig> lobbyConfig) {
         this.eventId = id;
         this.lastEventId = lastEvent;
+
+        World world = Bukkit.getWorld(lobbyConfig.getConfigInstance().getWorldName());
+        if (world == null) {
+			throw new IllegalArgumentException("Failed to reload: Could not find world \"" + lobbyConfig.getConfigInstance().getWorldName() + "\"");
+		}
+        Optional<Vector3d> spawnVector = lobbyConfig.getConfigInstance().getSpawnLocation();
+        if (spawnVector.isEmpty()) {
+            throw new IllegalArgumentException("Failed to reload: Spawn location not set");
+        }
+        this.spawnLocation = new Location(world, spawnVector.get().getX(), spawnVector.get().getY(), spawnVector.get().getZ()); // TODO: Yaw and pitch
         
         this.gameTask = new GameTask();
 
@@ -136,15 +152,21 @@ public class Event implements Listener {
             player.sendMessage("You are not registered for this event");
             player.setGameMode(GameMode.SPECTATOR);
         }
+
+        player.teleport(this.spawnLocation);
+    }
+
+    private void backToLobby() {
+        this.decisionDome.stop();
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            player.teleport(this.spawnLocation);
+        }
     }
 
     public void pause() {
         switch (this.currentState) {
             case DECISIONDOME_RUNNING:
-                this.decisionDome.stop();
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    // player.teleport(this.hubSpawn); // TODO:
-                }
+                this.backToLobby();
                 break;
             case NOT_STARTED:
                 break; // We are already in a paused state

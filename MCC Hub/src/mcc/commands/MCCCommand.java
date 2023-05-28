@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 
 import mcc.MCC;
 import mcc.decisiondome.DecisionDomeUtils;
+import mcc.yml.ConfigValidation;
 import mcc.yml.decisiondome.FileConfig;
 import mcc.yml.decisiondome.HubDecisiondomeConfig;
 
@@ -35,9 +36,9 @@ public class MCCCommand implements CommandExecutor {
             sender.sendMessage("/mcc resume");
             sender.sendMessage("/mcc stop");
         } else if (args[0].equalsIgnoreCase("start")) {
-            List<String> configErrors = DecisionDomeUtils.validateConfig(this.config.getConfigInstance());
+            List<String> configErrors = ConfigValidation.validateDecisiondomeConfig(this.config.getConfigInstance());
             if (configErrors.size() != 0) {
-                DecisionDomeUtils.sendConfigValidationResult(sender, configErrors);
+                ConfigValidation.sendConfigValidationResult(sender, configErrors);
                 return true;
             }
 
