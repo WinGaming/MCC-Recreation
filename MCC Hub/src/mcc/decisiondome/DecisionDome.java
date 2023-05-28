@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 
 import mcc.decisiondome.DecisionField.DecisionFieldState;
 import mcc.decisiondome.selector.FieldSelector;
+import mcc.event.Event;
 import mcc.game.GameTask;
 import mcc.utils.Pair;
 import mcc.utils.Timer;
@@ -34,8 +35,11 @@ public class DecisionDome {
 	private GameTask gameTask;
 
 	private FieldSelector fieldSelector;
+
+	private Event event;
 	
-	protected DecisionDome(DecisionField[] fields, HubDecisiondomeConfig config, TeamBox[] teamBoxes, FieldSelector selector, GameTask gametask) {
+	protected DecisionDome(Event event, DecisionField[] fields, HubDecisiondomeConfig config, TeamBox[] teamBoxes, FieldSelector selector, GameTask gametask) {
+		this.event = event;
 		this.config = config;
 		this.fields = fields;
 		this.gameTask = gametask;
@@ -119,6 +123,11 @@ public class DecisionDome {
 				} else {
 					this.ticksWaited++;
 				}
+			} else if (this.state == DecisionDomeState.GAME_SELECTED_AWAIT_TELEPORT) {
+				this.gameTask.teleportPlayers();
+				this.setState(DecisionDomeState.WAITING);
+				this.event.switchToGame();
+				return;
 			}
 			
 			if (this.currentTimer != null || this.state.shouldUpdateFieldsWithoutActiveTimer()) {
@@ -175,8 +184,6 @@ public class DecisionDome {
 				case GAME_SELECTED: Bukkit.broadcastMessage("Finished GAME_SELECTED"); setState(DecisionDomeState.GAME_SELECTED_AWAIT_TELEPORT); break;
 				case GAME_SELECTED_AWAIT_TELEPORT:
 					Bukkit.broadcastMessage("Finished GAME_SELECTED_AWAIT_TELEPORT");
-
-					this.gameTask.teleportPlayers();
 
 					setState(DecisionDomeState.WAITING);
 					break;

@@ -8,6 +8,7 @@ import org.bukkit.World;
 
 import mcc.decisiondome.DecisionField.DecisionFieldState;
 import mcc.decisiondome.selector.FieldSelector;
+import mcc.event.Event;
 import mcc.game.GameTask;
 import mcc.locationprovider.LocationProvider;
 import mcc.teams.Team;
@@ -18,7 +19,7 @@ import mcc.yml.decisiondome.TeamBoxConfig;
 
 public class DecisionDomeUtils {
 
-	public static DecisionDome loadFromConfig(HubDecisiondomeConfig config, TeamManager teamManager, FieldSelector fieldSelector, GameTask gameTask) throws IllegalArgumentException {
+	public static DecisionDome loadFromConfig(Event event, HubDecisiondomeConfig config, TeamManager teamManager, FieldSelector fieldSelector, GameTask gameTask) throws IllegalArgumentException {
 		World world = Bukkit.getWorld(config.getWorldName());
 		
 		if (world == null) {
@@ -35,6 +36,7 @@ public class DecisionDomeUtils {
 			}
 			
 			fields[i] = new DecisionField(locations, DecisionFieldState.ENABLED, config);
+			fields[i].setGameKey("test");
 		}
 		
 		List<Team> teams = teamManager.getTeams();
@@ -50,6 +52,6 @@ public class DecisionDomeUtils {
 			teamBoxes[i] = new TeamBox(team, spawnProvider, boxConfig.getCornerA(), boxConfig.getCornerB());
 		}
 
-		return new DecisionDome(fields, config, teamBoxes, fieldSelector, gameTask);
+		return new DecisionDome(event, fields, config, teamBoxes, fieldSelector, gameTask);
 	}
 }

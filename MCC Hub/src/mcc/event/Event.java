@@ -87,7 +87,7 @@ public class Event implements Listener {
 
         this.teamManager = teamManager;
         this.currentState = EventState.NOT_STARTED;
-        this.decisionDome = DecisionDomeUtils.loadFromConfig(config.getConfigInstance(), this.teamManager, new EntityFieldSelector(), this.gameTask);
+        this.decisionDome = DecisionDomeUtils.loadFromConfig(this, config.getConfigInstance(), this.teamManager, new EntityFieldSelector(), this.gameTask);
 
         this.lobbyTemplate = new CachedScoreboardTemplate(IChatBaseComponent.literal(YELLOW + "" + BOLD + "MC Championship Pride 22"), new ScoreboardPartProvider[] {
             new SuppliedTimerScoreboardPartProvider(this::getTimerTitle, this::getTimer),
@@ -108,6 +108,10 @@ public class Event implements Listener {
         });
     }
 
+    public void switchToGame() {
+        this.currentState = EventState.MINIGAME;
+    }
+
     public void tick() {
         long now = System.currentTimeMillis();
 
@@ -123,6 +127,7 @@ public class Event implements Listener {
                     break;
                 case NOT_STARTED:
                 case DECISIONDOME_RUNNING:
+                case MINIGAME:
                         this.lobbyTimer = null;
                         break;
             }
@@ -175,6 +180,8 @@ public class Event implements Listener {
                 this.lobbyTimer = null;
                 this.currentState = EventState.NOT_STARTED;
                 break;
+            case MINIGAME:
+                break; // TODO:
         }
     }
 

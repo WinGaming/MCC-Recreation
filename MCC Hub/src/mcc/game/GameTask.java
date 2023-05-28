@@ -28,7 +28,7 @@ public class GameTask {
     }
 
     public void tick() {
-
+        if (this.currentGame != null) this.currentGame.tick();
     }
 
 }

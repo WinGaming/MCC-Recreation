@@ -37,6 +37,6 @@ public class ConfigValidation {
 			}
 		}
 
-		player.sendMessage("");		
+		player.sendMessage("");
 	}
 }

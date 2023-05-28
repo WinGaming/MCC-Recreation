@@ -8,7 +8,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import mcc.MCC;
-import mcc.decisiondome.DecisionDomeUtils;
 import mcc.yml.ConfigValidation;
 import mcc.yml.decisiondome.FileConfig;
 import mcc.yml.decisiondome.HubDecisiondomeConfig;

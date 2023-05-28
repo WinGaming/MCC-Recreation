@@ -19,6 +19,8 @@ public class EntityFieldSelector implements FieldSelector {
 
     @Override
     public int select(DecisionField[] fields) {
+        if (fields.length == 0) return -1;
+
         Vector3d minPos = null;
         Vector3d maxPos = null;
         World world = null;
@@ -85,6 +87,8 @@ public class EntityFieldSelector implements FieldSelector {
                 result = key;
             }
         }
+
+        if (result == -1) return 0;
 
         return result;
     }
