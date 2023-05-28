@@ -43,6 +43,10 @@ public class DecisionDome {
 		this.fieldSelector = selector;
 		this.state = DecisionDomeState.WAITING;
 	}
+
+	public void stop() {
+		// TODO: Reset everything
+	}
 	
 	private void setState(DecisionDomeState newState) {
 		if (this.state != newState) {

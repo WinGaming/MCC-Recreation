@@ -138,12 +138,31 @@ public class Event implements Listener {
         }
     }
 
-    public void start() {
+    public void pause() {
+        switch (this.currentState) {
+            case DECISIONDOME_RUNNING:
+                this.decisionDome.stop();
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    // player.teleport(this.hubSpawn); // TODO:
+                }
+                break;
+            case NOT_STARTED:
+                break; // We are already in a paused state
+            case STARTING:
+            case DECISIONDOME_COUNTDOWN:
+                this.lobbyTimer = null;
+                this.currentState = EventState.NOT_STARTED;
+                break;
+        }
+    }
+
+    public boolean resume() {
         if (this.currentState == EventState.NOT_STARTED) {
             this.currentState = EventState.STARTING;
             this.lobbyTimer = new Timer(TimeUnit.SECONDS, 60); // TODO: Config
+            return true;
         } else {
-            throw new IllegalStateException("Cannot start event as it is already running");
+            return false;
         }
     }
 
