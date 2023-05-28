@@ -31,11 +31,18 @@ public class MCCCommand implements CommandExecutor {
         if (args.length == 0) {
             sender.sendMessage("/mcc start <eventId>");
             sender.sendMessage("/mcc pause");
+            sender.sendMessage("/mcc resume");
             sender.sendMessage("/mcc stop");
         } else if (args[0].equalsIgnoreCase("start")) {
             List<String> configErrors = DecisionDomeUtils.validateConfig(this.config.getDecisiondome());
             if (configErrors.size() != 0) {
                 DecisionDomeUtils.sendConfigValidationResult(sender, configErrors);
+                return true;
+            }
+
+            if (this.mccInstance.getEventInstance() != null) {
+                sender.sendMessage("An event is already running, did you mean /mcc resume?");
+                sender.sendMessage("To start another event, use /mcc stop to stop the current one");
                 return true;
             }
 
