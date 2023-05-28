@@ -14,15 +14,18 @@ import mcc.yml.MCCConfigSerializable;
 /**
  * This class represents the configuration implementing {@link MCCConfigSerializable}.
  */
-public class HubConfig implements MCCConfigSerializable {
+public class FileConfig<T extends MCCConfigSerializable> implements MCCConfigSerializable {
 	
 	private File configFile;
 	private long lastEdited;
 	
-	private HubDecisiondomeConfig decisiondome;
+	private String configName;
+
+	private T configInstance;
 	
-	public HubConfig() throws IOException {
-		this.decisiondome = new HubDecisiondomeConfig();
+	public FileConfig(String configName, T configInstance) throws IOException {
+		this.configName = configName;
+		this.configInstance = configInstance;
 		
 		this.reload();
 	}
@@ -33,7 +36,7 @@ public class HubConfig implements MCCConfigSerializable {
 	 */
 	public void reload() throws IOException {
 		File configDir = new File(new File("").getAbsolutePath() + "/" + Constants.FOLDER_CONFIGS);
-		File file = new File(configDir.getAbsolutePath() + "/decisiondome.yml");
+		File file = new File(configDir.getAbsolutePath() + "/" + this.configName + ".yml");
 		
 		File parentDir = file.getParentFile();
 		if (parentDir != null && !parentDir.exists()) {
@@ -53,7 +56,7 @@ public class HubConfig implements MCCConfigSerializable {
 		
 		YamlConfiguration config = YamlConfiguration.loadConfiguration(new InputStreamReader(new FileInputStream(file), "UTF-8"));
 		if (this.load(config)) {
-			System.out.println("Detected patches in decisiondome-config, force saving changed version...");
+			System.out.println(String.format("Detected patches in \"%s\"-config, force saving changed version...", this.configName));
 			this.save(config);
 			config.save(file);
 		}
@@ -94,16 +97,16 @@ public class HubConfig implements MCCConfigSerializable {
 	
 	@Override
 	public boolean load(ConfigurationSection config) {
-		return this.decisiondome.load(config);
+		return this.configInstance.load(config);
 	}
 	
 	@Override
 	public void save(ConfigurationSection config) {
-		this.decisiondome.save(config);
+		this.configInstance.save(config);
 	}
 	
-	public HubDecisiondomeConfig getDecisiondome() {
-		return decisiondome;
+	public T getConfigInstance() {
+		return configInstance;
 	}
 	
 	public enum FileSaveResponse {

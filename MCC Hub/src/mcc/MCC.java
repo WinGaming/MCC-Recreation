@@ -14,7 +14,8 @@ import mcc.commands.MCCCommand;
 import mcc.config.ConfigBuilder;
 import mcc.event.Event;
 import mcc.utils.PlayerTagCache;
-import mcc.yml.hub.HubConfig;
+import mcc.yml.hub.FileConfig;
+import mcc.yml.hub.HubDecisiondomeConfig;
 
 public class MCC extends JavaPlugin implements Listener {
 	
@@ -26,16 +27,16 @@ public class MCC extends JavaPlugin implements Listener {
 	private ConfigBuilder configBuilder;
 	
 	// Config instances
-	private HubConfig config;
+	private FileConfig<HubDecisiondomeConfig> decisiondomeConfig;
 
 	@Override
 	public void onEnable() {
 		this.configBuilder = new ConfigBuilder();
 		
 		try {
-			this.config = new HubConfig();
+			this.decisiondomeConfig = new FileConfig<HubDecisiondomeConfig>("decisiondome", new HubDecisiondomeConfig());
 		} catch (IOException e) {
-			System.err.println("Failed to load configuration! See error message for more details");
+			System.err.println("Failed to load config-files! See error message for more details");
 			
 			e.printStackTrace();
 			
@@ -45,8 +46,8 @@ public class MCC extends JavaPlugin implements Listener {
 			return;
 		}
 		
-		getCommand("decisiondome").setExecutor(new DecisionDomeCommand(this.configBuilder, this.config));
-		getCommand("mcc").setExecutor(new MCCCommand(this, this.config));
+		getCommand("decisiondome").setExecutor(new DecisionDomeCommand(this.configBuilder, this.decisiondomeConfig));
+		getCommand("mcc").setExecutor(new MCCCommand(this, this.decisiondomeConfig));
 		
 		getServer().getPluginManager().registerEvents(this.configBuilder, this);
 		getServer().getPluginManager().registerEvents(this, this);
@@ -60,7 +61,7 @@ public class MCC extends JavaPlugin implements Listener {
 	}
 
 	public void startEvent(String eventId) { // TODO: Return boolean state
-		this.eventInstance = Event.fromStats(eventId, new ExampleEventStats(), this.config); // TODO: Use real stats
+		this.eventInstance = Event.fromStats(eventId, new ExampleEventStats(), this.decisiondomeConfig); // TODO: Use real stats
 		getServer().getPluginManager().registerEvents(this.eventInstance, this);
 
 		for (Player player : getServer().getOnlinePlayers()) {

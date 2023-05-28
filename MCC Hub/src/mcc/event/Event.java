@@ -34,7 +34,8 @@ import mcc.stats.record.EventRecord;
 import mcc.teams.TeamManager;
 import mcc.utils.Pair;
 import mcc.utils.Timer;
-import mcc.yml.hub.HubConfig;
+import mcc.yml.hub.FileConfig;
+import mcc.yml.hub.HubDecisiondomeConfig;
 import net.minecraft.network.chat.IChatBaseComponent;
 
 public class Event implements Listener {
@@ -51,7 +52,7 @@ public class Event implements Listener {
     
     private final CachedScoreboardTemplate lobbyTemplate;
 
-    public static Event fromStats(String eventId, EventStats stats, HubConfig config) {
+    public static Event fromStats(String eventId, EventStats stats, FileConfig<HubDecisiondomeConfig> config) {
         Optional<List<PreparedTeam>> teams = stats.getTeamsForEvent(eventId);
         Optional<EventRecord> lastEvent = stats.getLastEventBefore(eventId);
 
@@ -62,7 +63,7 @@ public class Event implements Listener {
         return new Event(eventId, lastEvent.isPresent() ? lastEvent.get().getEventId() : null, new TeamManager(teams.get()), config);
     }
 
-    private Event(String id, String lastEvent, TeamManager teamManager, HubConfig config) {
+    private Event(String id, String lastEvent, TeamManager teamManager, FileConfig<HubDecisiondomeConfig> config) {
         this.eventId = id;
         this.lastEventId = lastEvent;
         
@@ -70,7 +71,7 @@ public class Event implements Listener {
 
         this.teamManager = teamManager;
         this.currentState = EventState.NOT_STARTED;
-        this.decisionDome = DecisionDomeUtils.loadFromConfig(config.getDecisiondome(), this.teamManager, new EntityFieldSelector(), this.gameTask);
+        this.decisionDome = DecisionDomeUtils.loadFromConfig(config.getConfigInstance(), this.teamManager, new EntityFieldSelector(), this.gameTask);
 
         this.lobbyTemplate = new CachedScoreboardTemplate(IChatBaseComponent.literal(YELLOW + "" + BOLD + "MC Championship Pride 22"), new ScoreboardPartProvider[] {
             new SuppliedTimerScoreboardPartProvider(this::getTimerTitle, this::getTimer),

@@ -14,14 +14,15 @@ import mcc.config.ConfigAction;
 import mcc.config.ConfigBuilder;
 import mcc.config.LocationListSelector;
 import mcc.decisiondome.DecisionDomeUtils;
-import mcc.yml.hub.HubConfig;
+import mcc.yml.hub.FileConfig;
+import mcc.yml.hub.HubDecisiondomeConfig;
 
 public class DecisionDomeCommand implements CommandExecutor {
 
-	private HubConfig config;
+	private FileConfig<HubDecisiondomeConfig> config;
 	private ConfigBuilder configBuilder;
 
-	public DecisionDomeCommand(ConfigBuilder configBuilder, HubConfig config) {
+	public DecisionDomeCommand(ConfigBuilder configBuilder, FileConfig<HubDecisiondomeConfig> config) {
 		this.config = config;
 		this.configBuilder = configBuilder;
 	}
@@ -49,7 +50,7 @@ public class DecisionDomeCommand implements CommandExecutor {
 			} else if (args[1].equalsIgnoreCase("save")) {
 				var currentSelection = this.configBuilder.getCurrentSelection(player);
 				if (currentSelection.getA() == ConfigAction.DECISIONDOME_CREATE_FIELD) {
-					Optional<String> error = this.config.getDecisiondome().addFieldFromSelector((LocationListSelector) currentSelection.getB());
+					Optional<String> error = this.config.getConfigInstance().addFieldFromSelector((LocationListSelector) currentSelection.getB());
 					if (!error.isPresent()) {
 						sender.sendMessage("Field added to template");
 						this.configBuilder.cancelSelector(player);
@@ -76,7 +77,7 @@ public class DecisionDomeCommand implements CommandExecutor {
 			} else if (args[1].equalsIgnoreCase("save")) {
 				var currentSelection = this.configBuilder.getCurrentSelection(player);
 				if (currentSelection.getA() == ConfigAction.DECISIONDOME_CREATE_TEAMBOX) {
-					Optional<String> error = this.config.getDecisiondome().addTeamboxFromSelector((AreaSelector) currentSelection.getB());
+					Optional<String> error = this.config.getConfigInstance().addTeamboxFromSelector((AreaSelector) currentSelection.getB());
 					if (!error.isPresent()) {
 						sender.sendMessage("Teambox added to template");
 						this.configBuilder.cancelSelector(player);
@@ -99,12 +100,12 @@ public class DecisionDomeCommand implements CommandExecutor {
 				if (args.length == 2) {
 					sender.sendMessage("/decisiondome config world <worldname>");
 				} else {
-					this.config.getDecisiondome().setWorldName(args[2]);
+					this.config.getConfigInstance().setWorldName(args[2]);
 					Bukkit.broadcastMessage(this.config.saveToFile(false).name());
 					sender.sendMessage(String.format("Set world to \"%s\"", args[2]));
 				}
 			} else if (args[1].equalsIgnoreCase("validate")) {
-				DecisionDomeUtils.sendConfigValidationResult(sender, DecisionDomeUtils.validateConfig(this.config.getDecisiondome()));
+				DecisionDomeUtils.sendConfigValidationResult(sender, DecisionDomeUtils.validateConfig(this.config.getConfigInstance()));
 			}
 		} else {
 			sender.sendMessage(String.format(ChatColor.RED + "Unknown sub-command \"%s\"", args[0]));
