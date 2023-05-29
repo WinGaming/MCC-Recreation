@@ -14,9 +14,7 @@ import org.bukkit.configuration.ConfigurationSection;
 
 import mcc.config.AreaSelector;
 import mcc.config.LocationListSelector;
-import mcc.utils.Pair;
 import mcc.utils.Vector3i;
-import mcc.yml.ConfigUtils;
 import mcc.yml.MCCConfigSerializable;
 
 /**
@@ -28,11 +26,10 @@ public class HubDecisiondomeConfig implements MCCConfigSerializable {
 	
 	private HubDecisiondomeSingleFieldConfig[] fields = new HubDecisiondomeSingleFieldConfig[0];
 	
-	private Pair<TimeUnit, Integer> gameSelectionPreVoteTimer = new Pair<>(TimeUnit.SECONDS, 60);
-	private Pair<TimeUnit, Integer> gameSelectionTimer = new Pair<>(TimeUnit.SECONDS, 30);
-	private Pair<TimeUnit, Integer> gameSelectionFinalTimer = new Pair<>(TimeUnit.SECONDS, 5);
-	private Pair<TimeUnit, Integer> gameSelectedTimer = new Pair<>(TimeUnit.SECONDS, 10);
-	private Pair<TimeUnit, Integer> gameSelectedAwaitTeleportTimer = new Pair<>(TimeUnit.HOURS, 10);
+	private TimerConfig gameSelectionPreVoteTimer = new TimerConfig(TimeUnit.SECONDS, 60);
+	private TimerConfig gameSelectionTimer = new TimerConfig(TimeUnit.SECONDS, 30);
+	private TimerConfig gameSelectionFinalTimer = new TimerConfig(TimeUnit.SECONDS, 5, 10);
+	private TimerConfig gameSelectedAwaitTeleportTimer = new TimerConfig(TimeUnit.HOURS, 10);
 	
 	private int minTickDelay = 2;
 	private int maxAdditionalTickDelay = 20;
@@ -43,28 +40,6 @@ public class HubDecisiondomeConfig implements MCCConfigSerializable {
 	private HubDecisiondomeFieldTypeConfig selectedState = new HubDecisiondomeFieldTypeConfig(Material.GREEN_WOOL);
 	
 	private TeamBoxConfig[] teamBoxes = new TeamBoxConfig[0];
-
-	/**
-	 * Loads and returns the stored timer values and a {@link Boolean} if default values were used.
-	 * The data is loaded under the key <code>"timer." + timerKey</code>
-	 * @param timerKey is the key of the name of the timer
-	 * @param defaultUnit is the default {@link TimeUnit}
-	 * @param defaultAmount is the default amount of time
-	 * @param config the {@link ConfigurationSection} to load from
-	 * @return the stored timer values and a {@link Boolean} if default values were used
-	 */
-	private static Pair<Pair<TimeUnit, Integer>, Boolean> loadTimerPair(String timerKey, TimeUnit defaultUnit, int defaultAmount, ConfigurationSection config) {
-		String unitKey = "timer." + timerKey + ".unit";
-		String amountKey = "timer." + timerKey + ".amount";
-		
-		Pair<TimeUnit, Boolean> gameSelectionUnit = ConfigUtils.readEnumValue(TimeUnit.class, unitKey, defaultUnit, config);
-		if (config.contains(amountKey)) {
-			int gameSelectionAmount = config.getInt(amountKey);
-			return new Pair<>(new Pair<>(gameSelectionUnit.getA(), gameSelectionAmount), gameSelectionUnit.getB());
-		} else {
-			return new Pair<>(new Pair<>(gameSelectionUnit.getA(), defaultAmount), true);
-		}
-	}
 	
 	@Override
 	public boolean load(ConfigurationSection config) throws IllegalArgumentException {
@@ -105,22 +80,19 @@ public class HubDecisiondomeConfig implements MCCConfigSerializable {
 		this.teamBoxes = newBoxes;
 		
 		// Timers
-		Pair<Pair<TimeUnit, Integer>, Boolean> gameSelectionPreVote = loadTimerPair("intro", TimeUnit.SECONDS, 60, config);
-		this.gameSelectionPreVoteTimer = gameSelectionPreVote.getA();
+		if (!config.contains("timer")) config.createSection("timer");
 
-		Pair<Pair<TimeUnit, Integer>, Boolean> gameSelection = loadTimerPair("selection", TimeUnit.SECONDS, 30, config);
-		this.gameSelectionTimer = gameSelection.getA();
+		if (!config.contains("timer.intro")) config.createSection("timer.intro");
+		valuesChanged = valuesChanged || this.gameSelectionPreVoteTimer.load(config.getConfigurationSection("timer.intro"));
+
+		if (!config.contains("timer.selection")) config.createSection("timer.selection");
+		valuesChanged = valuesChanged || this.gameSelectionTimer.load(config.getConfigurationSection("timer.selection"));
 		
-		Pair<Pair<TimeUnit, Integer>, Boolean> gameSelectionFinal = loadTimerPair("selection-final", TimeUnit.SECONDS, 5, config);
-		this.gameSelectionFinalTimer = gameSelectionFinal.getA();
+		if (!config.contains("timer.selection-final")) config.createSection("timer.selection-final");
+		valuesChanged = valuesChanged || this.gameSelectionFinalTimer.load(config.getConfigurationSection("timer.selection-final"));
 		
-		Pair<Pair<TimeUnit, Integer>, Boolean> gameSelected = loadTimerPair("selected", TimeUnit.SECONDS, 10, config);
-		this.gameSelectedTimer = gameSelected.getA();
-		
-		Pair<Pair<TimeUnit, Integer>, Boolean> gameSelectedAwaitTeleport = loadTimerPair("await-teleport", TimeUnit.HOURS, 10, config);
-		this.gameSelectedAwaitTeleportTimer = gameSelectedAwaitTeleport.getA();
-		
-		valuesChanged = valuesChanged || gameSelection.getB() || gameSelectionFinal.getB() || gameSelected.getB() || gameSelectedAwaitTeleport.getB();
+		if (!config.contains("timer.await-teleport")) config.createSection("timer.await-teleport");
+		valuesChanged = valuesChanged || this.gameSelectedAwaitTeleportTimer.load(config.getConfigurationSection("timer.await-teleport"));
 		
 		if (config.contains("min-delay")) this.minTickDelay = config.getInt("min-delay");
 		else { this.minTickDelay = 2; valuesChanged = true; }
@@ -158,20 +130,19 @@ public class HubDecisiondomeConfig implements MCCConfigSerializable {
 		}
 		
 		// Timers
-		config.set("timer.intro.unit", gameSelectionPreVoteTimer.getA().name());
-		config.set("timer.intro.amount", gameSelectionPreVoteTimer.getB());
+		if (!config.contains("timer")) config.createSection("timer");
 
-		config.set("timer.selection.unit", gameSelectionTimer.getA().name());
-		config.set("timer.selection.amount", gameSelectionTimer.getB());
-		
-		config.set("timer.selection-final.unit", gameSelectionFinalTimer.getA().name());
-		config.set("timer.selection-final.amount", gameSelectionFinalTimer.getB());
-		
-		config.set("timer.selected.unit", gameSelectedTimer.getA().name());
-		config.set("timer.selected.amount", gameSelectedTimer.getB());
-		
-		config.set("timer.await-teleport.unit", gameSelectedAwaitTeleportTimer.getA().name());
-		config.set("timer.await-teleport.amount", gameSelectedAwaitTeleportTimer.getB());
+		if (!config.contains("timer.intro")) config.createSection("timer.intro");
+		gameSelectionPreVoteTimer.save(config.getConfigurationSection("timer.intro"));
+
+		if (!config.contains("timer.selection")) config.createSection("timer.selection");
+		gameSelectionTimer.save(config.getConfigurationSection("timer.selection"));
+
+		if (!config.contains("timer.selection-final")) config.createSection("timer.selection-final");
+		gameSelectionFinalTimer.save(config.getConfigurationSection("timer.selection-final"));
+
+		if (!config.contains("timer.await-teleport")) config.createSection("timer.await-teleport");
+		gameSelectedAwaitTeleportTimer.save(config.getConfigurationSection("timer.await-teleport"));
 		
 		// Delays
 		config.set("min-delay", this.minTickDelay);
@@ -192,23 +163,19 @@ public class HubDecisiondomeConfig implements MCCConfigSerializable {
 	}
 	
 	// Getters
-	public Pair<TimeUnit, Integer> getGameSelectionPreVoteTimer() {
+	public TimerConfig getGameSelectionPreVoteTimer() {
 		return gameSelectionPreVoteTimer;
 	}
 
-	public Pair<TimeUnit, Integer> getGameSelectionTimer() {
+	public TimerConfig getGameSelectionTimer() {
 		return gameSelectionTimer;
 	}
 	
-	public Pair<TimeUnit, Integer> getGameSelectionFinalTimer() {
+	public TimerConfig getGameSelectionFinalTimer() {
 		return gameSelectionFinalTimer;
 	}
 	
-	public Pair<TimeUnit, Integer> getGameSelectedTimer() {
-		return gameSelectedTimer;
-	}
-	
-	public Pair<TimeUnit, Integer> getGameSelectedAwaitTeleportTimer() {
+	public TimerConfig getGameSelectedAwaitTeleportTimer() {
 		return gameSelectedAwaitTeleportTimer;
 	}
 	

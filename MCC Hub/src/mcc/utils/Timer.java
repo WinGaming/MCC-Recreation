@@ -2,10 +2,12 @@ package mcc.utils;
 
 import java.util.concurrent.TimeUnit;
 
+import mcc.yml.decisiondome.TimerConfig;
+
 public class Timer {
 
-	public static Timer fromPair(Pair<TimeUnit, Integer> pair) {
-		return new Timer(pair.getA(), pair.getB());
+	public static Timer fromConfig(TimerConfig config) {
+		return new Timer(config.getTimeunit(), config.getAmount(), config.getVisualDelay());
 	}
 
 	/** The amount of milisesconds the timer should run for */
@@ -13,9 +15,16 @@ public class Timer {
 	
 	/** The target time as unix timestamp */
 	private long activeTarget;
+
+	private long visualDelay = 0;
 	
 	public Timer(TimeUnit timeunit, int amount) {
+		this(timeunit, amount, 0);
+	}
+
+	public Timer(TimeUnit timeunit, int amount, long visualDelay) {
 		this.milliseconds = timeunit.toMillis(amount);
+		this.visualDelay = visualDelay;
 	}
 	
 	public void start(long start) {
@@ -37,7 +46,7 @@ public class Timer {
 	 * @return a String in the format HH:MM:SS or MM:SS
 	 */
 	public String buildText(long now) {
-		long remain = this.remaining(now) / 1000l;
+		long remain = this.remaining(now) / 1000l + this.visualDelay;
 		long seconds = remain % 60;
 		remain /= 60;
 		long minutes = remain % 60;

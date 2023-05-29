@@ -119,7 +119,7 @@ public class Event implements Listener {
             switch (this.currentState) {
                 case STARTING:
                     this.currentState = EventState.DECISIONDOME_COUNTDOWN;
-                    this.lobbyTimer = new Timer(TimeUnit.SECONDS, 60); // TODO: Config
+                    this.lobbyTimer = new Timer(TimeUnit.SECONDS, 61); // TODO: Config
                     this.lobbyTimer.start(now);
                     break;
                 case DECISIONDOME_COUNTDOWN:
@@ -197,7 +197,7 @@ public class Event implements Listener {
     public boolean resume() {
         if (this.currentState == EventState.NOT_STARTED) {
             this.currentState = EventState.STARTING;
-            this.lobbyTimer = new Timer(TimeUnit.SECONDS, 60); // TODO: Config
+            this.lobbyTimer = new Timer(TimeUnit.SECONDS, 59, 61); // TODO: Config
             this.lobbyTimer.start(System.currentTimeMillis());
             return true;
         } else {

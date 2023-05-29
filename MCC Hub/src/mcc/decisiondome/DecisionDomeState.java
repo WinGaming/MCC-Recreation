@@ -11,8 +11,6 @@ public enum DecisionDomeState {
     GAME_SELECTION_FINAL,
     /** Waiting for selected field to reach chosen */
     GAME_SELECTION_AWAIT_CHOSEN_POSITION_HIGHLIGHT(true),
-    /** A game was selected */
-    GAME_SELECTED,
     /** A game was selected and players should teleport currently or have been teleported */
     GAME_SELECTED_AWAIT_TELEPORT;
     
