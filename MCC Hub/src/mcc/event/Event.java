@@ -128,8 +128,10 @@ public class Event implements Listener {
                 case NOT_STARTED:
                 case DECISIONDOME_RUNNING:
                 case MINIGAME:
-                        this.lobbyTimer = null;
-                        break;
+                case PAUSED:
+                case PAUSED_IN_MINIGAME:
+                    this.lobbyTimer = null;
+                    break;
             }
         }
 
@@ -172,16 +174,22 @@ public class Event implements Listener {
         switch (this.currentState) {
             case DECISIONDOME_RUNNING:
                 this.backToLobby();
+                this.currentState = EventState.PAUSED;
                 break;
             case NOT_STARTED:
+                this.currentState = EventState.PAUSED;
                 break; // We are already in a paused state
             case STARTING:
             case DECISIONDOME_COUNTDOWN:
                 this.lobbyTimer = null;
-                this.currentState = EventState.NOT_STARTED;
+                this.currentState = EventState.PAUSED;
                 break;
             case MINIGAME:
+                this.currentState = EventState.PAUSED_IN_MINIGAME;
                 break; // TODO:
+            case PAUSED:
+            case PAUSED_IN_MINIGAME:
+                break; // Already in a paused state
         }
     }
 
@@ -210,9 +218,11 @@ public class Event implements Listener {
                 return RED + "" + BOLD + "Event begins in:";
             case DECISIONDOME_COUNTDOWN:
                 return RED + "" + BOLD + "Decision Dome in:";
-            case DECISIONDOME_RUNNING: {
+            case DECISIONDOME_RUNNING:
                 return this.decisionDome.getTimerTitle();
-            }
+            case PAUSED:
+            case PAUSED_IN_MINIGAME:
+                return "Paused";
             default: return "null";
         }
     }

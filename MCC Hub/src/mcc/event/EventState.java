@@ -11,4 +11,9 @@ public enum EventState {
     DECISIONDOME_RUNNING,
     /** A minigame is running */
     MINIGAME,
+
+    /** The event is paused */
+    PAUSED,
+    /** The event is paused, while a minigame is running */
+    PAUSED_IN_MINIGAME,
 }
