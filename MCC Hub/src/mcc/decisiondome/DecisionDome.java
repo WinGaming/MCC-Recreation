@@ -18,9 +18,11 @@ public class DecisionDome {
 	
 	private final DecisionField[] fields;
 	private final HubDecisiondomeConfig config;
+	private final FieldSelector fieldSelector;
+	private final TeamBox[] teamBoxes;
+	private final GameTask gameTask;
+	private final Event event;
 
-	private boolean active = false;
-	
 	private Timer currentTimer;
 	private DecisionDomeState state;
 	
@@ -28,14 +30,6 @@ public class DecisionDome {
 	private int currentSelectionIndex;
 	
 	private int chosenPosition = -1;
-
-	private TeamBox[] teamBoxes;
-
-	private GameTask gameTask;
-
-	private FieldSelector fieldSelector;
-
-	private Event event;
 	
 	protected DecisionDome(Event event, DecisionField[] fields, HubDecisiondomeConfig config, TeamBox[] teamBoxes, FieldSelector selector, GameTask gametask) {
 		this.event = event;
@@ -78,14 +72,13 @@ public class DecisionDome {
 
 		if (this.state == DecisionDomeState.WAITING) {
 			this.setState(DecisionDomeState.GAME_SELECTION_INTRO);
-			this.active = true;
 		} else {
 			System.err.println("Can not start decision dome, it's already running!");
 		}
 	}
 	
 	public void tick() {
-		if (this.active) {
+		if (this.state != DecisionDomeState.WAITING) {
 			if (this.state == DecisionDomeState.GAME_SELECTION || this.state == DecisionDomeState.GAME_SELECTION_FINAL) {
 				double totalRemaining = (double) this.currentTimer.remaining(System.currentTimeMillis());
 				
