@@ -2,6 +2,9 @@ package mcc.locationprovider;
 
 import mcc.utils.Vector3d;
 
+/**
+ * A {@code LocationProvider} implementation that always returns a copy of the same location.
+ */
 public class StaticLocationProvider implements LocationProvider {
 
     private Vector3d location;
