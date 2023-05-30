@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 
+import mcc.ExampleDecisionFieldDisplay;
 import mcc.decisiondome.DecisionField.DecisionFieldState;
 import mcc.decisiondome.selector.FieldSelector;
 import mcc.event.Event;
@@ -35,7 +36,7 @@ public class DecisionDomeUtils {
 				locations[j] = new Location(world, positions[j].getX(), positions[j].getY(), positions[j].getZ());
 			}
 			
-			fields[i] = new DecisionField(locations, DecisionFieldState.ENABLED, config);
+			fields[i] = new DecisionField(locations, DecisionFieldState.ENABLED, config, new ExampleDecisionFieldDisplay());
 			fields[i].setGameKey("test");
 		}
 		

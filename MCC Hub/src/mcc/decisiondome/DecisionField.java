@@ -6,21 +6,22 @@ import mcc.yml.decisiondome.HubDecisiondomeConfig;
 
 public class DecisionField {
 
-	private Location[] blockLocations;
-	
-	private DecisionFieldState state;
+	private final Location[] blockLocations;
+	private final DecisionFieldDisplay display;
+	private final HubDecisiondomeConfig decisiondomeConfig;
 	
 	private boolean dirty = true;
-	
-	private HubDecisiondomeConfig decisiondomeConfig;
+	private DecisionFieldState state;
 
 	private String gameKey = null;
 	
-	public DecisionField(Location[] blockLocations, DecisionFieldState state, HubDecisiondomeConfig config) {
+	public DecisionField(Location[] blockLocations, DecisionFieldState state, HubDecisiondomeConfig config, DecisionFieldDisplay display) {
 		this.blockLocations = blockLocations;
-		this.state = state;
-		
 		this.decisiondomeConfig = config;
+		
+		this.state = state;
+
+		this.display = display;
 	}
 
 	public void tick() {
@@ -59,6 +60,10 @@ public class DecisionField {
 	public void setState(DecisionFieldState state) {
 		this.dirty = this.state != state;
 		this.state = state;
+	}
+
+	public DecisionFieldDisplay getDisplay() {
+		return display;
 	}
 
 	public enum DecisionFieldState {
