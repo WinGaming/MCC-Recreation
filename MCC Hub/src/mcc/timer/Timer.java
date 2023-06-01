@@ -1,4 +1,4 @@
-package mcc.utils;
+package mcc.timer;
 
 import java.util.concurrent.TimeUnit;
 

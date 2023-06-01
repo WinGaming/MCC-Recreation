@@ -9,8 +9,8 @@ import mcc.decisiondome.DecisionField.DecisionFieldState;
 import mcc.decisiondome.selector.FieldSelector;
 import mcc.event.Event;
 import mcc.game.GameTask;
-import mcc.utils.EmptyTimer;
-import mcc.utils.Timer;
+import mcc.timer.EmptyTimer;
+import mcc.timer.Timer;
 import mcc.yml.decisiondome.HubDecisiondomeConfig;
 import mcc.yml.decisiondome.TimerConfig;
 

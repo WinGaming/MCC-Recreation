@@ -3,8 +3,8 @@ package mcc.display;
 import java.util.UUID;
 import java.util.function.Supplier;
 
+import mcc.timer.Timer;
 import mcc.utils.Pair;
-import mcc.utils.Timer;
 
 public class SuppliedTimerScoreboardPartProvider implements ScoreboardPartProvider {
 
