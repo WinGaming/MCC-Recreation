@@ -1,4 +1,4 @@
-package mcc;
+package mcc.yml;
 
 public class Constants {
 

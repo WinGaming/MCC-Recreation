@@ -8,7 +8,7 @@ import java.io.InputStreamReader;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import mcc.Constants;
+import mcc.yml.Constants;
 import mcc.yml.MCCConfigSerializable;
 
 /**
