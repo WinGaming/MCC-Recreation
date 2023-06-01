@@ -1,5 +1,9 @@
 package mcc.decisiondome;
 
+import java.util.function.Function;
+
+import mcc.decisiondome.runner.DecisionDomeStateRunner;
+
 public enum DecisionDomeState {
     /** Paused or any other state where no countdown is active */
     WAITING,
@@ -15,6 +19,7 @@ public enum DecisionDomeState {
     GAME_SELECTED_AWAIT_TELEPORT;
     
     private boolean updateFieldsWithoutActiveTimer;
+    private Function<DecisionDome, DecisionDomeStateRunner> runnerSupplier;
 
     private DecisionDomeState() {
         this(false);
@@ -26,5 +31,9 @@ public enum DecisionDomeState {
     
     public boolean shouldUpdateFieldsWithoutActiveTimer() {
         return updateFieldsWithoutActiveTimer;
+    }
+
+    public DecisionDomeStateRunner createStateRunner(DecisionDome decisionDome) {
+        return this.runnerSupplier.apply(decisionDome);
     }
 }
