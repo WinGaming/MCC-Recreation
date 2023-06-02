@@ -6,6 +6,9 @@ import mcc.timer.Timer;
 import mcc.yml.decisiondome.HubDecisiondomeConfig;
 import mcc.yml.decisiondome.TimerConfig;
 
+import static org.bukkit.ChatColor.RED;
+import static org.bukkit.ChatColor.BOLD;
+
 public class GameSelectionDecisionDomeStateRunner extends DecisionDomeStateRunner {
 
     private int ticksWaited;
@@ -23,7 +26,7 @@ public class GameSelectionDecisionDomeStateRunner extends DecisionDomeStateRunne
     }
 
     @Override
-    public int updateSelectedField(int current) {
+    public int updateSelectedField(int current, int chosenPosition) {
         double totalRemaining = (double) this.getDecisionDome().getCurrentTimer().remaining(System.currentTimeMillis());
 
         HubDecisiondomeConfig config = this.getDecisionDome().getConfig();
@@ -53,20 +56,16 @@ public class GameSelectionDecisionDomeStateRunner extends DecisionDomeStateRunne
 
     @Override
     public boolean tick() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'tick'");
+        for (int i = 0; i < this.fields.length; i++) this.fields[i].setState(i == this.currentSelectionIndex ? DecisionFieldState.HIGHLIGHTED : DecisionFieldState.ENABLED);
     }
 
     @Override
     public DecisionDomeState onTimerFinished() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'onTimerFinished'");
+        return DecisionDomeState.GAME_SELECTION_FINAL;
     }
 
     @Override
     public String getTimerTitle() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getTimerTitle'");
+        return RED + "" + BOLD + "Voting closes in:";
     }
-    
 }

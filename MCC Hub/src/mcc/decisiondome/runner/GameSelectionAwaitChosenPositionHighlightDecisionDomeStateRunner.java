@@ -5,6 +5,9 @@ import mcc.decisiondome.DecisionDomeState;
 import mcc.timer.EmptyTimer;
 import mcc.timer.Timer;
 
+import static org.bukkit.ChatColor.RED;
+import static org.bukkit.ChatColor.BOLD;
+
 public class GameSelectionAwaitChosenPositionHighlightDecisionDomeStateRunner extends DecisionDomeStateRunner {
 
     private int ticksWaited;
@@ -44,20 +47,17 @@ public class GameSelectionAwaitChosenPositionHighlightDecisionDomeStateRunner ex
 
     @Override
     public boolean tick() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'tick'");
+        for (int i = 0; i < this.fields.length; i++) this.fields[i].setState(i == this.currentSelectionIndex ? DecisionFieldState.HIGHLIGHTED : DecisionFieldState.ENABLED);
     }
 
     @Override
     public DecisionDomeState onTimerFinished() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'onTimerFinished'");
+        System.err.println("Decision dome timer finished, but no timer was set up");
+        return DecisionDomeState.WAITING;
     }
 
     @Override
     public String getTimerTitle() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getTimerTitle'");
+        return RED + "" + BOLD + "Game chosen in:";
     }
-    
 }

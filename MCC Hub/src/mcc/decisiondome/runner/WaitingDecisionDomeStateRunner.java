@@ -12,11 +12,13 @@ public class WaitingDecisionDomeStateRunner extends DecisionDomeStateRunner {
 
     @Override
     public Timer setup() {
+        for (int i = 0; i < this.fields.length; i++) this.fields[i].setState(DecisionFieldState.DISABLED);
+
         return null;
     }
 
     @Override
-    public int updateSelectedField(int current) {
+    public int updateSelectedField(int current, int chosenPosition) {
         return -1;
     }
 
