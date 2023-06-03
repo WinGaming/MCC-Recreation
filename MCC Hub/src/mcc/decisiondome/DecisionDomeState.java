@@ -1,6 +1,6 @@
 package mcc.decisiondome;
 
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 import mcc.decisiondome.runner.DecisionDomeStateRunner;
 
@@ -19,7 +19,7 @@ public enum DecisionDomeState {
     GAME_SELECTED_AWAIT_TELEPORT;
     
     private boolean updateFieldsWithoutActiveTimer;
-    private Function<DecisionDome, DecisionDomeStateRunner> runnerSupplier;
+    private BiFunction<DecisionDome, DecisionDomeManipulator, DecisionDomeStateRunner> runnerSupplier;
 
     private DecisionDomeState() {
         this(false);
@@ -33,7 +33,7 @@ public enum DecisionDomeState {
         return updateFieldsWithoutActiveTimer;
     }
 
-    public DecisionDomeStateRunner createStateRunner(DecisionDome decisionDome) {
-        return this.runnerSupplier.apply(decisionDome);
+    public DecisionDomeStateRunner createStateRunner(DecisionDome decisionDome, DecisionDomeManipulator manipulator) {
+        return this.runnerSupplier.apply(decisionDome, manipulator);
     }
 }

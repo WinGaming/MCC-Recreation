@@ -1,20 +1,26 @@
 package mcc.decisiondome.runner;
 
 import mcc.decisiondome.DecisionDome;
+import mcc.decisiondome.DecisionDomeManipulator;
 import mcc.decisiondome.DecisionDomeState;
+import mcc.decisiondome.DecisionField;
+import mcc.decisiondome.DecisionField.DecisionFieldState;
 import mcc.timer.Timer;
 import mcc.yml.decisiondome.HubDecisiondomeConfig;
 import mcc.yml.decisiondome.TimerConfig;
 
 import static org.bukkit.ChatColor.RED;
+
+import org.bukkit.Bukkit;
+
 import static org.bukkit.ChatColor.BOLD;
 
 public class GameSelectionFinalDecisionDomeStateRunner extends DecisionDomeStateRunner {
 
     private int ticksWaited;
 
-    public GameSelectionFinalDecisionDomeStateRunner(DecisionDome decisionDome) {
-        super(decisionDome);
+    public GameSelectionFinalDecisionDomeStateRunner(DecisionDome decisionDome, DecisionDomeManipulator manipulator) {
+        super(decisionDome, manipulator);
 
         this.ticksWaited = 0;
     }
@@ -26,7 +32,8 @@ public class GameSelectionFinalDecisionDomeStateRunner extends DecisionDomeState
     }
 
     @Override
-    public int updateSelectedField(int current, int chosenPosition) {
+    public int updateSelectedField() {
+        int current = this.getManipulator().getCurrentSelection();
         double totalRemaining = (double) this.getDecisionDome().getCurrentTimer().remaining(System.currentTimeMillis());
         
         HubDecisiondomeConfig config = this.getDecisionDome().getConfig();
@@ -54,28 +61,32 @@ public class GameSelectionFinalDecisionDomeStateRunner extends DecisionDomeState
 
     @Override
     public boolean tick() {
-        for (int i = 0; i < this.fields.length; i++) this.fields[i].setState(i == this.currentSelectionIndex ? DecisionFieldState.HIGHLIGHTED : DecisionFieldState.ENABLED);
+        DecisionField[] fields = this.getManipulator().getActiveDecisionFields();
+        for (int i = 0; i < fields.length; i++) fields[i].setState(i == this.getManipulator().getCurrentSelection() ? DecisionFieldState.HIGHLIGHTED : DecisionFieldState.ENABLED);
+        return true;
     }
 
     @Override
     public DecisionDomeState onTimerFinished() {
-        int gameSelection = this.fieldSelector.select(this.fields);
+        DecisionField[] fields = this.getManipulator().getActiveDecisionFields();
+        int chosenPosition = this.getManipulator().getChoosenPosition();
+
+        int gameSelection = this.getManipulator().getFieldSelector().select(fields);
         if (gameSelection < 0) {
-            setState(DecisionDomeState.WAITING);
             Bukkit.broadcastMessage("Failed to select a game. The event is now paused until the error gets resolved");
-            return;
+            return null;
         }
 
-        this.chosenPosition = gameSelection;
+        this.getManipulator().setChosenPosition(gameSelection);
 
-        if (this.fields.length <= this.chosenPosition || this.chosenPosition < 0) {
-            Bukkit.broadcastMessage("Tried to setup game from invalid index: " + this.chosenPosition);
+        if (fields.length <= chosenPosition || chosenPosition < 0) {
+            Bukkit.broadcastMessage("Tried to setup game from invalid index: " + chosenPosition);
             return DecisionDomeState.WAITING;
         }
 
-        if (!this.gameTask.startGame(this.fields[this.chosenPosition].getGameKey())) {
+        if (!this.getManipulator().getGameTask().prepareGame(fields[chosenPosition].getGameKey())) {
             Bukkit.broadcastMessage("Failed to prepare game. The event is now paused until the error gets resolved");
-            return DecisionDomeState.WAITING;
+            return null;
         }
 
         return DecisionDomeState.GAME_SELECTION_AWAIT_CHOSEN_POSITION_HIGHLIGHT;

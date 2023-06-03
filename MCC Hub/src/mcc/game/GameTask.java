@@ -4,7 +4,7 @@ public class GameTask {
     
     private Game currentGame;
 
-    public boolean startGame(String gameKey) {
+    public boolean prepareGame(String gameKey) {
         if (currentGame != null) {
             System.err.println("Tried to start new game while one is still running");
             return false;

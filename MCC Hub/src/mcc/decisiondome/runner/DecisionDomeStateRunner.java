@@ -1,19 +1,30 @@
 package mcc.decisiondome.runner;
 
 import mcc.decisiondome.DecisionDome;
+import mcc.decisiondome.DecisionDomeManipulator;
 import mcc.decisiondome.DecisionDomeState;
 import mcc.timer.Timer;
 
 public abstract class DecisionDomeStateRunner {
 
     private DecisionDome decisionDome;
+    private DecisionDomeManipulator manipulator;
 
-    public DecisionDomeStateRunner(DecisionDome decisionDome) {
+    public DecisionDomeStateRunner(DecisionDome decisionDome, DecisionDomeManipulator manipulator) {
         this.decisionDome = decisionDome;
+        this.manipulator = manipulator;
     }
 
     public DecisionDome getDecisionDome() {
         return decisionDome;
+    }
+
+    /**
+     * Returns a DecisionDomeManupulator instance to allow changing properties of the DecisionDome
+     * @return
+     */
+    public DecisionDomeManipulator getManipulator() {
+        return manipulator;
     }
 
     /**
@@ -26,11 +37,9 @@ public abstract class DecisionDomeStateRunner {
     /**
      * Called every tick while the state is set.
      * The returned index should be set in the same tick.
-     * @param current the currently selected field
-     * @param chosenPosition the position of the chosen field, or -1 if no field is chosen
      * @return the index of the field to highlight, or -1 if no field should be highlighted.
      */
-    public abstract int updateSelectedField(int current, int chosenPosition);
+    public abstract int updateSelectedField();
 
     /**
      * Called every tick, returning if the fields should be updated.

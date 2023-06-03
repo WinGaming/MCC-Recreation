@@ -1,7 +1,10 @@
 package mcc.decisiondome.runner;
 
 import mcc.decisiondome.DecisionDome;
+import mcc.decisiondome.DecisionDomeManipulator;
 import mcc.decisiondome.DecisionDomeState;
+import mcc.decisiondome.DecisionField;
+import mcc.decisiondome.DecisionField.DecisionFieldState;
 import mcc.timer.EmptyTimer;
 import mcc.timer.Timer;
 
@@ -11,24 +14,24 @@ import static org.bukkit.ChatColor.BOLD;
 public class GameSelectionAwaitChosenPositionHighlightDecisionDomeStateRunner extends DecisionDomeStateRunner {
 
     private int ticksWaited;
-    private boolean finished;
 
-    public GameSelectionAwaitChosenPositionHighlightDecisionDomeStateRunner(DecisionDome decisionDome) {
-        super(decisionDome);
+    public GameSelectionAwaitChosenPositionHighlightDecisionDomeStateRunner(DecisionDome decisionDome, DecisionDomeManipulator manipulator) {
+        super(decisionDome, manipulator);
 
         this.ticksWaited = 0;
-        this.finished = false;
     }
 
     @Override
     public Timer setup() {
         this.ticksWaited = 0;
-        this.finished = false;
         return new EmptyTimer();
     }
 
     @Override
-    public int updateSelectedField(int current, int chosenPosition) {
+    public int updateSelectedField() {
+        int current = this.getManipulator().getCurrentSelection();
+        int chosenPosition = this.getManipulator().getChoosenPosition();
+
         double delay = this.getDecisionDome().getConfig().getMinTickDelay();
         int ticksToWait = (int) delay;
         if (this.ticksWaited >= ticksToWait) {
@@ -37,23 +40,25 @@ public class GameSelectionAwaitChosenPositionHighlightDecisionDomeStateRunner ex
             this.ticksWaited = 0;
 
             if (current == chosenPosition) {
-                this.finished = true;
-                this.setState(DecisionDomeState.GAME_SELECTED_AWAIT_TELEPORT);
+                this.getManipulator().forceStateUpdate();
             }
         } else {
             this.ticksWaited++;
         }
+
+        return current;
     }
 
     @Override
     public boolean tick() {
-        for (int i = 0; i < this.fields.length; i++) this.fields[i].setState(i == this.currentSelectionIndex ? DecisionFieldState.HIGHLIGHTED : DecisionFieldState.ENABLED);
+        DecisionField[] fields = this.getManipulator().getActiveDecisionFields();
+        for (int i = 0; i < fields.length; i++) fields[i].setState(i == this.getManipulator().getCurrentSelection() ? DecisionFieldState.HIGHLIGHTED : DecisionFieldState.ENABLED);
+        return true;
     }
 
     @Override
     public DecisionDomeState onTimerFinished() {
-        System.err.println("Decision dome timer finished, but no timer was set up");
-        return DecisionDomeState.WAITING;
+        return DecisionDomeState.GAME_SELECTED_AWAIT_TELEPORT;
     }
 
     @Override

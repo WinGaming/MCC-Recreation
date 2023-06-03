@@ -1,19 +1,11 @@
 package mcc.decisiondome;
 
-import static org.bukkit.ChatColor.BOLD;
-import static org.bukkit.ChatColor.RED;
-
-import org.bukkit.Bukkit;
-
-import mcc.decisiondome.DecisionField.DecisionFieldState;
 import mcc.decisiondome.runner.DecisionDomeStateRunner;
 import mcc.decisiondome.selector.FieldSelector;
 import mcc.event.Event;
 import mcc.game.GameTask;
-import mcc.timer.EmptyTimer;
 import mcc.timer.Timer;
 import mcc.yml.decisiondome.HubDecisiondomeConfig;
-import mcc.yml.decisiondome.TimerConfig;
 
 public class DecisionDome {
 	
@@ -28,10 +20,13 @@ public class DecisionDome {
 	private DecisionDomeState state;
 	private DecisionDomeStateRunner stateRunner;
 	
-	private int ticksWaited = 0;
 	private int currentSelectionIndex;
 	
 	private int chosenPosition = -1;
+
+	private DecisionDomeManipulator manipulator;
+
+	private boolean forceStateUpdate = false;
 	
 	protected DecisionDome(Event event, DecisionField[] fields, HubDecisiondomeConfig config, TeamBox[] teamBoxes, FieldSelector selector, GameTask gametask) {
 		this.event = event;
@@ -41,7 +36,50 @@ public class DecisionDome {
 		this.teamBoxes = teamBoxes;
 		this.fieldSelector = selector;
 		this.state = DecisionDomeState.WAITING;
-		this.stateRunner = this.state.createStateRunner(this); // TODO: this is possibly not defined yet
+		this.stateRunner = this.state.createStateRunner(this, this.manipulator); // TODO: this is possibly not defined yet
+		// TODO: this.manipulator is not defined there
+
+		this.manipulator = new DecisionDomeManipulator() {
+			@Override
+			public DecisionField[] getActiveDecisionFields() {
+				return DecisionDome.this.fields;
+			}
+
+			@Override
+			public int getChoosenPosition() {
+				return DecisionDome.this.chosenPosition;
+			}
+
+			@Override
+			public int getCurrentSelection() {
+				return DecisionDome.this.currentSelectionIndex;
+			}
+
+			@Override
+			public FieldSelector getFieldSelector() {
+				return DecisionDome.this.fieldSelector;
+			}
+
+			@Override
+			public GameTask getGameTask() {
+				return DecisionDome.this.gameTask;
+			}
+
+			@Override
+			public void forceStateUpdate() {
+				DecisionDome.this.forceStateUpdate = true;
+			}
+
+			@Override
+			public void setChosenPosition(int index) {
+				DecisionDome.this.chosenPosition = index;
+			}
+
+			@Override
+			public void switchToGame() {
+				DecisionDome.this.event.switchToGame();
+			}
+		};
 	}
 
 	public void stop() {
@@ -77,115 +115,19 @@ public class DecisionDome {
 	}
 	
 	public void tick() {
-		this.currentSelectionIndex = this.stateRunner.updateSelectedField(this.currentSelectionIndex, this.chosenPosition);
+		this.currentSelectionIndex = this.stateRunner.updateSelectedField();
 
-		// TODO: Remove
-		if (this.state != DecisionDomeState.WAITING) {
-			if (this.state == DecisionDomeState.GAME_SELECTION || this.state == DecisionDomeState.GAME_SELECTION_FINAL) {
-				double totalRemaining = (double) this.currentTimer.remaining(System.currentTimeMillis());
-				
-				TimerConfig selectionFinalTimes = this.config.getGameSelectionFinalTimer();
-				double selectionFinalTimer = selectionFinalTimes.getTimeunit().toMillis(selectionFinalTimes.getAmount());
-				
-				TimerConfig selectionTimes = this.config.getGameSelectionTimer();
-				double selectionTimer = selectionTimes.getTimeunit().toMillis(selectionTimes.getAmount());
-				
-				if (state == DecisionDomeState.GAME_SELECTION) totalRemaining += selectionFinalTimer;
-				
-				// Bukkit.broadcastMessage("Total remaining: " + totalRemaining + " (" + selectionFinalTimer + " + " + selectionTimer + ")");
-				double percentage = totalRemaining / (selectionFinalTimer + selectionTimer);
-				double minDelay = this.config.getMinTickDelay();
-				double maxAddedDelay = this.config.getMaxAdditionalTickDelay();
-				int ticksToWait = (int) Math.ceil(minDelay + maxAddedDelay * percentage);
-				if (this.ticksWaited >= ticksToWait) {
-					this.currentSelectionIndex++;
-					this.currentSelectionIndex %= this.fields.length;
-					this.ticksWaited = 0;
-				} else {
-					this.ticksWaited++;
-				}
-			} else if (this.state == DecisionDomeState.GAME_SELECTION_AWAIT_CHOSEN_POSITION_HIGHLIGHT) {
-				double delay = this.config.getMinTickDelay();
-				int ticksToWait = (int) delay;
-				if (this.ticksWaited >= ticksToWait) {
-					this.currentSelectionIndex++;
-					this.currentSelectionIndex %= this.fields.length;
-					this.ticksWaited = 0;
-					
-					if (this.currentSelectionIndex == this.chosenPosition) {
-						this.setState(DecisionDomeState.GAME_SELECTED_AWAIT_TELEPORT); // we continue the method here, because we want to show the correct highlighting
-					}
-				} else {
-					this.ticksWaited++;
-				}
-			} else if (this.state == DecisionDomeState.GAME_SELECTED_AWAIT_TELEPORT) {
-				this.gameTask.teleportPlayers();
-				this.setState(DecisionDomeState.WAITING);
-				this.event.switchToGame();
-				return;
-			}
+		boolean needFieldsUpdate = this.stateRunner.tick();
 
-			this.stateRunner.tick();
-			
-			if (this.currentTimer != null || this.state.shouldUpdateFieldsWithoutActiveTimer()) {
-				if (this.currentTimer != null) System.out.println(this.currentTimer.buildText(System.currentTimeMillis()));
-				
-				switch (this.state) {
-				case WAITING:
-				case GAME_SELECTION_INTRO:
-					for (int i = 0; i < this.fields.length; i++) this.fields[i].setState(DecisionFieldState.DISABLED);
-					break;
-				case GAME_SELECTION:
-				case GAME_SELECTION_FINAL:
-				case GAME_SELECTION_AWAIT_CHOSEN_POSITION_HIGHLIGHT:
-					for (int i = 0; i < this.fields.length; i++) this.fields[i].setState(i == this.currentSelectionIndex ? DecisionFieldState.HIGHLIGHTED : DecisionFieldState.ENABLED);
-					break;
-				case GAME_SELECTED_AWAIT_TELEPORT:
-					for (int i = 0; i < this.fields.length; i++) this.fields[i].setState(i == this.currentSelectionIndex ? DecisionFieldState.SELECTED : DecisionFieldState.ENABLED);
-					break;
-				}
-			}
-			if (this.currentTimer != null && this.currentTimer.remaining(System.currentTimeMillis()) <= 0) {
-				this.setState(this.stateRunner.onTimerFinished());
-				switch (this.state) {
-				case WAITING: System.err.println("A timer run out where it shouldn't!"); break;
-				case GAME_SELECTION_INTRO: Bukkit.broadcastMessage("Finished GAME_SELECTION_INTRO"); setState(DecisionDomeState.GAME_SELECTION); break;
-				case GAME_SELECTION: Bukkit.broadcastMessage("Finished GAME_SELECTION"); setState(DecisionDomeState.GAME_SELECTION_FINAL); break;
-				case GAME_SELECTION_FINAL:
-					Bukkit.broadcastMessage("Finished GAME_SELECTION_FINAL");
+		if (this.forceStateUpdate || this.currentTimer != null && this.currentTimer.remaining(System.currentTimeMillis()) <= 0) {
+			this.forceStateUpdate = false;
 
-					int gameSelection = this.fieldSelector.select(this.fields);
-					if (gameSelection < 0) {
-						setState(DecisionDomeState.WAITING);
-						Bukkit.broadcastMessage("Failed to select a game. The event is now paused until the error gets resolved");
-						return;
-					}
+			DecisionDomeState newState = this.stateRunner.onTimerFinished();
+			if (newState == null) newState = DecisionDomeState.WAITING;
+			setState(newState);
+		}
 
-					this.chosenPosition = gameSelection;
-
-					if (this.fields.length <= this.chosenPosition || this.chosenPosition < 0) {
-						setState(DecisionDomeState.WAITING);
-						Bukkit.broadcastMessage("Tried to setup game from invalid index: " + this.chosenPosition);
-						return;
-					}
-
-					if (!this.gameTask.startGame(this.fields[this.chosenPosition].getGameKey())) {
-						setState(DecisionDomeState.WAITING);
-						Bukkit.broadcastMessage("Failed to prepare game. The event is now paused until the error gets resolved");
-						return;
-					}
-
-					setState(DecisionDomeState.GAME_SELECTION_AWAIT_CHOSEN_POSITION_HIGHLIGHT);
-					break;
-				case GAME_SELECTION_AWAIT_CHOSEN_POSITION_HIGHLIGHT: System.err.println("A timer run out where it shouldn't!"); break;
-				case GAME_SELECTED_AWAIT_TELEPORT:
-					Bukkit.broadcastMessage("Finished GAME_SELECTED_AWAIT_TELEPORT");
-
-					setState(DecisionDomeState.WAITING);
-					break;
-				}
-			}
-			
+		if (needFieldsUpdate) { // TODO: Run on state change
 			for (DecisionField field : this.fields) {
 				field.tick();
 			}
@@ -205,20 +147,7 @@ public class DecisionDome {
 	}
 
 	public String getTimerTitle() {
-		switch (this.state) {
-			case GAME_SELECTION_INTRO:
-			return RED + "" + BOLD + "Voting begins in:";
-			case GAME_SELECTION:
-			return RED + "" + BOLD + "Voting closes in:";
-			case GAME_SELECTION_FINAL:
-			case GAME_SELECTION_AWAIT_CHOSEN_POSITION_HIGHLIGHT:
-			return RED + "" + BOLD + "Game chosen in:";
-			case GAME_SELECTED_AWAIT_TELEPORT:
-			return RED + "" + BOLD + "Teleporting to Game in:";
-			case WAITING:
-			default:
-				return "null";
-		}
+		return this.stateRunner.getTimerTitle();
 	}
 
 	public Timer getCurrentTimer() {

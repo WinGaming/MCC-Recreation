@@ -1,7 +1,10 @@
 package mcc.decisiondome.runner;
 
 import mcc.decisiondome.DecisionDome;
+import mcc.decisiondome.DecisionDomeManipulator;
 import mcc.decisiondome.DecisionDomeState;
+import mcc.decisiondome.DecisionField;
+import mcc.decisiondome.DecisionField.DecisionFieldState;
 import mcc.timer.Timer;
 
 import static org.bukkit.ChatColor.RED;
@@ -9,19 +12,20 @@ import static org.bukkit.ChatColor.BOLD;;
 
 public class GameSelectionIntroDecisionDomeStateRunner extends DecisionDomeStateRunner {
 
-    public GameSelectionIntroDecisionDomeStateRunner(DecisionDome decisionDome) {
-        super(decisionDome);
+    public GameSelectionIntroDecisionDomeStateRunner(DecisionDome decisionDome, DecisionDomeManipulator manipulator) {
+        super(decisionDome, manipulator);
     }
 
     @Override
     public Timer setup() {
-        for (int i = 0; i < this.fields.length; i++) this.fields[i].setState(DecisionFieldState.DISABLED);
+        DecisionField[] fields = this.getManipulator().getActiveDecisionFields();
+        for (int i = 0; i < fields.length; i++) fields[i].setState(DecisionFieldState.DISABLED);
 
         return Timer.fromConfig(this.getDecisionDome().getConfig().getGameSelectionPreVoteTimer());
     }
 
     @Override
-    public int updateSelectedField(int current, int chosenPosition) {
+    public int updateSelectedField() {
         return -1;
     }
 

@@ -1,24 +1,28 @@
 package mcc.decisiondome.runner;
 
 import mcc.decisiondome.DecisionDome;
+import mcc.decisiondome.DecisionDomeManipulator;
 import mcc.decisiondome.DecisionDomeState;
+import mcc.decisiondome.DecisionField;
+import mcc.decisiondome.DecisionField.DecisionFieldState;
 import mcc.timer.Timer;
 
 public class WaitingDecisionDomeStateRunner extends DecisionDomeStateRunner {
 
-    public WaitingDecisionDomeStateRunner(DecisionDome decisionDome) {
-        super(decisionDome);
+    public WaitingDecisionDomeStateRunner(DecisionDome decisionDome, DecisionDomeManipulator manipulator) {
+        super(decisionDome, manipulator);
     }
 
     @Override
     public Timer setup() {
-        for (int i = 0; i < this.fields.length; i++) this.fields[i].setState(DecisionFieldState.DISABLED);
+        DecisionField[] fields = this.getManipulator().getActiveDecisionFields();
+        for (int i = 0; i < fields.length; i++) fields[i].setState(DecisionFieldState.DISABLED);
 
         return null;
     }
 
     @Override
-    public int updateSelectedField(int current, int chosenPosition) {
+    public int updateSelectedField() {
         return -1;
     }
 

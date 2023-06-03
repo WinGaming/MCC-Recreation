@@ -1,7 +1,10 @@
 package mcc.decisiondome.runner;
 
 import mcc.decisiondome.DecisionDome;
+import mcc.decisiondome.DecisionDomeManipulator;
 import mcc.decisiondome.DecisionDomeState;
+import mcc.decisiondome.DecisionField;
+import mcc.decisiondome.DecisionField.DecisionFieldState;
 import mcc.timer.Timer;
 
 import static org.bukkit.ChatColor.RED;
@@ -9,8 +12,8 @@ import static org.bukkit.ChatColor.BOLD;
 
 public class GameSelectedAwaitTeleportDecisionDomeStateRunner extends DecisionDomeStateRunner {
 
-    public GameSelectedAwaitTeleportDecisionDomeStateRunner(DecisionDome decisionDome) {
-        super(decisionDome);
+    public GameSelectedAwaitTeleportDecisionDomeStateRunner(DecisionDome decisionDome, DecisionDomeManipulator manipulator) {
+        super(decisionDome, manipulator);
     }
 
     @Override
@@ -19,22 +22,20 @@ public class GameSelectedAwaitTeleportDecisionDomeStateRunner extends DecisionDo
     }
 
     @Override
-    public int updateSelectedField(int current, int chosenPosition) {
-        this.gameTask.teleportPlayers();
-        this.setState(DecisionDomeState.WAITING);
-        this.event.switchToGame();
-        return;
+    public int updateSelectedField() {
+        this.getManipulator().getGameTask().teleportPlayers();
+        this.getManipulator().forceStateUpdate();
+        this.getManipulator().switchToGame();
 
-        return current;
+        return this.getManipulator().getCurrentSelection();
     }
 
     @Override
     public boolean tick() {
+        DecisionField[] fields = this.getManipulator().getActiveDecisionFields();
         // TODO As the fields should not change, this could be in setup right?
-        for (int i = 0; i < this.fields.length; i++) this.fields[i].setState(i == this.currentSelectionIndex ? DecisionFieldState.SELECTED : DecisionFieldState.ENABLED);
-
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'tick'");
+        for (int i = 0; i < fields.length; i++) fields[i].setState(i == this.getManipulator().getCurrentSelection() ? DecisionFieldState.SELECTED : DecisionFieldState.ENABLED);
+        return true;
     }
 
     @Override
