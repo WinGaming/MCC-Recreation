@@ -67,6 +67,13 @@ public class DecisionField {
 	}
 
 	public enum DecisionFieldState {
-		ENABLED, HIGHLIGHTED, DISABLED, SELECTED
+		/** The field is active and could be chosen */
+		ENABLED,
+		/** The field is highlighted, but not cosen */
+		HIGHLIGHTED,
+		/** The field is disabled and can not be used */
+		DISABLED,
+		/** The field is selected and should not change this round */
+		SELECTED
 	}
 }
