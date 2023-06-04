@@ -35,6 +35,7 @@ import mcc.stats.EventStats;
 import mcc.stats.record.EventRecord;
 import mcc.teams.TeamManager;
 import mcc.timer.Timer;
+import mcc.timer.scripts.ScriptManager;
 import mcc.utils.Pair;
 import mcc.utils.Vector3d;
 import mcc.yml.decisiondome.FileConfig;
@@ -138,6 +139,22 @@ public class Event implements Listener {
 
         this.decisionDome.tick();
         this.gameTask.tick();
+
+        switch (this.currentState) {
+            case DECISIONDOME_RUNNING:
+                ScriptManager.tick("decisiondome", this.currentState.name(), this.decisionDome.getCurrentTimer(), now);
+                break;
+            case MINIGAME:
+                ScriptManager.tick("minigame", null, null, now);
+                break;
+            case NOT_STARTED:
+            case PAUSED:
+            case PAUSED_IN_MINIGAME:
+            case STARTING:
+            case DECISIONDOME_COUNTDOWN:
+                ScriptManager.tick("event", this.currentState.name(), lobbyTimer, now);
+                break;
+        }
 
         for (Player player : Bukkit.getOnlinePlayers()) {
 			this.lobbyTemplate.show(player);

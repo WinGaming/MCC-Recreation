@@ -20,6 +20,12 @@ import mcc.yml.lobby.HubLobbyConfig;
 
 public class MCC extends JavaPlugin implements Listener {
 	
+	private static boolean staticLoadError = false;
+	
+	public static void markStaticLoadError() {
+		MCC.staticLoadError = true;
+	}
+
 	// Event instances
 	private Event eventInstance;
 	
@@ -33,6 +39,10 @@ public class MCC extends JavaPlugin implements Listener {
 
 	@Override
 	public void onEnable() {
+		if (staticLoadError) {
+			throw new IllegalStateException("Unknown error occured while loading MCC. See error message above for more details");
+		}
+
 		this.configBuilder = new ConfigBuilder();
 		
 		try {
