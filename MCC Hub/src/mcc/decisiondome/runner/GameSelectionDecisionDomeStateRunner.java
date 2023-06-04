@@ -1,7 +1,6 @@
 package mcc.decisiondome.runner;
 
 import mcc.decisiondome.DecisionDome;
-import mcc.decisiondome.DecisionDomeManipulator;
 import mcc.decisiondome.DecisionDomeState;
 import mcc.decisiondome.DecisionField;
 import mcc.decisiondome.DecisionField.DecisionFieldState;
@@ -16,8 +15,8 @@ public class GameSelectionDecisionDomeStateRunner extends DecisionDomeStateRunne
 
     private int ticksWaited;
 
-    public GameSelectionDecisionDomeStateRunner(DecisionDome decisionDome, DecisionDomeManipulator manipulator) {
-        super(decisionDome, manipulator);
+    public GameSelectionDecisionDomeStateRunner(DecisionDome decisionDome) {
+        super(decisionDome);
 
         this.ticksWaited = 0;
     }
@@ -30,7 +29,7 @@ public class GameSelectionDecisionDomeStateRunner extends DecisionDomeStateRunne
 
     @Override
     public int updateSelectedField() {
-        int current = this.getManipulator().getCurrentSelection();
+        int current = this.getDecisionDome().getCurrentSelection();
         double totalRemaining = (double) this.getDecisionDome().getCurrentTimer().remaining(System.currentTimeMillis());
 
         HubDecisiondomeConfig config = this.getDecisionDome().getConfig();
@@ -60,8 +59,8 @@ public class GameSelectionDecisionDomeStateRunner extends DecisionDomeStateRunne
 
     @Override
     public boolean tick() {
-        DecisionField[] fields = this.getManipulator().getActiveDecisionFields();
-        for (int i = 0; i < fields.length; i++) fields[i].setState(i == this.getManipulator().getCurrentSelection() ? DecisionFieldState.HIGHLIGHTED : DecisionFieldState.ENABLED);
+        DecisionField[] fields = this.getDecisionDome().getActiveDecisionFields();
+        for (int i = 0; i < fields.length; i++) fields[i].setState(i == this.getDecisionDome().getCurrentSelection() ? DecisionFieldState.HIGHLIGHTED : DecisionFieldState.ENABLED);
         return true;
     }
 

@@ -1,7 +1,6 @@
 package mcc.decisiondome.runner;
 
 import mcc.decisiondome.DecisionDome;
-import mcc.decisiondome.DecisionDomeManipulator;
 import mcc.decisiondome.DecisionDomeState;
 import mcc.decisiondome.DecisionField;
 import mcc.decisiondome.DecisionField.DecisionFieldState;
@@ -12,8 +11,8 @@ import static org.bukkit.ChatColor.BOLD;
 
 public class GameSelectedAwaitTeleportDecisionDomeStateRunner extends DecisionDomeStateRunner {
 
-    public GameSelectedAwaitTeleportDecisionDomeStateRunner(DecisionDome decisionDome, DecisionDomeManipulator manipulator) {
-        super(decisionDome, manipulator);
+    public GameSelectedAwaitTeleportDecisionDomeStateRunner(DecisionDome decisionDome) {
+        super(decisionDome);
     }
 
     @Override
@@ -23,18 +22,18 @@ public class GameSelectedAwaitTeleportDecisionDomeStateRunner extends DecisionDo
 
     @Override
     public int updateSelectedField() {
-        this.getManipulator().getGameTask().teleportPlayers();
-        this.getManipulator().forceStateUpdate();
-        this.getManipulator().switchToGame();
+        this.getDecisionDome().getGameTask().teleportPlayers();
+        this.getDecisionDome().forceStateUpdate();
+        this.getDecisionDome().switchToGame();
 
-        return this.getManipulator().getCurrentSelection();
+        return this.getDecisionDome().getCurrentSelection();
     }
 
     @Override
     public boolean tick() {
-        DecisionField[] fields = this.getManipulator().getActiveDecisionFields();
+        DecisionField[] fields = this.getDecisionDome().getActiveDecisionFields();
         // TODO As the fields should not change, this could be in setup right?
-        for (int i = 0; i < fields.length; i++) fields[i].setState(i == this.getManipulator().getCurrentSelection() ? DecisionFieldState.SELECTED : DecisionFieldState.ENABLED);
+        for (int i = 0; i < fields.length; i++) fields[i].setState(i == this.getDecisionDome().getCurrentSelection() ? DecisionFieldState.SELECTED : DecisionFieldState.ENABLED);
         return true;
     }
 

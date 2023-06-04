@@ -1,7 +1,6 @@
 package mcc.decisiondome.runner;
 
 import mcc.decisiondome.DecisionDome;
-import mcc.decisiondome.DecisionDomeManipulator;
 import mcc.decisiondome.DecisionDomeState;
 import mcc.decisiondome.DecisionField;
 import mcc.decisiondome.DecisionField.DecisionFieldState;
@@ -12,13 +11,13 @@ import static org.bukkit.ChatColor.BOLD;;
 
 public class GameSelectionIntroDecisionDomeStateRunner extends DecisionDomeStateRunner {
 
-    public GameSelectionIntroDecisionDomeStateRunner(DecisionDome decisionDome, DecisionDomeManipulator manipulator) {
-        super(decisionDome, manipulator);
+    public GameSelectionIntroDecisionDomeStateRunner(DecisionDome decisionDome) {
+        super(decisionDome);
     }
 
     @Override
     public Timer setup() {
-        DecisionField[] fields = this.getManipulator().getActiveDecisionFields();
+        DecisionField[] fields = this.getDecisionDome().getActiveDecisionFields();
         for (int i = 0; i < fields.length; i++) fields[i].setState(DecisionFieldState.DISABLED);
 
         return Timer.fromConfig(this.getDecisionDome().getConfig().getGameSelectionPreVoteTimer());

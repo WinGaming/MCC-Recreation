@@ -1,30 +1,19 @@
 package mcc.decisiondome.runner;
 
 import mcc.decisiondome.DecisionDome;
-import mcc.decisiondome.DecisionDomeManipulator;
 import mcc.decisiondome.DecisionDomeState;
 import mcc.timer.Timer;
 
 public abstract class DecisionDomeStateRunner {
 
     private DecisionDome decisionDome;
-    private DecisionDomeManipulator manipulator;
 
-    public DecisionDomeStateRunner(DecisionDome decisionDome, DecisionDomeManipulator manipulator) {
+    public DecisionDomeStateRunner(DecisionDome decisionDome) {
         this.decisionDome = decisionDome;
-        this.manipulator = manipulator;
     }
 
     public DecisionDome getDecisionDome() {
         return decisionDome;
-    }
-
-    /**
-     * Returns a DecisionDomeManupulator instance to allow changing properties of the DecisionDome
-     * @return
-     */
-    public DecisionDomeManipulator getManipulator() {
-        return manipulator;
     }
 
     /**

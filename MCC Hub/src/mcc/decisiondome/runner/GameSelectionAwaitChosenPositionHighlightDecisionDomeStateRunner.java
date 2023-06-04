@@ -1,7 +1,6 @@
 package mcc.decisiondome.runner;
 
 import mcc.decisiondome.DecisionDome;
-import mcc.decisiondome.DecisionDomeManipulator;
 import mcc.decisiondome.DecisionDomeState;
 import mcc.decisiondome.DecisionField;
 import mcc.decisiondome.DecisionField.DecisionFieldState;
@@ -15,8 +14,8 @@ public class GameSelectionAwaitChosenPositionHighlightDecisionDomeStateRunner ex
 
     private int ticksWaited;
 
-    public GameSelectionAwaitChosenPositionHighlightDecisionDomeStateRunner(DecisionDome decisionDome, DecisionDomeManipulator manipulator) {
-        super(decisionDome, manipulator);
+    public GameSelectionAwaitChosenPositionHighlightDecisionDomeStateRunner(DecisionDome decisionDome) {
+        super(decisionDome);
 
         this.ticksWaited = 0;
     }
@@ -29,8 +28,8 @@ public class GameSelectionAwaitChosenPositionHighlightDecisionDomeStateRunner ex
 
     @Override
     public int updateSelectedField() {
-        int current = this.getManipulator().getCurrentSelection();
-        int chosenPosition = this.getManipulator().getChoosenPosition();
+        int current = this.getDecisionDome().getCurrentSelection();
+        int chosenPosition = this.getDecisionDome().getChoosenPosition();
 
         double delay = this.getDecisionDome().getConfig().getMinTickDelay();
         int ticksToWait = (int) delay;
@@ -40,7 +39,7 @@ public class GameSelectionAwaitChosenPositionHighlightDecisionDomeStateRunner ex
             this.ticksWaited = 0;
 
             if (current == chosenPosition) {
-                this.getManipulator().forceStateUpdate();
+                this.getDecisionDome().forceStateUpdate();
             }
         } else {
             this.ticksWaited++;
@@ -51,8 +50,8 @@ public class GameSelectionAwaitChosenPositionHighlightDecisionDomeStateRunner ex
 
     @Override
     public boolean tick() {
-        DecisionField[] fields = this.getManipulator().getActiveDecisionFields();
-        for (int i = 0; i < fields.length; i++) fields[i].setState(i == this.getManipulator().getCurrentSelection() ? DecisionFieldState.HIGHLIGHTED : DecisionFieldState.ENABLED);
+        DecisionField[] fields = this.getDecisionDome().getActiveDecisionFields();
+        for (int i = 0; i < fields.length; i++) fields[i].setState(i == this.getDecisionDome().getCurrentSelection() ? DecisionFieldState.HIGHLIGHTED : DecisionFieldState.ENABLED);
         return true;
     }
 

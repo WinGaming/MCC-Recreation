@@ -24,8 +24,6 @@ public class DecisionDome {
 	
 	private int chosenPosition = -1;
 
-	private DecisionDomeManipulator manipulator;
-
 	private boolean forceStateUpdate = false;
 	
 	protected DecisionDome(Event event, DecisionField[] fields, HubDecisiondomeConfig config, TeamBox[] teamBoxes, FieldSelector selector, GameTask gametask) {
@@ -35,51 +33,8 @@ public class DecisionDome {
 		this.gameTask = gametask;
 		this.teamBoxes = teamBoxes;
 		this.fieldSelector = selector;
-		this.state = DecisionDomeState.WAITING;
-		this.stateRunner = this.state.createStateRunner(this, this.manipulator); // TODO: this is possibly not defined yet
-		// TODO: this.manipulator is not defined there
 
-		this.manipulator = new DecisionDomeManipulator() {
-			@Override
-			public DecisionField[] getActiveDecisionFields() {
-				return DecisionDome.this.fields;
-			}
-
-			@Override
-			public int getChoosenPosition() {
-				return DecisionDome.this.chosenPosition;
-			}
-
-			@Override
-			public int getCurrentSelection() {
-				return DecisionDome.this.currentSelectionIndex;
-			}
-
-			@Override
-			public FieldSelector getFieldSelector() {
-				return DecisionDome.this.fieldSelector;
-			}
-
-			@Override
-			public GameTask getGameTask() {
-				return DecisionDome.this.gameTask;
-			}
-
-			@Override
-			public void forceStateUpdate() {
-				DecisionDome.this.forceStateUpdate = true;
-			}
-
-			@Override
-			public void setChosenPosition(int index) {
-				DecisionDome.this.chosenPosition = index;
-			}
-
-			@Override
-			public void switchToGame() {
-				DecisionDome.this.event.switchToGame();
-			}
-		};
+		this.setState(DecisionDomeState.WAITING);
 	}
 
 	public void stop() {
@@ -152,5 +107,44 @@ public class DecisionDome {
 
 	public Timer getCurrentTimer() {
 		return currentTimer;
+	}
+
+	/**
+     * Returns an array of all fields that are not disabled by the DecisionDome itself.
+     * Fields may be disabled by the DecisionDome to limit the possible selectable fields in later rounds.
+     * @return an array of all fields that are no disabled by the DecisionDome itself
+     */
+	public DecisionField[] getActiveDecisionFields() {
+		return DecisionDome.this.fields;
+	}
+
+	public int getChoosenPosition() {
+		return DecisionDome.this.chosenPosition;
+	}
+
+	// * @param current the currently selected field
+	public int getCurrentSelection() {
+		return DecisionDome.this.currentSelectionIndex;
+	}
+
+	// * @param chosenPosition the position of the chosen field, or -1 if no field is chosen
+	public FieldSelector getFieldSelector() {
+		return DecisionDome.this.fieldSelector;
+	}
+
+	public GameTask getGameTask() {
+		return DecisionDome.this.gameTask;
+	}
+
+	public void forceStateUpdate() {
+		DecisionDome.this.forceStateUpdate = true;
+	}
+
+	public void setChosenPosition(int index) {
+		DecisionDome.this.chosenPosition = index;
+	}
+
+	public void switchToGame() {
+		DecisionDome.this.event.switchToGame();
 	}
 }
