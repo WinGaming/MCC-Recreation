@@ -34,6 +34,7 @@ import mcc.game.GameTask;
 import mcc.stats.EventStats;
 import mcc.stats.record.EventRecord;
 import mcc.teams.TeamManager;
+import mcc.timer.EmptyTimer;
 import mcc.timer.Timer;
 import mcc.timer.scripts.ScriptManager;
 import mcc.utils.Pair;
@@ -58,6 +59,9 @@ public class Event implements Listener {
     private final CachedScoreboardTemplate lobbyTemplate;
 
     private Location spawnLocation;
+
+    // TODO: THis is just temp
+    private int currentRound = 0;
 
     public static Event fromStats(String eventId, EventStats stats, FileConfig<HubDecisiondomeConfig> config, FileConfig<HubLobbyConfig> lobbyConfig) {
         Optional<List<PreparedTeam>> teams = stats.getTeamsForEvent(eventId);
@@ -124,6 +128,16 @@ public class Event implements Listener {
                     this.lobbyTimer.start(now);
                     break;
                 case DECISIONDOME_COUNTDOWN:
+                    if (this.currentRound == 0) {
+                        this.currentState = EventState.DECISIONDOME_COUNTDOWN_PARTY;
+                        this.lobbyTimer = new EmptyTimer(TimeUnit.SECONDS, 15); // TODO: Config
+                        this.lobbyTimer.start(now);
+                    } else {
+                        this.currentState = EventState.DECISIONDOME_RUNNING;
+                        this.decisionDome.start();
+                    }
+                    break;
+                case DECISIONDOME_COUNTDOWN_PARTY:
                     this.currentState = EventState.DECISIONDOME_RUNNING;
                     this.decisionDome.start();
                     break;
@@ -152,6 +166,7 @@ public class Event implements Listener {
             case PAUSED_IN_MINIGAME:
             case STARTING:
             case DECISIONDOME_COUNTDOWN:
+            case DECISIONDOME_COUNTDOWN_PARTY:
                 ScriptManager.tick("event", this.currentState.name(), lobbyTimer, now);
                 break;
         }
@@ -199,6 +214,7 @@ public class Event implements Listener {
                 break; // We are already in a paused state
             case STARTING:
             case DECISIONDOME_COUNTDOWN:
+            case DECISIONDOME_COUNTDOWN_PARTY:
                 this.lobbyTimer = null;
                 this.currentState = EventState.PAUSED;
                 break;
@@ -236,6 +252,7 @@ public class Event implements Listener {
             case STARTING:
                 return RED + "" + BOLD + "Event begins in:";
             case DECISIONDOME_COUNTDOWN:
+            case DECISIONDOME_COUNTDOWN_PARTY:
                 return RED + "" + BOLD + "Decision Dome in:";
             case DECISIONDOME_RUNNING:
                 return this.decisionDome.getTimerTitle();
@@ -251,6 +268,7 @@ public class Event implements Listener {
             case NOT_STARTED:
             case STARTING: 
             case DECISIONDOME_COUNTDOWN:
+            case DECISIONDOME_COUNTDOWN_PARTY:
                 return this.lobbyTimer;
             case DECISIONDOME_RUNNING:
                 return this.decisionDome.getCurrentTimer();

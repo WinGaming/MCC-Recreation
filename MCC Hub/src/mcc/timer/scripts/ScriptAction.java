@@ -1,10 +1,17 @@
 package mcc.timer.scripts;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 @FunctionalInterface
 public interface ScriptAction {
     
+    public static final ScriptAction TITLE = (values) -> {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            player.sendTitle(values[0], values.length >= 2 ? values[1] : "", 10, 70, 20);
+        }
+    };
+
     public static final ScriptAction CHATBOX = (values) -> {
         Bukkit.broadcastMessage("§a§m                                                                                ");
 

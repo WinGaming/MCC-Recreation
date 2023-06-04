@@ -7,6 +7,8 @@ public enum EventState {
     STARTING,
     /** Time to go to the decision dome */
     DECISIONDOME_COUNTDOWN,
+    /** An additional phase before the first game selection, similar to DECISIONDOME_COUNTDOWN */
+    DECISIONDOME_COUNTDOWN_PARTY,
     /** The decision dome is running, and it manages everything on its own */
     DECISIONDOME_RUNNING,
     /** A minigame is running */

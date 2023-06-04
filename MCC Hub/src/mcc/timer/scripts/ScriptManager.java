@@ -96,6 +96,8 @@ public class ScriptManager {
     private static ScriptAction parseAction(String type) {
         if (type.equalsIgnoreCase("chatbox")) {
             return ScriptAction.CHATBOX;
+        } else if (type.equalsIgnoreCase("title")) {
+            return ScriptAction.TITLE;
         } else {
             return ScriptAction.ERROR;
         }
