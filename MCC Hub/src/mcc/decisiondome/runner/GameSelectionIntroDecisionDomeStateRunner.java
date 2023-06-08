@@ -53,6 +53,7 @@ public class GameSelectionIntroDecisionDomeStateRunner extends DecisionDomeState
                     for (Player player : Bukkit.getOnlinePlayers()) {
                         player.sendTitle("", this.getDecisionDome().getFields()[i].getGameKey(), 0, 35, 5);
                     }
+                    Bukkit.broadcastMessage("[Decision Dome]: " + this.getDecisionDome().getFields()[i].getGameKey() + "!");
                 }
             } else if (now >= start) {
                 this.getDecisionDome().getActiveDecisionFields()[i].getDisplay().startRolling();
