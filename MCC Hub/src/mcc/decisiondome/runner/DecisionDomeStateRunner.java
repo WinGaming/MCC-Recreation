@@ -32,9 +32,10 @@ public abstract class DecisionDomeStateRunner {
 
     /**
      * Called every tick, returning if the fields should be updated.
+     * @param now the current time in milliseconds
      * @return {@code true} if the fields should be updated, {@code false} otherwise.
      */
-    public abstract boolean tick();
+    public abstract boolean tick(long now);
 
     /**
      * Called when the timer returned by setup() runs out.

@@ -151,12 +151,12 @@ public class Event implements Listener {
             }
         }
 
-        this.decisionDome.tick();
+        this.decisionDome.tick(now);
         this.gameTask.tick();
 
         switch (this.currentState) {
             case DECISIONDOME_RUNNING:
-                ScriptManager.tick("decisiondome", this.currentState.name(), this.decisionDome.getCurrentTimer(), now);
+                ScriptManager.tick("decisiondome", this.decisionDome.getState().name(), this.decisionDome.getCurrentTimer(), now);
                 break;
             case MINIGAME:
                 ScriptManager.tick("minigame", null, null, now);

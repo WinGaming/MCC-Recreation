@@ -36,8 +36,8 @@ public class DecisionDomeUtils {
 				locations[j] = new Location(world, positions[j].getX(), positions[j].getY(), positions[j].getZ());
 			}
 			
-			fields[i] = new DecisionField(locations, DecisionFieldState.ENABLED, config, new ExampleDecisionFieldDisplay());
-			fields[i].setGameKey("test");
+			fields[i] = new DecisionField(locations, DecisionFieldState.ENABLED, config);
+			fields[i].getDisplay().reset();
 		}
 		
 		List<Team> teams = teamManager.getTeams();

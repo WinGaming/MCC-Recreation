@@ -3,6 +3,7 @@ package mcc.decisiondome;
 import mcc.decisiondome.runner.DecisionDomeStateRunner;
 import mcc.decisiondome.selector.FieldSelector;
 import mcc.event.Event;
+import mcc.game.GameManager;
 import mcc.game.GameTask;
 import mcc.timer.Timer;
 import mcc.yml.decisiondome.HubDecisiondomeConfig;
@@ -53,6 +54,16 @@ public class DecisionDome {
 
 		if (this.currentTimer != null) this.currentTimer.start(System.currentTimeMillis());
 	}
+
+	public void setGameForField(int index) {
+		if (this.fields[index].getGameKey() == null) {
+			this.fields[index].setGameKey(GameManager.getGameList().get(0)); // TODO:
+		}
+	}
+
+	public DecisionField[] getFields() {
+		return fields;
+	}
 	
 	public void start() {
 		// Teleporting all players...
@@ -69,10 +80,10 @@ public class DecisionDome {
 		}
 	}
 	
-	public void tick() {
+	public void tick(long now) {
 		this.currentSelectionIndex = this.stateRunner.updateSelectedField();
 
-		boolean needFieldsUpdate = this.stateRunner.tick();
+		boolean needFieldsUpdate = this.stateRunner.tick(now);
 
 		if (this.forceStateUpdate || this.currentTimer != null && this.currentTimer.remaining(System.currentTimeMillis()) <= 0) {
 			this.forceStateUpdate = false;

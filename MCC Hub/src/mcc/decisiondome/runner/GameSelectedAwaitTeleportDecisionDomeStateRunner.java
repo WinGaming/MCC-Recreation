@@ -30,7 +30,7 @@ public class GameSelectedAwaitTeleportDecisionDomeStateRunner extends DecisionDo
     }
 
     @Override
-    public boolean tick() {
+    public boolean tick(long now) {
         DecisionField[] fields = this.getDecisionDome().getActiveDecisionFields();
         // TODO As the fields should not change, this could be in setup right?
         for (int i = 0; i < fields.length; i++) fields[i].setState(i == this.getDecisionDome().getCurrentSelection() ? DecisionFieldState.SELECTED : DecisionFieldState.ENABLED);

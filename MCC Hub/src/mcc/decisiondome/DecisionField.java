@@ -2,6 +2,8 @@ package mcc.decisiondome;
 
 import org.bukkit.Location;
 
+import mcc.ExampleDecisionFieldDisplay;
+import mcc.decisiondome.display.DecisionFieldDisplay;
 import mcc.yml.decisiondome.HubDecisiondomeConfig;
 
 public class DecisionField {
@@ -15,13 +17,13 @@ public class DecisionField {
 
 	private String gameKey = null;
 	
-	public DecisionField(Location[] blockLocations, DecisionFieldState state, HubDecisiondomeConfig config, DecisionFieldDisplay display) {
+	public DecisionField(Location[] blockLocations, DecisionFieldState state, HubDecisiondomeConfig config) {
 		this.blockLocations = blockLocations;
 		this.decisiondomeConfig = config;
 		
 		this.state = state;
 
-		this.display = display;
+		this.display = new ExampleDecisionFieldDisplay(this);
 	}
 
 	public void tick() {
@@ -43,6 +45,7 @@ public class DecisionField {
 
 	public void setGameKey(String gameKey) {
 		this.gameKey = gameKey;
+		this.display.displayGame(this.gameKey);
 	}
 
 	public String getGameKey() {

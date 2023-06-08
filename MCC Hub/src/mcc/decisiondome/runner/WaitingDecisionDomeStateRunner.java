@@ -26,7 +26,7 @@ public class WaitingDecisionDomeStateRunner extends DecisionDomeStateRunner {
     }
 
     @Override
-    public boolean tick() {
+    public boolean tick(long now) {
         return false;
     }
 
