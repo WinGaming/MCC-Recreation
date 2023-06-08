@@ -22,6 +22,7 @@ public class DecisionField {
 		this.decisiondomeConfig = config;
 		
 		this.state = state;
+		this.dirty = true;
 
 		this.display = new ExampleDecisionFieldDisplay(this);
 	}
@@ -45,6 +46,7 @@ public class DecisionField {
 
 	public void setGameKey(String gameKey) {
 		this.gameKey = gameKey;
+		this.setState(DecisionFieldState.ENABLED);
 		this.display.displayGame(this.gameKey);
 	}
 

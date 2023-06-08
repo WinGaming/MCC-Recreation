@@ -1,5 +1,6 @@
 package mcc.decisiondome;
 
+import mcc.decisiondome.DecisionField.DecisionFieldState;
 import mcc.decisiondome.runner.DecisionDomeStateRunner;
 import mcc.decisiondome.selector.FieldSelector;
 import mcc.event.Event;

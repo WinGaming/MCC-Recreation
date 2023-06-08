@@ -43,6 +43,7 @@ public class GameSelectionIntroDecisionDomeStateRunner extends DecisionDomeState
         // The timestamp when the first roll should start
         long startRoll = now + remaining - (this.getDecisionDome().getFieldCount() * (this.rollDuration + this.titleDuration));
 
+        boolean possibleUpdate = now >= startRoll;
         for (int i = 0; i < this.getDecisionDome().getFieldCount(); i++) {
             // The timestamp when the current field should be highlighted
             long start = startRoll + (i * (this.rollDuration + this.titleDuration));
@@ -60,7 +61,7 @@ public class GameSelectionIntroDecisionDomeStateRunner extends DecisionDomeState
             }
         }
 
-        return false;
+        return possibleUpdate;
     }
 
     @Override

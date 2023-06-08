@@ -36,7 +36,8 @@ public class DecisionDomeUtils {
 				locations[j] = new Location(world, positions[j].getX(), positions[j].getY(), positions[j].getZ());
 			}
 			
-			fields[i] = new DecisionField(locations, DecisionFieldState.ENABLED, config);
+			fields[i] = new DecisionField(locations, DecisionFieldState.DISABLED, config);
+			fields[i].tick(); // force update
 			fields[i].getDisplay().reset();
 		}
 		
