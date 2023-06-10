@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Chicken;
 import org.bukkit.entity.Egg;
@@ -22,12 +23,17 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import mcc.decisiondome.DecisionDome;
 import mcc.decisiondome.DecisionDomeUtils;
+import mcc.decisiondome.items.VoteEgg;
 import mcc.decisiondome.selector.EntityFieldSelector;
 import mcc.display.CachedScoreboardTemplate;
 import mcc.display.ScoreboardPartProvider;
@@ -66,6 +72,14 @@ public class Event implements Listener {
 
     // TODO: THis is just temp
     private int currentRound = 0;
+
+    @EventHandler
+    public void iTemp(PlayerInteractEvent event) {
+        if (event.getItem().getType() == Material.EGG && event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            new VoteEgg().onInteraction(event.getPlayer());
+            event.setCancelled(true);
+        }
+    }
 
     public static Event fromStats(String eventId, EventStats stats, FileConfig<HubDecisiondomeConfig> config, FileConfig<HubLobbyConfig> lobbyConfig) {
         Optional<List<PreparedTeam>> teams = stats.getTeamsForEvent(eventId);
@@ -282,10 +296,17 @@ public class Event implements Listener {
     }
 
     @EventHandler
+    public void onEggBreak(CreatureSpawnEvent event) {
+        if (event.getSpawnReason() == SpawnReason.EGG) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
     public void onEggBreak(ProjectileHitEvent event) {
         if (event.getEntityType() == EntityType.EGG) {
             Egg egg = (Egg) event.getEntity();
-            // egg.remove(); // TODO: Add this again after testing bouncing
+            egg.remove();
             
             Location spawnLocation = egg.getLocation().clone().add(0, 0.5, 0);
             Chicken voteChicken = (Chicken) egg.getWorld().spawnEntity(spawnLocation, EntityType.CHICKEN);
@@ -295,6 +316,8 @@ public class Event implements Listener {
             voteChicken.setGravity(false);
             voteChicken.setCustomName(egg.getCustomName());
             voteChicken.setCustomNameVisible(true);
+
+            event.setCancelled(true);
         }
     }
 }

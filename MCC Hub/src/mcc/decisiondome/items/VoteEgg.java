@@ -15,7 +15,6 @@ public class VoteEgg implements VoteItem {
     @Override
     public void onInteraction(Player player) {
         Egg egg = player.launchProjectile(Egg.class);
-        egg.setBounce(true); // TODO: what does this do?
         egg.setCustomName("team_name"); // TODO:
     }
 }

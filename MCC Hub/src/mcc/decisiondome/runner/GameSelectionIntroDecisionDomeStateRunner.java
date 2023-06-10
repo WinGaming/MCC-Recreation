@@ -4,6 +4,8 @@ import mcc.decisiondome.DecisionDome;
 import mcc.decisiondome.DecisionDomeState;
 import mcc.decisiondome.DecisionField;
 import mcc.decisiondome.DecisionField.DecisionFieldState;
+import mcc.decisiondome.items.VoteEgg;
+import mcc.decisiondome.items.VoteItem;
 import mcc.timer.Timer;
 
 import static org.bukkit.ChatColor.RED;
@@ -27,6 +29,12 @@ public class GameSelectionIntroDecisionDomeStateRunner extends DecisionDomeState
     public Timer setup() {
         DecisionField[] fields = this.getDecisionDome().getActiveDecisionFields();
         for (int i = 0; i < fields.length; i++) fields[i].setState(DecisionFieldState.DISABLED);
+
+        VoteItem item = new VoteEgg();
+        // TODO:
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            player.getInventory().addItem(item.createInstance());
+        }
 
         return Timer.fromConfig(this.getDecisionDome().getConfig().getGameSelectionPreVoteTimer());
     }
