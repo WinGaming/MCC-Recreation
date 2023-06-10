@@ -49,6 +49,9 @@ public class ScorelistScoreboardPartProvider<T extends Score<T, V>, V> implement
     @Override
     public Pair<String[], Long> getLines(UUID viewer) {
         List<Pair<UUID, T>> sortedScores = scores.sortScores();
+        if (sortedScores.size() == 0) {
+            return new Pair<>(new String[] {""}, 0L);
+        }
         
         Optional<T> viewerScore = Optional.empty();
         int viewerScoreIndex = -1;

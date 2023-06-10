@@ -3,27 +3,29 @@ package mcc.game;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
+import java.util.function.Function;
+
+import mcc.event.Event;
 
 public class GameManager {
     
-    private static Map<String, Supplier<Game>> gameLibrary;
+    private static Map<String, Function<Event, Game>> gameLibrary;
 
     static {
         gameLibrary = new HashMap<>();
 
-        registerGame("test", TestGame::new);
+        registerGame("battlebox", BattleBox::new);
     }
 
-    public static boolean registerGame(String key, Supplier<Game> supplier) {
+    public static boolean registerGame(String key, Function<Event, Game> supplier) {
         if (gameLibrary.containsKey(key)) return false;
         
         gameLibrary.put(key, supplier);
         return true;
     }
 
-    public static Game createGame(String key) {
-        return gameLibrary.containsKey(key) ? gameLibrary.get(key).get() : null;
+    public static Game createGame(String key, Event event) {
+        return gameLibrary.containsKey(key) ? gameLibrary.get(key).apply(event) : null;
     }
 
     public static List<String> getGameList() {

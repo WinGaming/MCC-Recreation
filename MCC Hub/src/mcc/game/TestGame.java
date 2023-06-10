@@ -17,7 +17,7 @@ public class TestGame extends Game {
     }
 
     @Override
-    public void tick() {
+    public void tick(long now) {
         Bukkit.getOnlinePlayers().forEach(player -> {
             player.setHealth(new Random().nextInt(20) + 1);
         });

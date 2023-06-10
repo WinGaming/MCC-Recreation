@@ -1,16 +1,18 @@
 package mcc.game;
 
+import mcc.event.Event;
+
 public class GameTask {
     
     private Game currentGame;
 
-    public boolean prepareGame(String gameKey) {
+    public boolean prepareGame(String gameKey, Event evnet) {
         if (currentGame != null) {
             System.err.println("Tried to start new game while one is still running");
             return false;
         }
 
-        this.currentGame = GameManager.createGame(gameKey);
+        this.currentGame = GameManager.createGame(gameKey, evnet);
         if (this.currentGame == null) {
             System.err.println("Failed to create game: " + gameKey);
             return false;
@@ -27,8 +29,8 @@ public class GameTask {
         if (this.currentGame != null) this.currentGame.teleportPlayers();
     }
 
-    public void tick() {
-        if (this.currentGame != null) this.currentGame.tick();
+    public void tick(long now) {
+        if (this.currentGame != null) this.currentGame.tick(now);
     }
 
 }

@@ -29,29 +29,32 @@ public class CachedScoreboardTemplate {
 
     private ScoreboardPartCache[] partCaches;
 
-	public CachedScoreboardTemplate(IChatBaseComponent title, ScoreboardPartProvider[] parts) {
+	private String objectiveIdSuffix;
+
+	public CachedScoreboardTemplate(IChatBaseComponent title, String objectiveIdSuffix, ScoreboardPartProvider[] parts) {
 		this.title = title;
 		this.parts = parts;
+		this.objectiveIdSuffix = objectiveIdSuffix;
 
 		this.partCaches = new ScoreboardPartCache[parts.length];
 	}
 
 	public void show(Player player) {
-		final String objectiveId = "objective_id";
+		final String objectiveId = "objective_id_" + this.objectiveIdSuffix;
 		
 		if (this.objective == null) {
 			this.objective = new ScoreboardObjective(new Scoreboard(), objectiveId, IScoreboardCriteria.DUMMY, title, EnumScoreboardHealthDisplay.INTEGER);
 		}
 
-		boolean ignoreCacheForPlayer = !PlayerTagCache.hasTag(player.getUniqueId(), "scoreboard_objective");
-		if (!PlayerTagCache.hasTag(player.getUniqueId(), "scoreboard_objective")) {
+		boolean ignoreCacheForPlayer = !PlayerTagCache.hasTag(player.getUniqueId(), "scoreboard_objective_" + this.objectiveIdSuffix);
+		if (!PlayerTagCache.hasTag(player.getUniqueId(), "scoreboard_objective_" + this.objectiveIdSuffix)) {
 			PacketPlayOutScoreboardObjective objectivePacket = new PacketPlayOutScoreboardObjective(objective, PacketPlayOutScoreboardObjective.METHOD_ADD);
 			((CraftPlayer) player).getHandle().connection.send(objectivePacket);
 			
 			PacketPlayOutScoreboardDisplayObjective displayPacket = new PacketPlayOutScoreboardDisplayObjective(Scoreboard.getDisplaySlotByName("sidebar"), objective);
 			((CraftPlayer) player).getHandle().connection.send(displayPacket);
 
-			PlayerTagCache.addTag(player.getUniqueId(), "scoreboard_objective");
+			PlayerTagCache.addTag(player.getUniqueId(), "scoreboard_objective_" + this.objectiveIdSuffix);
 		}
 
 		if (this.parts.length == 0) {

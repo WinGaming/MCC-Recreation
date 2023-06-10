@@ -1,11 +1,9 @@
 package mcc.decisiondome;
 
-import mcc.decisiondome.DecisionField.DecisionFieldState;
 import mcc.decisiondome.runner.DecisionDomeStateRunner;
 import mcc.decisiondome.selector.FieldSelector;
 import mcc.event.Event;
 import mcc.game.GameManager;
-import mcc.game.GameTask;
 import mcc.timer.Timer;
 import mcc.yml.decisiondome.HubDecisiondomeConfig;
 
@@ -15,7 +13,6 @@ public class DecisionDome {
 	private final HubDecisiondomeConfig config;
 	private final FieldSelector fieldSelector;
 	private final TeamBox[] teamBoxes;
-	private final GameTask gameTask;
 	private final Event event;
 
 	private Timer currentTimer;
@@ -28,11 +25,10 @@ public class DecisionDome {
 
 	private boolean forceStateUpdate = false;
 	
-	protected DecisionDome(Event event, DecisionField[] fields, HubDecisiondomeConfig config, TeamBox[] teamBoxes, FieldSelector selector, GameTask gametask) {
+	protected DecisionDome(Event event, DecisionField[] fields, HubDecisiondomeConfig config, TeamBox[] teamBoxes, FieldSelector selector) {
 		this.event = event;
 		this.config = config;
 		this.fields = fields;
-		this.gameTask = gametask;
 		this.teamBoxes = teamBoxes;
 		this.fieldSelector = selector;
 
@@ -144,10 +140,6 @@ public class DecisionDome {
 		return DecisionDome.this.fieldSelector;
 	}
 
-	public GameTask getGameTask() {
-		return DecisionDome.this.gameTask;
-	}
-
 	public void forceStateUpdate() {
 		DecisionDome.this.forceStateUpdate = true;
 	}
@@ -158,5 +150,9 @@ public class DecisionDome {
 
 	public void switchToGame() {
 		DecisionDome.this.event.switchToGame();
+	}
+
+	public Event getEvent() {
+		return event;
 	}
 }

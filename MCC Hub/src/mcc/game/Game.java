@@ -9,5 +9,5 @@ public abstract class Game {
     public abstract void teleportPlayers();
 
     /** Called each tick to allow synchronized calls to Server- and MCC-API */
-    public abstract void tick();
+    public abstract void tick(long now);
 }

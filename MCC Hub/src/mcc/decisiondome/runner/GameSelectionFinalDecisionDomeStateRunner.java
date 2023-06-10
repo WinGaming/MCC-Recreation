@@ -82,7 +82,7 @@ public class GameSelectionFinalDecisionDomeStateRunner extends DecisionDomeState
             return null;
         }
 
-        if (!this.getDecisionDome().getGameTask().prepareGame(fields[chosenPosition].getGameKey())) {
+        if (!this.getDecisionDome().getEvent().prepareMinigame(fields[chosenPosition].getGameKey())) {
             Bukkit.broadcastMessage("Failed to prepare game. The event is now paused until the error gets resolved");
             return null;
         }

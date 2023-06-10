@@ -73,6 +73,10 @@ public class Event implements Listener {
     // TODO: THis is just temp
     private int currentRound = 0;
 
+    public TeamManager getTeamManager() {
+        return teamManager;
+    }
+
     @EventHandler
     public void iTemp(PlayerInteractEvent event) {
         if (event.getItem().getType() == Material.EGG && event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
@@ -110,9 +114,9 @@ public class Event implements Listener {
 
         this.teamManager = teamManager;
         this.currentState = EventState.NOT_STARTED;
-        this.decisionDome = DecisionDomeUtils.loadFromConfig(this, config.getConfigInstance(), this.teamManager, new EntityFieldSelector(), this.gameTask);
+        this.decisionDome = DecisionDomeUtils.loadFromConfig(this, config.getConfigInstance(), this.teamManager, new EntityFieldSelector());
 
-        this.lobbyTemplate = new CachedScoreboardTemplate(IChatBaseComponent.literal(YELLOW + "" + BOLD + "MC Championship Pride 22"), new ScoreboardPartProvider[] {
+        this.lobbyTemplate = new CachedScoreboardTemplate(IChatBaseComponent.literal(YELLOW + "" + BOLD + "MC Championship Pride 22"), "lobby", new ScoreboardPartProvider[] {
             new SuppliedTimerScoreboardPartProvider(this::getTimerTitle, this::getTimer),
             new TeamsPlayerCountScoreboardPartProvider(this.teamManager),
             new TeamScoreboardPartProvider(this.teamManager),
@@ -132,6 +136,7 @@ public class Event implements Listener {
     }
 
     public void switchToGame() {
+        this.gameTask.teleportPlayers();
         this.currentState = EventState.MINIGAME;
     }
 
@@ -142,7 +147,7 @@ public class Event implements Listener {
             switch (this.currentState) {
                 case STARTING:
                     this.currentState = EventState.DECISIONDOME_COUNTDOWN;
-                    this.lobbyTimer = new Timer(TimeUnit.SECONDS, 61); // TODO: Config
+                    this.lobbyTimer = new Timer(TimeUnit.SECONDS, /*61*/ 5); // TODO: Config
                     this.lobbyTimer.start(now);
                     break;
                 case DECISIONDOME_COUNTDOWN:
@@ -170,7 +175,7 @@ public class Event implements Listener {
         }
 
         this.decisionDome.tick(now);
-        this.gameTask.tick();
+        this.gameTask.tick(now);
 
         switch (this.currentState) {
             case DECISIONDOME_RUNNING:
@@ -189,9 +194,15 @@ public class Event implements Listener {
                 break;
         }
 
-        for (Player player : Bukkit.getOnlinePlayers()) {
-			this.lobbyTemplate.show(player);
-		}
+        if (this.currentState != EventState.MINIGAME) {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                this.lobbyTemplate.show(player);
+            }
+        }
+    }
+
+    public boolean prepareMinigame(String game) {
+        return this.gameTask.prepareGame(game, this);
     }
 
     @EventHandler
@@ -248,7 +259,7 @@ public class Event implements Listener {
     public boolean resume() {
         if (this.currentState == EventState.NOT_STARTED) {
             this.currentState = EventState.STARTING;
-            this.lobbyTimer = new Timer(TimeUnit.SECONDS, 59, 61); // TODO: Config
+            this.lobbyTimer = new Timer(TimeUnit.SECONDS, /*59*/ 5, 61); // TODO: Config
             this.lobbyTimer.start(System.currentTimeMillis());
             return true;
         } else {

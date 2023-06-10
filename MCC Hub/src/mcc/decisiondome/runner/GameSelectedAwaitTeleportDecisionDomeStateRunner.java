@@ -22,7 +22,6 @@ public class GameSelectedAwaitTeleportDecisionDomeStateRunner extends DecisionDo
 
     @Override
     public int updateSelectedField() {
-        this.getDecisionDome().getGameTask().teleportPlayers();
         this.getDecisionDome().forceStateUpdate();
         this.getDecisionDome().switchToGame();
 
