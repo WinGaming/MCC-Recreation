@@ -16,9 +16,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.Chicken;
+import org.bukkit.entity.Egg;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -274,6 +278,23 @@ public class Event implements Listener {
                 return this.decisionDome.getCurrentTimer();
             default:
                 return null;
+        }
+    }
+
+    @EventHandler
+    public void onEggBreak(ProjectileHitEvent event) {
+        if (event.getEntityType() == EntityType.EGG) {
+            Egg egg = (Egg) event.getEntity();
+            // egg.remove(); // TODO: Add this again after testing bouncing
+            
+            Location spawnLocation = egg.getLocation().clone().add(0, 0.5, 0);
+            Chicken voteChicken = (Chicken) egg.getWorld().spawnEntity(spawnLocation, EntityType.CHICKEN);
+            
+            // TODO: Replace this with team color etc.
+            voteChicken.setAI(false);
+            voteChicken.setGravity(false);
+            voteChicken.setCustomName(egg.getCustomName());
+            voteChicken.setCustomNameVisible(true);
         }
     }
 }
