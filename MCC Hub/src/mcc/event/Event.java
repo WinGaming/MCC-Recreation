@@ -175,7 +175,10 @@ public class Event implements Listener {
         }
 
         this.decisionDome.tick(now);
-        this.gameTask.tick(now);
+        if (this.gameTask.tick(now)) {
+            this.backToLobby();
+            this.currentState = EventState.DECISIONDOME_COUNTDOWN;
+        }
 
         switch (this.currentState) {
             case DECISIONDOME_RUNNING:

@@ -17,9 +17,10 @@ public class TestGame extends Game {
     }
 
     @Override
-    public void tick(long now) {
+    public boolean tick(long now) {
         Bukkit.getOnlinePlayers().forEach(player -> {
             player.setHealth(new Random().nextInt(20) + 1);
         });
+        return false;
     }
 }

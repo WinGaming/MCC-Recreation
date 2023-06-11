@@ -29,8 +29,12 @@ public class GameTask {
         if (this.currentGame != null) this.currentGame.teleportPlayers();
     }
 
-    public void tick(long now) {
-        if (this.currentGame != null) this.currentGame.tick(now);
+    public boolean tick(long now) {
+        if (this.currentGame != null) {
+            return this.currentGame.tick(now);
+        }
+
+        return true;
     }
 
 }

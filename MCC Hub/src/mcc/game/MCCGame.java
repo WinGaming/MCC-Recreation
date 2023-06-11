@@ -68,7 +68,7 @@ public abstract class MCCGame<GameState extends Enum<GameState>, T extends Score
     public void prepare() {}
 
     @Override
-    public void tick(long now) {
+    public boolean tick(long now) {
         if (this.timer != null && this.timer.remaining(now) <= 0) {
             switch (this.state) {
                 case STARTING:
@@ -85,7 +85,7 @@ public abstract class MCCGame<GameState extends Enum<GameState>, T extends Score
                     }
                     break;
                 case FINISHED:
-                    break;
+                    return true;
             }
 
             if (this.timer != null) {
@@ -96,6 +96,8 @@ public abstract class MCCGame<GameState extends Enum<GameState>, T extends Score
         for (Player player : Bukkit.getOnlinePlayers()) {
             this.cachedScoreboardTemplate.show(player);
         }
+
+        return false;
     }
 
     public abstract Timer getTimer(GameState state);
