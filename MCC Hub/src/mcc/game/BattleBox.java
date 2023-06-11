@@ -24,6 +24,16 @@ public class BattleBox extends MCCGame<BattleBox.BattleBoxState, CoinScore, Inte
     }
 
     @Override
+    public boolean tick(long now) {
+        if (this.getGameState() == BattleBoxState.PREPARE_ROUND) {
+            this.updateGameState(BattleBoxState.KIT_SELECTION);
+            return false;
+        }
+
+        return super.tick(now);
+    }
+
+    @Override
     public String getTimerText(BattleBoxState state) {
         switch (state) {
             case PREPARE_ROUND:         return "Ingame"; // TODO: Get correct text
@@ -40,7 +50,7 @@ public class BattleBox extends MCCGame<BattleBox.BattleBoxState, CoinScore, Inte
     public BattleBoxState onTimerEnd(BattleBoxState state) {
         switch (state) {
             case PREPARE_ROUND:
-                return BattleBoxState.KIT_SELECTION;
+                return BattleBoxState.KIT_SELECTION; // Technically dead code
             case KIT_SELECTION:
                 return BattleBoxState.BATTLE_PREPARE;
             case BATTLE_PREPARE:

@@ -39,6 +39,17 @@ public class CachedScoreboardTemplate {
 		this.partCaches = new ScoreboardPartCache[parts.length];
 	}
 
+	public void hide(Player player) {
+		if (this.objective == null) {
+			return;
+		}
+
+		PacketPlayOutScoreboardObjective objectivePacket = new PacketPlayOutScoreboardObjective(objective, PacketPlayOutScoreboardObjective.METHOD_REMOVE);
+		((CraftPlayer) player).getHandle().connection.send(objectivePacket);
+
+		PlayerTagCache.removeTag(player.getUniqueId(), "scoreboard_objective_" + this.objectiveIdSuffix);
+	}
+
 	public void show(Player player) {
 		final String objectiveId = "objective_id_" + this.objectiveIdSuffix;
 		
@@ -106,8 +117,6 @@ public class CachedScoreboardTemplate {
 
 			partCache.lines = lines;
 			partCache.lastUpdate = linesResult.getB();
-
-			System.out.println("New lines: " + lines[lines.length - 1]);
 
 			// Send lines
 			for (int forwardLineIndex = 0; forwardLineIndex < lines.length; forwardLineIndex++) {

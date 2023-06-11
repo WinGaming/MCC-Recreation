@@ -76,6 +76,14 @@ public abstract class MCCGame<GameState extends Enum<GameState>, T extends Score
         });
     }
 
+    public void updateGameState(GameState gameState) {
+        this.gameState = gameState;
+        this.timer = getTimer(this.gameState);
+        if (this.timer != null) {
+            this.timer.start(System.currentTimeMillis());
+        }
+    }
+
     public Scorelist<T> getScorelist() {
         return scorelist;
     }
@@ -100,14 +108,17 @@ public abstract class MCCGame<GameState extends Enum<GameState>, T extends Score
                     break;
                 case INGAME:
                     this.gameState = this.onTimerEnd(this.gameState);
-                    this.timer = getTimer(this.gameState);
-
+                    
                     if (this.gameState == null) {
                         this.state = MCCGameState.FINISHED;
                         this.timer = new Timer(TimeUnit.SECONDS, 15); // TODO: what is the correct time?
+                    } else {
+                        this.timer = getTimer(this.gameState);
                     }
+
                     break;
                 case FINISHED:
+                    for (Player player : Bukkit.getOnlinePlayers()) this.cachedScoreboardTemplate.hide(player);
                     return true;
             }
 
@@ -121,6 +132,10 @@ public abstract class MCCGame<GameState extends Enum<GameState>, T extends Score
         }
 
         return false;
+    }
+
+    public GameState getGameState() {
+        return gameState;
     }
 
     public abstract String getTimerText(GameState state);

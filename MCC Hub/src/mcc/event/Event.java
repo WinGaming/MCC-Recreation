@@ -17,6 +17,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
 import org.bukkit.entity.Chicken;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.EntityType;
@@ -25,8 +26,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -38,6 +39,7 @@ import mcc.decisiondome.selector.EntityFieldSelector;
 import mcc.display.CachedScoreboardTemplate;
 import mcc.display.ScoreboardPartProvider;
 import mcc.display.SuppliedTimerScoreboardPartProvider;
+import mcc.display.TablistDisplay;
 import mcc.display.TeamScoreboardPartProvider;
 import mcc.display.TeamsPlayerCountScoreboardPartProvider;
 import mcc.game.GameTask;
@@ -53,6 +55,7 @@ import mcc.yml.decisiondome.FileConfig;
 import mcc.yml.decisiondome.HubDecisiondomeConfig;
 import mcc.yml.lobby.HubLobbyConfig;
 import net.minecraft.network.chat.IChatBaseComponent;
+import net.minecraft.network.protocol.game.PacketPlayOutPlayerListHeaderFooter;
 
 public class Event implements Listener {
     
@@ -136,6 +139,7 @@ public class Event implements Listener {
     }
 
     public void switchToGame() {
+        for (Player player : Bukkit.getOnlinePlayers()) this.lobbyTemplate.hide(player);
         this.gameTask.teleportPlayers();
         this.currentState = EventState.MINIGAME;
     }
@@ -147,7 +151,7 @@ public class Event implements Listener {
             switch (this.currentState) {
                 case STARTING:
                     this.currentState = EventState.DECISIONDOME_COUNTDOWN;
-                    this.lobbyTimer = new Timer(TimeUnit.SECONDS, /*61*/ 5); // TODO: Config
+                    this.lobbyTimer = new Timer(TimeUnit.SECONDS, 61); // TODO: Config
                     this.lobbyTimer.start(now);
                     break;
                 case DECISIONDOME_COUNTDOWN:
@@ -225,6 +229,9 @@ public class Event implements Listener {
             player.setGameMode(GameMode.SPECTATOR);
         }
 
+        PacketPlayOutPlayerListHeaderFooter a = new TablistDisplay().generatePacket(this.teamManager.getTeams(), 400);
+        ((CraftPlayer) player).getHandle().connection.send(a);
+
         player.teleport(this.spawnLocation);
     }
 
@@ -262,7 +269,7 @@ public class Event implements Listener {
     public boolean resume() {
         if (this.currentState == EventState.NOT_STARTED) {
             this.currentState = EventState.STARTING;
-            this.lobbyTimer = new Timer(TimeUnit.SECONDS, /*59*/ 5, 61); // TODO: Config
+            this.lobbyTimer = new Timer(TimeUnit.SECONDS, 59, 61); // TODO: Config
             this.lobbyTimer.start(System.currentTimeMillis());
             return true;
         } else {

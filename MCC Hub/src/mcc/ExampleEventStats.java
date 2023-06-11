@@ -29,7 +29,7 @@ public class ExampleEventStats implements EventStats {
 
         PreparedTeam iron = new PreparedTeam(
             "the_ironing_iron",
-            Arrays.asList(UUID.fromString("f7939e63-643b-4d18-ae81-812c2c6a11d1")),
+            Arrays.asList(UUID.fromString("f7939e63-643b-4d18-ae81-812c2c6a11d1"), UUID.fromString("178bbc53-2d4e-422e-998b-371cb57d49ed")),
             new TeamTemplateRecord("Ironing Iron", ChatColor.GRAY, '#')
         );
 
