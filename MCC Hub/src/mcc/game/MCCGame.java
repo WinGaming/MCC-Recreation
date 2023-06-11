@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import mcc.display.CachedScoreboardTemplate;
@@ -32,20 +31,20 @@ public abstract class MCCGame<GameState extends Enum<GameState>, T extends Score
     private MCCGameState state;
     private GameState gameState;
 
-    private Location lobbyLocation;
-
     private CachedScoreboardTemplate cachedScoreboardTemplate;
 
     private List<List<Team[]>> matches;
     private int currentRound = 0;
 
-    public MCCGame(String title, GameState initGameState, Location lobbyLocation, Event event, TeamMatcher teamMatcher) {
+    private Map map;
+
+    public MCCGame(String title, GameState initGameState, Event event, TeamMatcher teamMatcher, Map map) {
         this.title = title;
         this.event = event;
 
-        long now = System.currentTimeMillis();
+        this.map = map;
 
-        this.lobbyLocation = lobbyLocation;
+        long now = System.currentTimeMillis();
 
         this.state = MCCGameState.STARTING;
         this.timer = new Timer(TimeUnit.SECONDS, 60 + 37);
@@ -68,7 +67,7 @@ public abstract class MCCGame<GameState extends Enum<GameState>, T extends Score
 
                 return new Pair<>(new String[] {
                     ChatColor.AQUA + "" + ChatColor.BOLD + "Game ?/?: " + ChatColor.RESET + this.title,
-                    ChatColor.AQUA + "" + ChatColor.BOLD + "Map: " + ChatColor.RESET + "???",
+                    ChatColor.AQUA + "" + ChatColor.BOLD + "Map: " + ChatColor.RESET + this.map.getName(),
                     ChatColor.GREEN + "" + ChatColor.BOLD + "Round: " + ChatColor.RESET + "" + (this.currentRound + 1) + "/" + this.matches.size(),
                     (ChatColor.RED + "" + ChatColor.BOLD) + (this.timer == null ? timerString : (timerString + " " + ChatColor.RESET + this.timer.buildText(nnow)))
                 }, nnow);
@@ -84,7 +83,7 @@ public abstract class MCCGame<GameState extends Enum<GameState>, T extends Score
     @Override
     public void teleportPlayers() { // TODO: Use method that allows spreading players out a bit
         for (Player player : Bukkit.getOnlinePlayers()) {
-            player.teleport(this.lobbyLocation);
+            player.teleport(this.map.getLobbyLocation());
         }
     }
 
