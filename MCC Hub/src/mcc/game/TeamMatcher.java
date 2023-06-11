@@ -18,7 +18,7 @@ public interface TeamMatcher {
         List<Team> teams = teamManager.getTeams();
         for (int i = 0; i < rounds; i++) {
             matches.add(new ArrayList<>());
-            for (int j = 0; j < teams.size(); j++) {
+            for (int j = 0; j < teams.size(); j++) { // TODO: This does not work
                 Team team1 = teams.get(j);
                 Team team2 = teams.get((j + i) % teams.size());
                 matches.get(i).add(new Team[] { team1, team2 });
