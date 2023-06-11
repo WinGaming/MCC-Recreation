@@ -6,6 +6,14 @@ public class CoinScore implements Score<CoinScore, Integer> {
 
     private int coins;
 
+    public CoinScore() {
+        this.coins = 0;
+    }
+
+    public CoinScore(int coins) {
+        this.coins = coins;
+    }
+
     @Override
     public int compareTo(CoinScore o) {
         return Integer.compare(coins, o.coins);

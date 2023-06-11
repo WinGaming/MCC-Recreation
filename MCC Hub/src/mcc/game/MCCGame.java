@@ -15,6 +15,8 @@ import mcc.scores.Score;
 import mcc.scores.Scorelist;
 import mcc.teams.Team;
 import mcc.timer.Timer;
+import mcc.utils.Pair;
+import net.md_5.bungee.api.ChatColor;
 import net.minecraft.network.chat.IChatBaseComponent;
 
 public abstract class MCCGame<GameState extends Enum<GameState>, T extends Score<T, V>, V> extends Game {
@@ -35,16 +37,19 @@ public abstract class MCCGame<GameState extends Enum<GameState>, T extends Score
     private CachedScoreboardTemplate cachedScoreboardTemplate;
 
     private List<List<Team[]>> matches;
+    private int currentRound = 0;
 
     public MCCGame(String title, GameState initGameState, Location lobbyLocation, Event event, TeamMatcher teamMatcher) {
         this.title = title;
         this.event = event;
 
+        long now = System.currentTimeMillis();
+
         this.lobbyLocation = lobbyLocation;
 
         this.state = MCCGameState.STARTING;
         this.timer = new Timer(TimeUnit.SECONDS, 60 + 37);
-        this.timer.start(System.currentTimeMillis());
+        this.timer.start(now);
 
         this.gameState = initGameState;
         
@@ -53,8 +58,27 @@ public abstract class MCCGame<GameState extends Enum<GameState>, T extends Score
         this.scorelist = new Scorelist<>();
 
         this.cachedScoreboardTemplate = new CachedScoreboardTemplate(IChatBaseComponent.literal("MC ..."), "game", new ScoreboardPartProvider[] {
+            (player) -> {
+                long nnow = System.currentTimeMillis();
+
+                String timerString = "";
+                if (this.state == MCCGameState.STARTING) timerString = "Game begins in:";
+                else if (this.state == MCCGameState.INGAME) timerString = this.getTimerText(this.gameState);
+                else if (this.state == MCCGameState.FINISHED) timerString = "Back to Hub:";
+
+                return new Pair<>(new String[] {
+                    ChatColor.AQUA + "" + ChatColor.BOLD + "Game ?/?: " + ChatColor.RESET + this.title,
+                    ChatColor.AQUA + "" + ChatColor.BOLD + "Map: " + ChatColor.RESET + "???",
+                    ChatColor.GREEN + "" + ChatColor.BOLD + "Round: " + ChatColor.RESET + "" + (this.currentRound + 1) + "/" + this.matches.size(),
+                    (ChatColor.RED + "" + ChatColor.BOLD) + (this.timer == null ? timerString : (timerString + " " + ChatColor.RESET + this.timer.buildText(nnow)))
+                }, nnow);
+            },
             new ScorelistScoreboardPartProvider<>(this.scorelist)
         });
+    }
+
+    public Scorelist<T> getScorelist() {
+        return scorelist;
     }
 
     @Override
@@ -99,6 +123,8 @@ public abstract class MCCGame<GameState extends Enum<GameState>, T extends Score
 
         return false;
     }
+
+    public abstract String getTimerText(GameState state);
 
     public abstract Timer getTimer(GameState state);
     public abstract GameState onTimerEnd(GameState state);

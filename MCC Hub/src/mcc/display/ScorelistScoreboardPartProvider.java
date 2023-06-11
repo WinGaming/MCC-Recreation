@@ -1,5 +1,6 @@
 package mcc.display;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -12,7 +13,7 @@ import mcc.utils.Pair;
 
 public class ScorelistScoreboardPartProvider<T extends Score<T, V>, V> implements ScoreboardPartProvider {
 	
-    private boolean showAbsoluteFirst = true; // TODO: Make this configurable
+    private boolean showAbsoluteFirst = false; // TODO: Make this configurable
 
     // TODO: Make this configurable
     // private int lineLength = 35;
@@ -71,6 +72,8 @@ public class ScorelistScoreboardPartProvider<T extends Score<T, V>, V> implement
         if (this.showAbsoluteFirst) {
             final int n = 3;
             lines = new String[n + 2];
+            // fill with empty lines
+            Arrays.fill(lines, " ");
             
             // TODO: MCC displays total time if viewer is first, but this feels like a bug
             lines[0] = createScorelistLine(sortedScores.get(0).getA(), longestIndexLength, 1, sortedScores.get(0).getB(), viewerScore) + SpaceFont.NEG_SPACE_1 + SpaceFont.POS_SPACE_1; // Making sure if viewer is 1. it can display the same line twice
@@ -79,17 +82,21 @@ public class ScorelistScoreboardPartProvider<T extends Score<T, V>, V> implement
             Bukkit.broadcastMessage("viewerScoreIndex: " + viewerScoreIndex);
             int topNStartIndex = Math.max(0, Math.min(viewerScoreIndex - 1, sortedScores.size() - n));
             for (int i = 0; i < n; i++) {
+                if (topNStartIndex + i >= sortedScores.size()) break;
                 Pair<UUID, T> scorePair = sortedScores.get(topNStartIndex + i);
                 lines[2 + i] = createScorelistLine(scorePair.getA(), longestIndexLength, topNStartIndex + i + 1, scorePair.getB(), viewerScore);
             }
         } else {
             final int n = 3;
             lines = new String[n + 1];
+            // fill with empty lines
+            Arrays.fill(lines, " ");
 
             lines[0] = createScorelistLine(sortedScores.get(0).getA(), longestIndexLength, 1, sortedScores.get(0).getB(), viewerScore);
             
             int topNStartIndex = Math.max(1, Math.min(viewerScoreIndex - 1, sortedScores.size() - n));
             for (int i = 0; i < n; i++) {
+                if (topNStartIndex + i >= sortedScores.size()) break;
                 Pair<UUID, T> scorePair = sortedScores.get(topNStartIndex + i);
                 lines[1 + i] = createScorelistLine(scorePair.getA(), longestIndexLength, topNStartIndex + i + 1, scorePair.getB(), viewerScore);
             }

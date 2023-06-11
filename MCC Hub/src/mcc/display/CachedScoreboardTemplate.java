@@ -86,6 +86,7 @@ public class CachedScoreboardTemplate {
 				requireScoreUpdate = true;
 			}
 
+			// System.out.println(requireScoreUpdate + " | " + partCache != null + " | " + (partCache == null ? "null" : partCache.lastUpdate) + " | " + linesResult.getB() + " | " + ignoreCacheForPlayer + " | " + (partCache == null ? "null" : (partCache.lastUpdate >= linesResult.getB())));
 			if (!requireScoreUpdate && partCache != null && partCache.lastUpdate >= linesResult.getB() && !ignoreCacheForPlayer) {
 				currentScore += lines.length + 1;
 				lastSpaceString += " ";
@@ -105,6 +106,8 @@ public class CachedScoreboardTemplate {
 
 			partCache.lines = lines;
 			partCache.lastUpdate = linesResult.getB();
+
+			System.out.println("New lines: " + lines[lines.length - 1]);
 
 			// Send lines
 			for (int forwardLineIndex = 0; forwardLineIndex < lines.length; forwardLineIndex++) {

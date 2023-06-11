@@ -16,6 +16,26 @@ public class BattleBox extends MCCGame<BattleBox.BattleBoxState, CoinScore, Inte
     }
 
     @Override
+    public void prepare() {
+        super.prepare();
+
+        this.getScorelist().setScore(Bukkit.getPlayer("SiegerSpieler").getUniqueId(), new CoinScore());
+    }
+
+    @Override
+    public String getTimerText(BattleBoxState state) {
+        switch (state) {
+            case PREPARE_ROUND:         return "Ingame"; // TODO: Get correct text
+            case KIT_SELECTION:         return "Kit Selection:";
+            case BATTLE_PREPARE:        return "Battle starts:";
+            case BATTLE:                return "Time left:";
+            case BATTLE_POST_TIMEOUT:   return "Next Round:";
+        }
+
+        return "Error";
+    }
+
+    @Override
     public BattleBoxState onTimerEnd(BattleBoxState state) {
         switch (state) {
             case PREPARE_ROUND:
