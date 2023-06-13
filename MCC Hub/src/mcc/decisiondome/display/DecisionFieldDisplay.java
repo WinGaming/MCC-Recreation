@@ -2,6 +2,10 @@ package mcc.decisiondome.display;
 
 import mcc.decisiondome.DecisionField;
 
+/** 
+ * Represents a element that can display a game selection,
+ * or if a game is currently being selected
+ */
 public abstract class DecisionFieldDisplay {
     
     private DecisionField field;
@@ -23,6 +27,9 @@ public abstract class DecisionFieldDisplay {
      */
     public abstract void startRolling();
 
-    /** Displays the game given by the {@code gameKey}. */
+    /**
+     * Displays the game given by the {@code gameKey}.
+     * @param gameKey the key for the game to display
+     */
     public abstract void displayGame(String gameKey);
 }
