@@ -53,6 +53,17 @@ public class ScriptManager {
         }
     }
 
+    public static void resetScripts(String component) {
+        Map<String, List<Script>> componentScripts = scripts.get(component);
+        if (componentScripts == null) return;
+
+        for (List<Script> stateList : componentScripts.values()) {
+            for (Script script : stateList) {
+                script.reset();
+            }
+        }
+    }
+
     public static void tick(String component, String state, Timer timer, long now) {
         Map<String, List<Script>> componentScripts = scripts.get(component);
         if (componentScripts == null) return;

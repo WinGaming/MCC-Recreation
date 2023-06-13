@@ -8,17 +8,19 @@ import org.bukkit.Location;
 import mcc.event.Event;
 import mcc.scores.CoinScore;
 import mcc.timer.Timer;
+import mcc.timer.scripts.ScriptManager;
 
 public class BattleBox extends MCCGame<BattleBox.BattleBoxState, CoinScore, Integer> {
 
     public BattleBox(Event event) {
         super("Battle Box", BattleBoxState.PREPARE_ROUND, event, TeamMatcher.ALL, new Map("Flat Rainbow", new Location(Bukkit.getWorld("world"), 44, -56, 45, -25f, 20f)));
-        // TODO: Load scripts
     }
 
     @Override
     public void prepare() {
         super.prepare();
+
+        ScriptManager.resetScripts("BATTLEBOX"); // Resetting possible scripts
 
         this.getScorelist().setScore(Bukkit.getPlayer("SiegerSpieler").getUniqueId(), new CoinScore());
     }

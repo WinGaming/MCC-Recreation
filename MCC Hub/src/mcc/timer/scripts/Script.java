@@ -12,6 +12,8 @@ public class Script {
     private String state;
 
     private List<ScriptEvent> events;
+    /** A list containing all added events to allow resetting this script */
+    private List<ScriptEvent> originalEvents;
 
     public Script(String name, String component, String state) {
         this.name = name;
@@ -23,6 +25,7 @@ public class Script {
 
     public void addEvent(ScriptEvent event) {
         this.events.add(event);
+        this.originalEvents.add(event);
     }
 
     public void tick(Timer timer, long now) {
@@ -34,6 +37,13 @@ public class Script {
             }
         }
         this.events.removeAll(toRemove);
+    }
+
+    public void reset() {
+        this.events = new ArrayList<>();
+        for (ScriptEvent event : this.originalEvents) {
+            this.events.add(event);
+        }
     }
 
     public String getName() {
