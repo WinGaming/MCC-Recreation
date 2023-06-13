@@ -4,17 +4,21 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import mcc.display.CachedScoreboardTemplate;
 import mcc.display.ScoreboardPartProvider;
 import mcc.display.ScorelistScoreboardPartProvider;
 import mcc.event.Event;
+import mcc.game.map.Map;
+import mcc.game.map.MapManager;
 import mcc.scores.Score;
 import mcc.scores.Scorelist;
 import mcc.teams.Team;
 import mcc.timer.Timer;
 import mcc.utils.Pair;
+import mcc.utils.Vector3i;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.network.chat.IChatBaseComponent;
 
@@ -30,6 +34,7 @@ public abstract class MCCGame<GameState extends Enum<GameState>, T extends Score
 
     private MCCGameState state;
     private GameState gameState;
+    private GameState initGameState;
 
     private CachedScoreboardTemplate cachedScoreboardTemplate;
 
@@ -37,12 +42,18 @@ public abstract class MCCGame<GameState extends Enum<GameState>, T extends Score
     private int currentRound = 0;
 
     private Map map;
+    private List<Vector3i> mapLocations;
+    private Location mapCopyAreaStart;
 
-    public MCCGame(String title, GameState initGameState, Event event, TeamMatcher teamMatcher, Map map) {
+    private Location lobbyLocation;
+
+    public MCCGame(String title, GameState initGameState, Event event, TeamMatcher teamMatcher, Map map, Location lobbyLocation, Location mapCopyareaStart) {
         this.title = title;
         this.event = event;
 
-        this.map = map;
+        this.mapCopyAreaStart = mapCopyareaStart;
+
+        this.lobbyLocation = lobbyLocation;
 
         long now = System.currentTimeMillis();
 
@@ -51,8 +62,17 @@ public abstract class MCCGame<GameState extends Enum<GameState>, T extends Score
         this.timer.start(now);
 
         this.gameState = initGameState;
+        this.initGameState = initGameState;
         
         this.matches = teamMatcher.generateMatches(event.getTeamManager());
+
+        this.map = map;
+
+        int biggestRound = 0;
+        for (List<Team[]> roundMatches : this.matches) {
+            biggestRound = Math.max(biggestRound, roundMatches.size());
+        }
+        this.mapLocations = MapManager.calculateAreaPositions(this.map.getBlueprint(), biggestRound);
 
         this.scorelist = new Scorelist<>();
 
@@ -91,12 +111,17 @@ public abstract class MCCGame<GameState extends Enum<GameState>, T extends Score
     @Override
     public void teleportPlayers() { // TODO: Use method that allows spreading players out a bit
         for (Player player : Bukkit.getOnlinePlayers()) {
-            player.teleport(this.map.getLobbyLocation());
+            player.teleport(this.lobbyLocation);
         }
     }
 
     @Override
-    public void prepare() {}
+    public void prepare() {
+        for (int i = 0; i < this.mapLocations.size(); i++) {
+            Vector3i s = this.mapLocations.get(i);
+            this.map.getBlueprint().build(this.mapCopyAreaStart.clone().add(s.getX(), s.getY(), s.getZ()));
+        }
+    }
 
     @Override
     public boolean tick(long now) {
@@ -110,8 +135,20 @@ public abstract class MCCGame<GameState extends Enum<GameState>, T extends Score
                     this.gameState = this.onTimerEnd(this.gameState);
                     
                     if (this.gameState == null) {
-                        this.state = MCCGameState.FINISHED;
-                        this.timer = new Timer(TimeUnit.SECONDS, 15); // TODO: what is the correct time?
+                        this.currentRound++;
+
+                        if (this.currentRound >= this.matches.size()) {
+                            this.state = MCCGameState.FINISHED;
+                            this.timer = new Timer(TimeUnit.SECONDS, 15); // TODO: what is the correct time?
+                        } else {
+                            // Resetting areas
+                            for (int i = 0; i < this.mapLocations.size(); i++) {
+                                Vector3i s = this.mapLocations.get(i);
+                                this.resetMapAt(this.mapCopyAreaStart.clone().add(s.getX(), s.getY(), s.getZ()), this.map);
+                            }
+
+                            this.updateGameState(this.initGameState);
+                        }
                     } else {
                         this.timer = getTimer(this.gameState);
                     }
@@ -137,6 +174,13 @@ public abstract class MCCGame<GameState extends Enum<GameState>, T extends Score
     public GameState getGameState() {
         return gameState;
     }
+
+    private void teleportPlayersIntoMaps() {
+        for (int i = 0; i < this.matches.get(this.currentRound).size(); i++) {
+        }
+    }
+
+    public abstract void resetMapAt(Location mapStart, Map map);
 
     public abstract String getTimerText(GameState state);
 
