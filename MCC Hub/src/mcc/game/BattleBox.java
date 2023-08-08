@@ -20,7 +20,8 @@ public class BattleBox extends MCCGame<BattleBox.BattleBoxState, CoinScore, Inte
             event,
             TeamMatcher.ALL,
             new Map("Flat Rainbow", null), // TODO:
-            new Location(Bukkit.getWorld("world"), 44, -56, 45, -25f, 20f)
+            new Location(Bukkit.getWorld("world"), 44, -56, 45, -25f, 20f),
+            null // TODO: What param?
         );
     }
 
@@ -103,5 +104,11 @@ public class BattleBox extends MCCGame<BattleBox.BattleBoxState, CoinScore, Inte
         BATTLE,
         /** A timeout to relax */
         BATTLE_POST_TIMEOUT,
+    }
+
+    @Override
+    public void resetMapAt(Location mapStart, Map map) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'resetMapAt'");
     }
 }
