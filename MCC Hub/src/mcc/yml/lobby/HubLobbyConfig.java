@@ -44,6 +44,10 @@ public class HubLobbyConfig implements MCCConfigSerializable {
         }
     }
 
+    public void setSpawnLocation(Vector3d spawnLocation) {
+        this.spawnLocation = Optional.of(spawnLocation);
+    }
+
     public String getWorldName() {
         return worldName;
     }

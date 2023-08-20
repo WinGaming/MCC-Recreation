@@ -1,6 +1,7 @@
 package mcc.locationprovider;
 
-import mcc.utils.Vector3d;
+import org.bukkit.Location;
+import org.bukkit.World;
 
 /**
  * This functional interface allows to provide an infinite number of locations.
@@ -8,6 +9,6 @@ import mcc.utils.Vector3d;
 @FunctionalInterface
 public interface LocationProvider {
     
-    Vector3d next();
+    Location next(World world);
 
 }

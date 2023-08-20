@@ -29,8 +29,7 @@ public class TeamBox {
     /** Teleports all players of the team into the box */
     public void teleportPlayers() {
         for (Player player : this.team.getPlayers()) {
-            Vector3d pos = this.locationProvider.next();
-            player.teleport(new Location(player.getWorld(), pos.getX(), pos.getY(), pos.getZ()));
+            player.teleport(this.locationProvider.next(player.getWorld()));
         }
     }
 

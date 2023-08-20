@@ -46,4 +46,8 @@ public class Vector3d {
 	public double getZ() {
 		return z;
 	}
+
+	public String toString() {
+		return "Vector3d(" + x + ", " + y + ", " + z + ")";
+	}
 }

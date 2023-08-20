@@ -1,24 +1,30 @@
 package mcc.commands;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import mcc.MCC;
+import mcc.utils.Vector3d;
 import mcc.yml.ConfigValidation;
 import mcc.yml.decisiondome.FileConfig;
 import mcc.yml.decisiondome.HubDecisiondomeConfig;
+import mcc.yml.lobby.HubLobbyConfig;
 
 public class MCCCommand implements CommandExecutor {
 
     private FileConfig<HubDecisiondomeConfig> config;
+    private FileConfig<HubLobbyConfig> lobbyConfig;
     private MCC mccInstance;
 
-    public MCCCommand(MCC mcc, FileConfig<HubDecisiondomeConfig> config) {
+    public MCCCommand(MCC mcc, FileConfig<HubDecisiondomeConfig> config, FileConfig<HubLobbyConfig> lobbyConfig) {
         this.config = config;
+        this.lobbyConfig = lobbyConfig;
         this.mccInstance = mcc;
     }
 
@@ -34,6 +40,7 @@ public class MCCCommand implements CommandExecutor {
             sender.sendMessage("/mcc pause");
             sender.sendMessage("/mcc resume");
             sender.sendMessage("/mcc stop");
+            sender.sendMessage("/mcc setSpawn");
         } else if (args[0].equalsIgnoreCase("start")) {
             List<String> configErrors = ConfigValidation.validateDecisiondomeConfig(this.config.getConfigInstance());
             if (configErrors.size() != 0) {
@@ -70,6 +77,11 @@ public class MCCCommand implements CommandExecutor {
             }
         } else if (args[0].equalsIgnoreCase("stop")) {
             sender.sendMessage("Stopping MCC"); // TODO:
+        } else if (args[0].equalsIgnoreCase("setSpawn")) {
+            Location location = ((Player) sender).getLocation();
+            this.lobbyConfig.getConfigInstance().setSpawnLocation(new Vector3d(location.getX(), location.getY(), location.getZ()));
+            var result = this.lobbyConfig.saveToFile(false);
+            sender.sendMessage("Saved lobby config to file: " + result);
         } else {
             sender.sendMessage("Unknown sub-command");
         }

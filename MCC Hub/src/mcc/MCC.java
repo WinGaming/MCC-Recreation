@@ -60,7 +60,7 @@ public class MCC extends JavaPlugin implements Listener {
 		}
 		
 		getCommand("decisiondome").setExecutor(new DecisionDomeCommand(this.configBuilder, this.decisiondomeConfig));
-		getCommand("mcc").setExecutor(new MCCCommand(this, this.decisiondomeConfig));
+		getCommand("mcc").setExecutor(new MCCCommand(this, this.decisiondomeConfig, this.lobbyConfig));
 		
 		getServer().getPluginManager().registerEvents(this.configBuilder, this);
 		getServer().getPluginManager().registerEvents(this, this);

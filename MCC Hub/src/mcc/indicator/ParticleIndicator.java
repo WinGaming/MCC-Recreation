@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 import mcc.utils.Vector3d;
 import mcc.utils.Vector3i;
@@ -64,6 +65,10 @@ public class ParticleIndicator {
 		return new Location(world, vector.getX(), vector.getY(), vector.getZ());
 	}
 
+	public static final void highlightLocation(Player player, Location location, Color color) {
+		location.getWorld().spawnParticle(Particle.REDSTONE, location, 5, new Particle.DustOptions(color, .5f));
+	}
+
 	public static final void highlightArea(Player player, World world, Vector3i cornerA, Vector3i cornerB) {
 		int minX = Math.min(cornerA.getX(), cornerB.getX());
 		int minY = Math.min(cornerA.getY(), cornerB.getY());
@@ -117,10 +122,11 @@ public class ParticleIndicator {
 		
 		World world = start.getWorld();
 		double distance = start.distance(end);
-		Vector3d deltaVector = new Vector3d(end.getX() - start.getX(), end.getY() - start.getY(), end.getZ() - start.getZ()).normalize();
-		
-		for (int i = 0; i < Math.floor(distance / stepSize); i++) {
-			Location loc = start.clone().add(deltaVector.getX() * stepSize * i, deltaVector.getY() * stepSize * i, deltaVector.getZ() * stepSize * i);
+
+		Vector direction = end.toVector().subtract(start.toVector()).normalize();
+
+		for (double distanceTraveled = 0; distanceTraveled < distance; distanceTraveled += stepSize) {
+			Location loc = start.clone().add(direction.clone().multiply(distanceTraveled));
 			world.spawnParticle(Particle.REDSTONE, loc, 1, new Particle.DustOptions(color, .5f));
 		}
 		

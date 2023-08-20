@@ -13,6 +13,7 @@ import mcc.config.AreaSelector;
 import mcc.config.ConfigAction;
 import mcc.config.ConfigBuilder;
 import mcc.config.LocationListSelector;
+import mcc.config.TeamBoxSelector;
 import mcc.yml.ConfigValidation;
 import mcc.yml.decisiondome.FileConfig;
 import mcc.yml.decisiondome.HubDecisiondomeConfig;
@@ -72,12 +73,15 @@ public class DecisionDomeCommand implements CommandExecutor {
 				sender.sendMessage("/decisiondome teambox add");
 				sender.sendMessage("/decisiondome teambox save");
 			} else if (args[1].equalsIgnoreCase("add")) {
-				this.configBuilder.setSelector(player, ConfigAction.DECISIONDOME_CREATE_TEAMBOX, new AreaSelector());
+				this.configBuilder.setSelector(player, ConfigAction.DECISIONDOME_CREATE_TEAMBOX, new TeamBoxSelector());
 				sender.sendMessage("Started selecting blocks for a teambox");
 			} else if (args[1].equalsIgnoreCase("save")) {
 				var currentSelection = this.configBuilder.getCurrentSelection(player);
-				if (currentSelection.getA() == ConfigAction.DECISIONDOME_CREATE_TEAMBOX) {
-					Optional<String> error = this.config.getConfigInstance().addTeamboxFromSelector((AreaSelector) currentSelection.getB());
+				if (currentSelection.getB().nextStep()) {
+					sender.sendMessage("Next step");
+					return true;
+				} else if (currentSelection.getA() == ConfigAction.DECISIONDOME_CREATE_TEAMBOX) {
+					Optional<String> error = this.config.getConfigInstance().addTeamboxFromSelector((TeamBoxSelector) currentSelection.getB());
 					if (!error.isPresent()) {
 						sender.sendMessage("Teambox added to template");
 						this.configBuilder.cancelSelector(player);

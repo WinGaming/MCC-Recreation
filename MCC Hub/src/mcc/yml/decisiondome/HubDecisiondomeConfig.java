@@ -12,8 +12,11 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 
-import mcc.config.AreaSelector;
 import mcc.config.LocationListSelector;
+import mcc.config.TeamBoxSelector;
+import mcc.locationprovider.StaticLocationProvider;
+import mcc.utils.Vector2f;
+import mcc.utils.Vector3d;
 import mcc.utils.Vector3i;
 import mcc.yml.MCCConfigSerializable;
 
@@ -249,10 +252,14 @@ public class HubDecisiondomeConfig implements MCCConfigSerializable {
 		return Optional.empty();
 	}
 
-	public Optional<String> addTeamboxFromSelector(AreaSelector selector) {
+	public Optional<String> addTeamboxFromSelector(TeamBoxSelector selector) {
 		var selectorResult = selector.build();
 
-		if (!this.worldName.equals(selectorResult.getA().getWorld().getName()) || !this.worldName.equals(selectorResult.getB().getWorld().getName())) {
+		if (
+			!this.worldName.equals(selectorResult.getA().getA().getWorld().getName()) ||
+			!this.worldName.equals(selectorResult.getA().getB().getWorld().getName()) ||
+			!this.worldName.equals(selectorResult.getB().getWorld().getName())
+		) {
 			return Optional.of("At least one corner is in a diffrent world than the decisiondome");
 		}
 
@@ -261,9 +268,15 @@ public class HubDecisiondomeConfig implements MCCConfigSerializable {
 		}
 
 		TeamBoxConfig teamboxConfig = new TeamBoxConfig();
-		teamboxConfig.setCornerA(toVector3i(selectorResult.getA()));
-		teamboxConfig.setCornerB(toVector3i(selectorResult.getB()));
-		teamboxConfig.setSpawnLocationProviderConfig(new LocationProviderConfig());
+		teamboxConfig.setCornerA(toVector3i(selectorResult.getA().getA()));
+		teamboxConfig.setCornerB(toVector3i(selectorResult.getA().getB()));
+
+		var locationProviderConfig = new LocationProviderConfig();
+		Location loc = selectorResult.getB();
+		Vector3d posVec = new Vector3d(loc.getX(), loc.getY(), loc.getZ());
+		Vector2f yawPitch = new Vector2f(loc.getYaw(), loc.getPitch());
+		locationProviderConfig.setProvider(new StaticLocationProvider(posVec, yawPitch));
+		teamboxConfig.setSpawnLocationProviderConfig(locationProviderConfig);
 		
 		TeamBoxConfig[] newBoxes = new TeamBoxConfig[this.teamBoxes.length + 1];
 		for (int i = 0; i < this.teamBoxes.length; i++) {
