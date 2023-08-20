@@ -5,11 +5,15 @@ import java.util.concurrent.TimeUnit;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
+import mcc.TestBluePrint;
 import mcc.event.Event;
 import mcc.game.map.Map;
+import mcc.game.map.blueprint.MapBlueprint;
 import mcc.scores.CoinScore;
 import mcc.timer.Timer;
 import mcc.timer.scripts.ScriptManager;
+import mcc.utils.Vector3d;
+import mcc.utils.Vector3i;
 
 public class BattleBox extends MCCGame<BattleBox.BattleBoxState, CoinScore, Integer> {
 
@@ -19,9 +23,9 @@ public class BattleBox extends MCCGame<BattleBox.BattleBoxState, CoinScore, Inte
             BattleBoxState.PREPARE_ROUND,
             event,
             TeamMatcher.ALL,
-            new Map("Flat Rainbow", null), // TODO:
-            new Location(Bukkit.getWorld("world"), 44, -56, 45, -25f, 20f),
-            null // TODO: What param?
+            new Map("Flat Rainbow", new TestBluePrint()), // TODO:
+            new Location(Bukkit.getWorld("world"), 0, 201, 0),
+            new Location(Bukkit.getWorld("world"), 0, 200, 0) // TODO: What param?
         );
     }
 

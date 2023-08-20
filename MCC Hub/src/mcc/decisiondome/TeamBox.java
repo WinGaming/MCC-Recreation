@@ -1,5 +1,7 @@
 package mcc.decisiondome;
 
+import java.util.Optional;
+
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -16,10 +18,10 @@ public class TeamBox {
     private LocationProvider locationProvider;
 
     /** The team instance */
-    private Team team;
+    private Optional<Team> team;
 
     public TeamBox(Team team, LocationProvider spawnLocationProvider, Vector3i cornerA, Vector3i cornerB) {
-        this.team = team;
+        this.team = Optional.ofNullable(team);
         this.locationProvider = spawnLocationProvider;
 
         this.cornerA = cornerA;
@@ -28,7 +30,9 @@ public class TeamBox {
 
     /** Teleports all players of the team into the box */
     public void teleportPlayers() {
-        for (Player player : this.team.getPlayers()) {
+        if (!this.team.isPresent()) return;
+
+        for (Player player : this.team.get().getPlayers()) {
             player.teleport(this.locationProvider.next(player.getWorld()));
         }
     }
