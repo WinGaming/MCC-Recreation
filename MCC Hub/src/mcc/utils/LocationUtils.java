@@ -1,8 +1,6 @@
-package mcc.yml.decisiondome;
+package mcc.utils;
 
 import org.bukkit.Location;
-
-import mcc.utils.Vector3i;
 
 public class LocationUtils {
     

@@ -1,6 +1,6 @@
 package mcc.yml.decisiondome;
 
-import static mcc.yml.decisiondome.LocationUtils.toVector3i;
+import static mcc.utils.LocationUtils.toVector3i;
 
 import java.util.ArrayList;
 import java.util.List;

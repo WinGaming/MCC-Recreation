@@ -14,7 +14,7 @@ import mcc.commands.MCCCommand;
 import mcc.config.ConfigBuilder;
 import mcc.event.Event;
 import mcc.utils.PlayerTagCache;
-import mcc.yml.decisiondome.FileConfig;
+import mcc.yml.FileConfig;
 import mcc.yml.decisiondome.HubDecisiondomeConfig;
 import mcc.yml.lobby.HubLobbyConfig;
 

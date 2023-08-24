@@ -38,9 +38,6 @@ public class LocationProviderConfig implements MCCConfigSerializable {
 
     @Override
     public void save(ConfigurationSection config) {
-        System.out.println(config);
-        System.out.println(provider);
-
         if (provider instanceof StaticLocationProvider) {
             StaticLocationProvider staticProvider = (StaticLocationProvider) provider;
             config.set("config.location.x", staticProvider.getOriginalLocation().getX());

@@ -1,4 +1,4 @@
-package mcc.yml.decisiondome;
+package mcc.yml;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -7,9 +7,6 @@ import java.io.InputStreamReader;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-
-import mcc.yml.Constants;
-import mcc.yml.MCCConfigSerializable;
 
 /**
  * This class represents the configuration implementing {@link MCCConfigSerializable}.

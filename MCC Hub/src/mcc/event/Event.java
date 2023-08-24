@@ -51,7 +51,7 @@ import mcc.timer.Timer;
 import mcc.timer.scripts.ScriptManager;
 import mcc.utils.Pair;
 import mcc.utils.Vector3d;
-import mcc.yml.decisiondome.FileConfig;
+import mcc.yml.FileConfig;
 import mcc.yml.decisiondome.HubDecisiondomeConfig;
 import mcc.yml.lobby.HubLobbyConfig;
 import net.minecraft.network.chat.IChatBaseComponent;

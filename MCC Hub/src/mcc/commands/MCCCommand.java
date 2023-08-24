@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 import mcc.MCC;
 import mcc.utils.Vector3d;
 import mcc.yml.ConfigValidation;
-import mcc.yml.decisiondome.FileConfig;
+import mcc.yml.FileConfig;
 import mcc.yml.decisiondome.HubDecisiondomeConfig;
 import mcc.yml.lobby.HubLobbyConfig;
 
