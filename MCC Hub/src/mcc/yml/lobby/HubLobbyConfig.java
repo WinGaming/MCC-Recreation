@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.bukkit.configuration.ConfigurationSection;
 
+import mcc.utils.Vector2f;
 import mcc.utils.Vector3d;
 import mcc.yml.MCCConfigSerializable;
 
@@ -12,6 +13,7 @@ public class HubLobbyConfig implements MCCConfigSerializable {
     private String worldName = "WORLD_NAME";
 
     private Optional<Vector3d> spawnLocation = Optional.empty();
+    private Optional<Vector2f> spawnRotation = Optional.empty();
 
     @Override
     public boolean load(ConfigurationSection config) throws IllegalArgumentException {
@@ -27,6 +29,10 @@ public class HubLobbyConfig implements MCCConfigSerializable {
             double y = config.getDouble("spawn.y");
             double z = config.getDouble("spawn.z");
             this.spawnLocation = Optional.of(new Vector3d(x, y, z));
+
+            float yaw = (float) config.getDouble("spawn.yaw");
+            float pitch = (float) config.getDouble("spawn.pitch");
+            this.spawnRotation = Optional.of(new Vector2f(yaw, pitch));
         }
 
         return valuesChanged;
@@ -54,5 +60,9 @@ public class HubLobbyConfig implements MCCConfigSerializable {
 
     public Optional<Vector3d> getSpawnLocation() {
         return spawnLocation;
+    }
+
+    public Optional<Vector2f> getSpawnRotation() {
+        return spawnRotation;
     }
 }

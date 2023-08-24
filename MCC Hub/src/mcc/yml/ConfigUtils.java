@@ -1,7 +1,6 @@
 package mcc.yml;
 
 import java.io.IOException;
-
 import org.bukkit.configuration.ConfigurationSection;
 
 import mcc.MCC;

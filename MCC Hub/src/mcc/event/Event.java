@@ -68,14 +68,6 @@ public class Event implements Listener {
         return teamManager;
     }
 
-    // @EventHandler
-    // public void iTemp(PlayerInteractEvent event) {
-    //     if (event.getItem().getType() == Material.EGG && event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-    //         new VoteEgg().onInteraction(event.getPlayer());
-    //         event.setCancelled(true);
-    //     }
-    // }
-
     public static Event fromStats(String eventId, EventStats stats) {
         Optional<List<PreparedTeam>> teams = stats.getTeamsForEvent(eventId);
         Optional<EventRecord> lastEvent = stats.getLastEventBefore(eventId);
@@ -326,6 +318,14 @@ public class Event implements Listener {
     //         voteChicken.setCustomName(egg.getCustomName());
     //         voteChicken.setCustomNameVisible(true);
 
+    //         event.setCancelled(true);
+    //     }
+    // }
+
+    // @EventHandler
+    // public void iTemp(PlayerInteractEvent event) {
+    //     if (event.getItem().getType() == Material.EGG && event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+    //         new VoteEgg().onInteraction(event.getPlayer());
     //         event.setCancelled(true);
     //     }
     // }
