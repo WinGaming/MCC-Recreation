@@ -5,13 +5,15 @@ import java.util.List;
 
 import org.bukkit.command.CommandSender;
 
+import mcc.MCC;
 import mcc.yml.decisiondome.HubDecisiondomeConfig;
 
 public class ConfigValidation {
     
-    public static List<String> validateDecisiondomeConfig(HubDecisiondomeConfig config) {
+    public static List<String> validateDecisiondomeConfig() {
 		List<String> errors = new ArrayList<>();
 
+		HubDecisiondomeConfig config = MCC.decisiondomeConfig.getConfigInstance();
 		if (config.getWorldName().equals("WORLD_NAME")) errors.add("world");
 		if (config.getFields().length < 2) errors.add("fields.amount");
 		if (config.getTeamBoxes().length < 2) errors.add("teamboxes.amount");

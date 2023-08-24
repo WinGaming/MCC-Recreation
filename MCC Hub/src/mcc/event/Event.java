@@ -15,26 +15,17 @@ import java.util.concurrent.TimeUnit;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
-import org.bukkit.entity.Chicken;
-import org.bukkit.entity.Egg;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
-import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import mcc.MCC;
 import mcc.decisiondome.DecisionDome;
 import mcc.decisiondome.DecisionDomeUtils;
-import mcc.decisiondome.items.VoteEgg;
 import mcc.decisiondome.selector.EntityFieldSelector;
 import mcc.display.CachedScoreboardTemplate;
 import mcc.display.ScoreboardPartProvider;
@@ -51,9 +42,6 @@ import mcc.timer.Timer;
 import mcc.timer.scripts.ScriptManager;
 import mcc.utils.Pair;
 import mcc.utils.Vector3d;
-import mcc.yml.FileConfig;
-import mcc.yml.decisiondome.HubDecisiondomeConfig;
-import mcc.yml.lobby.HubLobbyConfig;
 import net.minecraft.network.chat.IChatBaseComponent;
 import net.minecraft.network.protocol.game.PacketPlayOutPlayerListHeaderFooter;
 
@@ -80,15 +68,15 @@ public class Event implements Listener {
         return teamManager;
     }
 
-    @EventHandler
-    public void iTemp(PlayerInteractEvent event) {
-        if (event.getItem().getType() == Material.EGG && event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            new VoteEgg().onInteraction(event.getPlayer());
-            event.setCancelled(true);
-        }
-    }
+    // @EventHandler
+    // public void iTemp(PlayerInteractEvent event) {
+    //     if (event.getItem().getType() == Material.EGG && event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+    //         new VoteEgg().onInteraction(event.getPlayer());
+    //         event.setCancelled(true);
+    //     }
+    // }
 
-    public static Event fromStats(String eventId, EventStats stats, FileConfig<HubDecisiondomeConfig> config, FileConfig<HubLobbyConfig> lobbyConfig) {
+    public static Event fromStats(String eventId, EventStats stats) {
         Optional<List<PreparedTeam>> teams = stats.getTeamsForEvent(eventId);
         Optional<EventRecord> lastEvent = stats.getLastEventBefore(eventId);
 
@@ -96,18 +84,18 @@ public class Event implements Listener {
             throw new IllegalArgumentException("No teams found for event " + eventId);
         }
 
-        return new Event(eventId, lastEvent.isPresent() ? lastEvent.get().getEventId() : null, new TeamManager(teams.get()), config, lobbyConfig);
+        return new Event(eventId, lastEvent.isPresent() ? lastEvent.get().getEventId() : null, new TeamManager(teams.get()));
     }
 
-    private Event(String id, String lastEvent, TeamManager teamManager, FileConfig<HubDecisiondomeConfig> config, FileConfig<HubLobbyConfig> lobbyConfig) {
+    private Event(String id, String lastEvent, TeamManager teamManager) {
         this.eventId = id;
         this.lastEventId = lastEvent;
 
-        World world = Bukkit.getWorld(lobbyConfig.getConfigInstance().getWorldName());
+        World world = Bukkit.getWorld(MCC.lobbyConfig.getConfigInstance().getWorldName());
         if (world == null) {
-			throw new IllegalArgumentException("Failed to reload: Could not find world \"" + lobbyConfig.getConfigInstance().getWorldName() + "\"");
+			throw new IllegalArgumentException("Failed to reload: Could not find world \"" + MCC.lobbyConfig.getConfigInstance().getWorldName() + "\"");
 		}
-        Optional<Vector3d> spawnVector = lobbyConfig.getConfigInstance().getSpawnLocation();
+        Optional<Vector3d> spawnVector = MCC.lobbyConfig.getConfigInstance().getSpawnLocation();
         if (spawnVector.isEmpty()) {
             throw new IllegalArgumentException("Failed to reload: Spawn location not set");
         }
@@ -117,7 +105,7 @@ public class Event implements Listener {
 
         this.teamManager = teamManager;
         this.currentState = EventState.NOT_STARTED;
-        this.decisionDome = DecisionDomeUtils.loadFromConfig(this, config.getConfigInstance(), this.teamManager, new EntityFieldSelector());
+        this.decisionDome = DecisionDomeUtils.loadFromConfig(this, MCC.decisiondomeConfig.getConfigInstance(), this.teamManager, new EntityFieldSelector());
 
         this.lobbyTemplate = new CachedScoreboardTemplate(IChatBaseComponent.literal(YELLOW + "" + BOLD + "MC Championship Pride 22"), "lobby", new ScoreboardPartProvider[] {
             new SuppliedTimerScoreboardPartProvider(this::getTimerTitle, this::getTimer),
@@ -316,29 +304,29 @@ public class Event implements Listener {
         }
     }
 
-    @EventHandler
-    public void onEggBreak(CreatureSpawnEvent event) {
-        if (event.getSpawnReason() == SpawnReason.EGG) {
-            event.setCancelled(true);
-        }
-    }
+    // @EventHandler
+    // public void onEggBreak(CreatureSpawnEvent event) {
+    //     if (event.getSpawnReason() == SpawnReason.EGG) {
+    //         event.setCancelled(true);
+    //     }
+    // }
 
-    @EventHandler
-    public void onEggBreak(ProjectileHitEvent event) {
-        if (event.getEntityType() == EntityType.EGG) {
-            Egg egg = (Egg) event.getEntity();
-            egg.remove();
+    // @EventHandler
+    // public void onEggBreak(ProjectileHitEvent event) {
+    //     if (event.getEntityType() == EntityType.EGG) {
+    //         Egg egg = (Egg) event.getEntity();
+    //         egg.remove();
             
-            Location spawnLocation = egg.getLocation().clone().add(0, 0.5, 0);
-            Chicken voteChicken = (Chicken) egg.getWorld().spawnEntity(spawnLocation, EntityType.CHICKEN);
+    //         Location spawnLocation = egg.getLocation().clone().add(0, 0.5, 0);
+    //         Chicken voteChicken = (Chicken) egg.getWorld().spawnEntity(spawnLocation, EntityType.CHICKEN);
             
-            // TODO: Replace this with team color etc.
-            voteChicken.setAI(false);
-            voteChicken.setGravity(false);
-            voteChicken.setCustomName(egg.getCustomName());
-            voteChicken.setCustomNameVisible(true);
+    //         // TODO: Replace this with team color etc.
+    //         voteChicken.setAI(false);
+    //         voteChicken.setGravity(false);
+    //         voteChicken.setCustomName(egg.getCustomName());
+    //         voteChicken.setCustomNameVisible(true);
 
-            event.setCancelled(true);
-        }
-    }
+    //         event.setCancelled(true);
+    //     }
+    // }
 }

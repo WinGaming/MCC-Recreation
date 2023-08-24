@@ -1,7 +1,5 @@
 package mcc;
 
-import java.io.IOException;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,15 +14,21 @@ import mcc.event.Event;
 import mcc.utils.PlayerTagCache;
 import mcc.yml.FileConfig;
 import mcc.yml.decisiondome.HubDecisiondomeConfig;
+import mcc.yml.event.EventConfig;
 import mcc.yml.lobby.HubLobbyConfig;
+
+import static mcc.yml.ConfigUtils.loadConfig;
 
 public class MCC extends JavaPlugin implements Listener {
 	
-	private static boolean staticLoadError = false;
-	
-	public static void markStaticLoadError() {
-		MCC.staticLoadError = true;
-	}
+	// Static load error handling
+	private static boolean failedInitialization = false;
+	public static void markStaticLoadError() { MCC.failedInitialization = true; }
+
+	// Config instances
+	public static final FileConfig<HubDecisiondomeConfig> decisiondomeConfig = loadConfig("decisiondome", new HubDecisiondomeConfig());
+	public static final FileConfig<HubLobbyConfig> lobbyConfig = loadConfig("lobby", new HubLobbyConfig());
+	public static final FileConfig<EventConfig> eventConfig = loadConfig("event", new EventConfig());
 
 	// Event instances
 	private Event eventInstance;
@@ -32,35 +36,17 @@ public class MCC extends JavaPlugin implements Listener {
 	// final instances
 	private int schedulerId;
 	private ConfigBuilder configBuilder;
-	
-	// Config instances
-	private FileConfig<HubDecisiondomeConfig> decisiondomeConfig;
-	private FileConfig<HubLobbyConfig> lobbyConfig;
 
 	@Override
 	public void onEnable() {
-		if (staticLoadError) {
+		if (failedInitialization) {
 			throw new IllegalStateException("Unknown error occured while loading MCC. See error message above for more details");
 		}
 
 		this.configBuilder = new ConfigBuilder();
 		
-		try {
-			this.decisiondomeConfig = new FileConfig<HubDecisiondomeConfig>("decisiondome", new HubDecisiondomeConfig());
-			this.lobbyConfig = new FileConfig<HubLobbyConfig>("lobby", new HubLobbyConfig());
-		} catch (IOException e) {
-			System.err.println("Failed to load config-files! See error message for more details");
-			
-			e.printStackTrace();
-			
-			Bukkit.getPluginManager().disablePlugin(this);
-			Bukkit.getServer().shutdown();
-			
-			return;
-		}
-		
-		getCommand("decisiondome").setExecutor(new DecisionDomeCommand(this.configBuilder, this.decisiondomeConfig));
-		getCommand("mcc").setExecutor(new MCCCommand(this, this.decisiondomeConfig, this.lobbyConfig));
+		getCommand("decisiondome").setExecutor(new DecisionDomeCommand(this.configBuilder));
+		getCommand("mcc").setExecutor(new MCCCommand(this));
 		
 		getServer().getPluginManager().registerEvents(this.configBuilder, this);
 		getServer().getPluginManager().registerEvents(this, this);
@@ -74,7 +60,7 @@ public class MCC extends JavaPlugin implements Listener {
 	}
 
 	public void startEvent(String eventId) { // TODO: Return boolean state
-		this.eventInstance = Event.fromStats(eventId, new ExampleEventStats(), this.decisiondomeConfig, this.lobbyConfig); // TODO: Use real stats
+		this.eventInstance = Event.fromStats(eventId, new ExampleEventStats()); // TODO: Use real stats
 		getServer().getPluginManager().registerEvents(this.eventInstance, this);
 
 		for (Player player : getServer().getOnlinePlayers()) {

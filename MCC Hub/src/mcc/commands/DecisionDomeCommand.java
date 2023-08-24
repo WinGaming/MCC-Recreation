@@ -9,21 +9,18 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import mcc.MCC;
 import mcc.config.ConfigAction;
 import mcc.config.ConfigBuilder;
 import mcc.config.LocationListSelector;
 import mcc.config.TeamBoxSelector;
 import mcc.yml.ConfigValidation;
-import mcc.yml.FileConfig;
-import mcc.yml.decisiondome.HubDecisiondomeConfig;
 
 public class DecisionDomeCommand implements CommandExecutor {
 
-	private FileConfig<HubDecisiondomeConfig> config;
 	private ConfigBuilder configBuilder;
 
-	public DecisionDomeCommand(ConfigBuilder configBuilder, FileConfig<HubDecisiondomeConfig> config) {
-		this.config = config;
+	public DecisionDomeCommand(ConfigBuilder configBuilder) {
 		this.configBuilder = configBuilder;
 	}
 	
@@ -50,12 +47,12 @@ public class DecisionDomeCommand implements CommandExecutor {
 			} else if (args[1].equalsIgnoreCase("save")) {
 				var currentSelection = this.configBuilder.getCurrentSelection(player);
 				if (currentSelection.getA() == ConfigAction.DECISIONDOME_CREATE_FIELD) {
-					Optional<String> error = this.config.getConfigInstance().addFieldFromSelector((LocationListSelector) currentSelection.getB());
+					Optional<String> error = MCC.decisiondomeConfig.getConfigInstance().addFieldFromSelector((LocationListSelector) currentSelection.getB());
 					if (!error.isPresent()) {
 						sender.sendMessage("Field added to template");
 						this.configBuilder.cancelSelector(player);
 						
-						Bukkit.broadcastMessage(this.config.saveToFile(false).name());
+						Bukkit.broadcastMessage(MCC.decisiondomeConfig.saveToFile(false).name());
 					} else {
 						sender.sendMessage(error.get());
 					}
@@ -80,12 +77,12 @@ public class DecisionDomeCommand implements CommandExecutor {
 					sender.sendMessage("Next step");
 					return true;
 				} else if (currentSelection.getA() == ConfigAction.DECISIONDOME_CREATE_TEAMBOX) {
-					Optional<String> error = this.config.getConfigInstance().addTeamboxFromSelector((TeamBoxSelector) currentSelection.getB());
+					Optional<String> error = MCC.decisiondomeConfig.getConfigInstance().addTeamboxFromSelector((TeamBoxSelector) currentSelection.getB());
 					if (!error.isPresent()) {
 						sender.sendMessage("Teambox added to template");
 						this.configBuilder.cancelSelector(player);
 						
-						Bukkit.broadcastMessage(this.config.saveToFile(false).name());
+						Bukkit.broadcastMessage(MCC.decisiondomeConfig.saveToFile(false).name());
 					} else {
 						sender.sendMessage(error.get());
 					}
@@ -103,12 +100,12 @@ public class DecisionDomeCommand implements CommandExecutor {
 				if (args.length == 2) {
 					sender.sendMessage("/decisiondome config world <worldname>");
 				} else {
-					this.config.getConfigInstance().setWorldName(args[2]);
-					Bukkit.broadcastMessage(this.config.saveToFile(false).name());
+					MCC.decisiondomeConfig.getConfigInstance().setWorldName(args[2]);
+					Bukkit.broadcastMessage(MCC.decisiondomeConfig.saveToFile(false).name());
 					sender.sendMessage(String.format("Set world to \"%s\"", args[2]));
 				}
 			} else if (args[1].equalsIgnoreCase("validate")) {
-				ConfigValidation.sendConfigValidationResult(sender, ConfigValidation.validateDecisiondomeConfig(this.config.getConfigInstance()));
+				ConfigValidation.sendConfigValidationResult(sender, ConfigValidation.validateDecisiondomeConfig());
 			}
 		} else {
 			sender.sendMessage(String.format(ChatColor.RED + "Unknown sub-command \"%s\"", args[0]));

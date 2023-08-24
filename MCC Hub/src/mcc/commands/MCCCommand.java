@@ -11,19 +11,12 @@ import org.bukkit.entity.Player;
 import mcc.MCC;
 import mcc.utils.Vector3d;
 import mcc.yml.ConfigValidation;
-import mcc.yml.FileConfig;
-import mcc.yml.decisiondome.HubDecisiondomeConfig;
-import mcc.yml.lobby.HubLobbyConfig;
 
 public class MCCCommand implements CommandExecutor {
 
-    private FileConfig<HubDecisiondomeConfig> config;
-    private FileConfig<HubLobbyConfig> lobbyConfig;
     private MCC mccInstance;
 
-    public MCCCommand(MCC mcc, FileConfig<HubDecisiondomeConfig> config, FileConfig<HubLobbyConfig> lobbyConfig) {
-        this.config = config;
-        this.lobbyConfig = lobbyConfig;
+    public MCCCommand(MCC mcc) {
         this.mccInstance = mcc;
     }
 
@@ -41,7 +34,7 @@ public class MCCCommand implements CommandExecutor {
             sender.sendMessage("/mcc stop");
             sender.sendMessage("/mcc setSpawn");
         } else if (args[0].equalsIgnoreCase("start")) {
-            List<String> configErrors = ConfigValidation.validateDecisiondomeConfig(this.config.getConfigInstance());
+            List<String> configErrors = ConfigValidation.validateDecisiondomeConfig();
             if (configErrors.size() != 0) {
                 ConfigValidation.sendConfigValidationResult(sender, configErrors);
                 return true;
@@ -78,8 +71,8 @@ public class MCCCommand implements CommandExecutor {
             sender.sendMessage("Stopping MCC"); // TODO:
         } else if (args[0].equalsIgnoreCase("setSpawn")) {
             Location location = ((Player) sender).getLocation();
-            this.lobbyConfig.getConfigInstance().setSpawnLocation(new Vector3d(location.getX(), location.getY(), location.getZ()));
-            var result = this.lobbyConfig.saveToFile(false);
+            MCC.lobbyConfig.getConfigInstance().setSpawnLocation(new Vector3d(location.getX(), location.getY(), location.getZ()));
+            var result = MCC.lobbyConfig.saveToFile(false);
             sender.sendMessage("Saved lobby config to file: " + result);
         } else {
             sender.sendMessage("Unknown sub-command");
