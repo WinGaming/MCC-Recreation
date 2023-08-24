@@ -9,7 +9,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import mcc.config.AreaSelector;
 import mcc.config.ConfigAction;
 import mcc.config.ConfigBuilder;
 import mcc.config.LocationListSelector;

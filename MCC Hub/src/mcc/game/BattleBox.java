@@ -8,12 +8,9 @@ import org.bukkit.Location;
 import mcc.TestBluePrint;
 import mcc.event.Event;
 import mcc.game.map.Map;
-import mcc.game.map.blueprint.MapBlueprint;
 import mcc.scores.CoinScore;
 import mcc.timer.Timer;
 import mcc.timer.scripts.ScriptManager;
-import mcc.utils.Vector3d;
-import mcc.utils.Vector3i;
 
 public class BattleBox extends MCCGame<BattleBox.BattleBoxState, CoinScore, Integer> {
 

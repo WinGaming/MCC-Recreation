@@ -9,7 +9,6 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import mcc.utils.Vector3d;
 import mcc.utils.Vector3i;
 
 public class ParticleIndicator {

@@ -26,7 +26,7 @@ public abstract class MCCGame<GameState extends Enum<GameState>, T extends Score
     
     private String title;
 
-    private Event event;
+    // private Event event;
 
     private Timer timer;
 
@@ -49,7 +49,7 @@ public abstract class MCCGame<GameState extends Enum<GameState>, T extends Score
 
     public MCCGame(String title, GameState initGameState, Event event, TeamMatcher teamMatcher, Map map, Location lobbyLocation, Location mapCopyareaStart) {
         this.title = title;
-        this.event = event;
+        // this.event = event;
 
         this.mapCopyAreaStart = mapCopyareaStart;
 
@@ -175,10 +175,10 @@ public abstract class MCCGame<GameState extends Enum<GameState>, T extends Score
         return gameState;
     }
 
-    private void teleportPlayersIntoMaps() {
-        for (int i = 0; i < this.matches.get(this.currentRound).size(); i++) {
-        }
-    }
+    // private void teleportPlayersIntoMaps() {
+    //     for (int i = 0; i < this.matches.get(this.currentRound).size(); i++) {
+    //     }
+    // }
 
     public abstract void resetMapAt(Location mapStart, Map map);
 

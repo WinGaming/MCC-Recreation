@@ -1,7 +1,6 @@
 package mcc.commands;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.bukkit.Location;
 import org.bukkit.command.Command;

@@ -2,17 +2,15 @@ package mcc.decisiondome;
 
 import java.util.Optional;
 
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import mcc.locationprovider.LocationProvider;
 import mcc.teams.Team;
-import mcc.utils.Vector3d;
 import mcc.utils.Vector3i;
 
 public class TeamBox {
 
-    private Vector3i cornerA, cornerB;
+    // private Vector3i cornerA, cornerB;
     
     /** LocationProvider for spawn locations */
     private LocationProvider locationProvider;
@@ -24,8 +22,8 @@ public class TeamBox {
         this.team = Optional.ofNullable(team);
         this.locationProvider = spawnLocationProvider;
 
-        this.cornerA = cornerA;
-        this.cornerB = cornerB;
+        // this.cornerA = cornerA;
+        // this.cornerB = cornerB;
     }
 
     /** Teleports all players of the team into the box */
