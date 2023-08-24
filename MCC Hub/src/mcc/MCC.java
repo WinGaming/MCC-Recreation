@@ -1,5 +1,7 @@
 package mcc;
 
+import static mcc.yml.ConfigUtils.loadConfig;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,8 +18,6 @@ import mcc.yml.FileConfig;
 import mcc.yml.decisiondome.HubDecisiondomeConfig;
 import mcc.yml.event.EventConfig;
 import mcc.yml.lobby.HubLobbyConfig;
-
-import static mcc.yml.ConfigUtils.loadConfig;
 
 public class MCC extends JavaPlugin implements Listener {
 	
@@ -79,10 +79,6 @@ public class MCC extends JavaPlugin implements Listener {
 		}
 		
 		this.configBuilder.tick();
-	}
-	
-	public ConfigBuilder getConfigBuilder() {
-		return configBuilder;
 	}
 
 	public Event getEventInstance() {
