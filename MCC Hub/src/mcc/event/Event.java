@@ -46,9 +46,6 @@ import net.minecraft.network.protocol.game.PacketPlayOutPlayerListHeaderFooter;
 
 public class Event implements Listener {
     
-    private Timer lobbyTimer;
-    private EventState currentState;
-    
 	private final String eventId;
 	private final String lastEventId;
     
@@ -58,6 +55,8 @@ public class Event implements Listener {
     
     private final CachedScoreboardTemplate lobbyTemplate;
 
+    private Timer lobbyTimer;
+    private EventState currentState;
     private Location spawnLocation;
 
     // TODO: THis is just temp
@@ -89,7 +88,6 @@ public class Event implements Listener {
         
         this.spawnLocation = ConfigInstanceUtils.instantiateHubSpawnLocation();
         this.decisionDome = DecisionDomeUtils.loadFromConfig(this, this.teamManager, new EntityFieldSelector());
-
         this.lobbyTemplate = new CachedScoreboardTemplate(title, "lobby", MCC.eventConfig.getConfigInstance().getLobbyDisplay().getScoreboardParts(this));
     }
 
