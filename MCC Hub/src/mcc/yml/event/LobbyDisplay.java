@@ -27,6 +27,7 @@ public class LobbyDisplay implements MCCConfigSerializable {
             this.scoreboardParts.add(new Pair<>("eventTimer", new YamlConfiguration()));
             this.scoreboardParts.add(new Pair<>("teamPlayerCount", new YamlConfiguration()));
             this.scoreboardParts.add(new Pair<>("team", new YamlConfiguration()));
+            this.scoreboardParts.add(new Pair<>("tempCoins", new YamlConfiguration()));
             valuesChanged = true;
         } else {
             this.scoreboardParts = new ArrayList<>();

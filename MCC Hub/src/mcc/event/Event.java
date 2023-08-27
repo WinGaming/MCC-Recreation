@@ -91,23 +91,21 @@ public class Event implements Listener {
         this.decisionDome = DecisionDomeUtils.loadFromConfig(this, this.teamManager, new EntityFieldSelector());
 
         this.lobbyTemplate = new CachedScoreboardTemplate(title, "lobby", MCC.eventConfig.getConfigInstance().getLobbyDisplay().getScoreboardParts(this));
-        // this.lobbyTemplate = new CachedScoreboardTemplate(title, "lobby", new ScoreboardPartProvider[] {
-        //     new SuppliedTimerScoreboardPartProvider(this::getTimerTitle, this::getTimer),
-        //     new TeamsPlayerCountScoreboardPartProvider(this.teamManager),
-        //     new TeamScoreboardPartProvider(this.teamManager),
-		// 	(uuid) -> {
-		// 		String eventCoinsString;
-		// 		if (this.currentState == EventState.NOT_STARTED) {
-		// 			eventCoinsString = GREEN + "" + BOLD + "Last Event Coins: " + RESET + "" + getEventCoins(this.getPreviousEventId(), uuid) + "~";
-		// 		} else {
-		// 			eventCoinsString = GREEN + "" + BOLD + "Event Coins: " + RESET + "" + getEventCoins(this.getId(), uuid) + "~";
-		// 		}
+    }
 
-		// 		String lifetimeString = GREEN + "" + BOLD + "Lifetime Coins: " + RESET + getLifetimeCoins(uuid) + "~";
+    public ScoreboardPartProvider getTempCoinsProvider() {
+        return (uuid) -> {
+            String eventCoinsString;
+            if (this.currentState == EventState.NOT_STARTED) {
+                eventCoinsString = GREEN + "" + BOLD + "Last Event Coins: " + RESET + "" + getEventCoins(this.getPreviousEventId(), uuid) + "~";
+            } else {
+                eventCoinsString = GREEN + "" + BOLD + "Event Coins: " + RESET + "" + getEventCoins(this.getId(), uuid) + "~";
+            }
 
-		// 		return new Pair<>(new String[] { eventCoinsString, lifetimeString }, System.currentTimeMillis());
-		// 	},
-        // });
+            String lifetimeString = GREEN + "" + BOLD + "Lifetime Coins: " + RESET + getLifetimeCoins(uuid) + "~";
+
+            return new Pair<>(new String[] { eventCoinsString, lifetimeString }, System.currentTimeMillis());
+        };
     }
 
     public void switchToGame() {

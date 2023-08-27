@@ -27,6 +27,9 @@ public class ScoreboardPartsParser {
         scoreboardPartProviderParsers.put("team", (event, config) -> {
             return new TeamScoreboardPartProvider(event.getTeamManager());
         });
+        scoreboardPartProviderParsers.put("tempCoins", (event, config) -> {
+            return event.getTempCoinsProvider();
+        });
     }
 
     public static ScoreboardPartProvider parseScoreboardPartProvider(String id, Event event, ConfigurationSection section) {
