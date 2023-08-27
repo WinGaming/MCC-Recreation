@@ -15,7 +15,6 @@ import java.util.concurrent.TimeUnit;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -41,7 +40,7 @@ import mcc.timer.EmptyTimer;
 import mcc.timer.Timer;
 import mcc.timer.scripts.ScriptManager;
 import mcc.utils.Pair;
-import mcc.utils.Vector3d;
+import mcc.yml.ConfigInstanceUtils;
 import net.minecraft.network.chat.IChatBaseComponent;
 import net.minecraft.network.protocol.game.PacketPlayOutPlayerListHeaderFooter;
 
@@ -76,46 +75,39 @@ public class Event implements Listener {
             throw new IllegalArgumentException("No teams found for event " + eventId);
         }
 
-        return new Event(eventId, lastEvent.isPresent() ? lastEvent.get().getEventId() : null, new TeamManager(teams.get()));
+        // {"text":"MC Championship Pride 22","color":"yellow","bold":true}
+        return new Event(eventId, lastEvent.isPresent() ? lastEvent.get().getEventId() : null, new TeamManager(teams.get()), IChatBaseComponent.literal(YELLOW + "" + BOLD + "MC Championship Pride 22"));
     }
 
-    private Event(String id, String lastEvent, TeamManager teamManager) {
+    private Event(String id, String lastEvent, TeamManager teamManager, IChatBaseComponent title) {
         this.eventId = id;
         this.lastEventId = lastEvent;
-
-        World world = Bukkit.getWorld(MCC.lobbyConfig.getConfigInstance().getWorldName());
-        if (world == null) {
-			throw new IllegalArgumentException("Failed to reload: Could not find world \"" + MCC.lobbyConfig.getConfigInstance().getWorldName() + "\"");
-		}
-        Optional<Vector3d> spawnVector = MCC.lobbyConfig.getConfigInstance().getSpawnLocation();
-        if (spawnVector.isEmpty()) {
-            throw new IllegalArgumentException("Failed to reload: Spawn location not set");
-        }
-        this.spawnLocation = new Location(world, spawnVector.get().getX(), spawnVector.get().getY(), spawnVector.get().getZ()); // TODO: Yaw and pitch
-        
-        this.gameTask = new GameTask();
-
         this.teamManager = teamManager;
+
+        this.gameTask = new GameTask();
         this.currentState = EventState.NOT_STARTED;
-        this.decisionDome = DecisionDomeUtils.loadFromConfig(this, MCC.decisiondomeConfig.getConfigInstance(), this.teamManager, new EntityFieldSelector());
+        
+        this.spawnLocation = ConfigInstanceUtils.instantiateHubSpawnLocation();
+        this.decisionDome = DecisionDomeUtils.loadFromConfig(this, this.teamManager, new EntityFieldSelector());
 
-        this.lobbyTemplate = new CachedScoreboardTemplate(IChatBaseComponent.literal(YELLOW + "" + BOLD + "MC Championship Pride 22"), "lobby", new ScoreboardPartProvider[] {
-            new SuppliedTimerScoreboardPartProvider(this::getTimerTitle, this::getTimer),
-            new TeamsPlayerCountScoreboardPartProvider(this.teamManager),
-            new TeamScoreboardPartProvider(this.teamManager),
-			(uuid) -> {
-				String eventCoinsString;
-				if (this.currentState == EventState.NOT_STARTED) {
-					eventCoinsString = GREEN + "" + BOLD + "Last Event Coins: " + RESET + "" + getEventCoins(this.getPreviousEventId(), uuid) + "~";
-				} else {
-					eventCoinsString = GREEN + "" + BOLD + "Event Coins: " + RESET + "" + getEventCoins(this.getId(), uuid) + "~";
-				}
+        this.lobbyTemplate = new CachedScoreboardTemplate(title, "lobby", MCC.eventConfig.getConfigInstance().getLobbyDisplay().getScoreboardParts(this));
+        // this.lobbyTemplate = new CachedScoreboardTemplate(title, "lobby", new ScoreboardPartProvider[] {
+        //     new SuppliedTimerScoreboardPartProvider(this::getTimerTitle, this::getTimer),
+        //     new TeamsPlayerCountScoreboardPartProvider(this.teamManager),
+        //     new TeamScoreboardPartProvider(this.teamManager),
+		// 	(uuid) -> {
+		// 		String eventCoinsString;
+		// 		if (this.currentState == EventState.NOT_STARTED) {
+		// 			eventCoinsString = GREEN + "" + BOLD + "Last Event Coins: " + RESET + "" + getEventCoins(this.getPreviousEventId(), uuid) + "~";
+		// 		} else {
+		// 			eventCoinsString = GREEN + "" + BOLD + "Event Coins: " + RESET + "" + getEventCoins(this.getId(), uuid) + "~";
+		// 		}
 
-				String lifetimeString = GREEN + "" + BOLD + "Lifetime Coins: " + RESET + getLifetimeCoins(uuid) + "~";
+		// 		String lifetimeString = GREEN + "" + BOLD + "Lifetime Coins: " + RESET + getLifetimeCoins(uuid) + "~";
 
-				return new Pair<>(new String[] { eventCoinsString, lifetimeString }, System.currentTimeMillis());
-			},
-        });
+		// 		return new Pair<>(new String[] { eventCoinsString, lifetimeString }, System.currentTimeMillis());
+		// 	},
+        // });
     }
 
     public void switchToGame() {
@@ -265,7 +257,7 @@ public class Event implements Listener {
         return lastEventId;
     }
 
-    private String getTimerTitle() {
+    public String getTimerTitle() {
         switch (this.currentState) {
             case NOT_STARTED:
             case STARTING:
@@ -282,7 +274,7 @@ public class Event implements Listener {
         }
     }
 
-    private Timer getTimer() {
+    public Timer getTimer() {
         switch (this.currentState) {
             case NOT_STARTED:
             case STARTING: 

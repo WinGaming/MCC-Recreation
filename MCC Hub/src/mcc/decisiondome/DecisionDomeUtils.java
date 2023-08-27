@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 
+import mcc.MCC;
 import mcc.decisiondome.DecisionField.DecisionFieldState;
 import mcc.decisiondome.selector.FieldSelector;
 import mcc.event.Event;
@@ -18,7 +19,8 @@ import mcc.yml.decisiondome.TeamBoxConfig;
 
 public class DecisionDomeUtils {
 
-	public static DecisionDome loadFromConfig(Event event, HubDecisiondomeConfig config, TeamManager teamManager, FieldSelector fieldSelector) throws IllegalArgumentException {
+	public static DecisionDome loadFromConfig(Event event, TeamManager teamManager, FieldSelector fieldSelector) throws IllegalArgumentException {
+		HubDecisiondomeConfig config = MCC.decisiondomeConfig.getConfigInstance();
 		World world = Bukkit.getWorld(config.getWorldName());
 		
 		if (world == null) {
