@@ -66,19 +66,7 @@ public class Event implements Listener {
         return teamManager;
     }
 
-    public static Event fromStats(String eventId, EventStats stats) {
-        Optional<List<PreparedTeam>> teams = stats.getTeamsForEvent(eventId);
-        Optional<EventRecord> lastEvent = stats.getLastEventBefore(eventId);
-
-        if (teams.isEmpty()) {
-            throw new IllegalArgumentException("No teams found for event " + eventId);
-        }
-
-        // {"text":"MC Championship Pride 22","color":"yellow","bold":true}
-        return new Event(eventId, lastEvent.isPresent() ? lastEvent.get().getEventId() : null, new TeamManager(teams.get()), IChatBaseComponent.literal(YELLOW + "" + BOLD + "MC Championship Pride 22"));
-    }
-
-    private Event(String id, String lastEvent, TeamManager teamManager, IChatBaseComponent title) {
+    protected Event(String id, String lastEvent, TeamManager teamManager, IChatBaseComponent title) {
         this.eventId = id;
         this.lastEventId = lastEvent;
         this.teamManager = teamManager;
@@ -283,38 +271,4 @@ public class Event implements Listener {
                 return null;
         }
     }
-
-    // @EventHandler
-    // public void onEggBreak(CreatureSpawnEvent event) {
-    //     if (event.getSpawnReason() == SpawnReason.EGG) {
-    //         event.setCancelled(true);
-    //     }
-    // }
-
-    // @EventHandler
-    // public void onEggBreak(ProjectileHitEvent event) {
-    //     if (event.getEntityType() == EntityType.EGG) {
-    //         Egg egg = (Egg) event.getEntity();
-    //         egg.remove();
-            
-    //         Location spawnLocation = egg.getLocation().clone().add(0, 0.5, 0);
-    //         Chicken voteChicken = (Chicken) egg.getWorld().spawnEntity(spawnLocation, EntityType.CHICKEN);
-            
-    //         // TODO: Replace this with team color etc.
-    //         voteChicken.setAI(false);
-    //         voteChicken.setGravity(false);
-    //         voteChicken.setCustomName(egg.getCustomName());
-    //         voteChicken.setCustomNameVisible(true);
-
-    //         event.setCancelled(true);
-    //     }
-    // }
-
-    // @EventHandler
-    // public void iTemp(PlayerInteractEvent event) {
-    //     if (event.getItem().getType() == Material.EGG && event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-    //         new VoteEgg().onInteraction(event.getPlayer());
-    //         event.setCancelled(true);
-    //     }
-    // }
 }

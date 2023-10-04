@@ -13,6 +13,7 @@ import mcc.commands.DecisionDomeCommand;
 import mcc.commands.MCCCommand;
 import mcc.config.ConfigBuilder;
 import mcc.event.Event;
+import mcc.event.EventFactory;
 import mcc.utils.PlayerTagCache;
 import mcc.yml.FileConfig;
 import mcc.yml.decisiondome.HubDecisiondomeConfig;
@@ -60,7 +61,7 @@ public class MCC extends JavaPlugin implements Listener {
 	}
 
 	public void startEvent(String eventId) { // TODO: Return boolean state
-		this.eventInstance = Event.fromStats(eventId, new ExampleEventStats()); // TODO: Use real stats
+		this.eventInstance = EventFactory.fromStats(eventId, new ExampleEventStats()); // TODO: Use real stats
 		getServer().getPluginManager().registerEvents(this.eventInstance, this);
 
 		for (Player player : getServer().getOnlinePlayers()) {
