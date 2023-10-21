@@ -83,9 +83,9 @@ public class Event implements Listener {
         return (uuid) -> {
             String eventCoinsString;
             if (this.currentState == EventState.NOT_STARTED) {
-                eventCoinsString = GREEN + "" + BOLD + "Last Event Coins: " + RESET + "" + getEventCoins(this.getPreviousEventId(), uuid) + "~";
+                eventCoinsString = GREEN + "" + BOLD + "Last Event Coins: " + RESET + getEventCoins(this.getPreviousEventId(), uuid) + "~";
             } else {
-                eventCoinsString = GREEN + "" + BOLD + "Event Coins: " + RESET + "" + getEventCoins(this.getId(), uuid) + "~";
+                eventCoinsString = GREEN + "" + BOLD + "Event Coins: " + RESET + getEventCoins(this.getId(), uuid) + "~";
             }
 
             String lifetimeString = GREEN + "" + BOLD + "Lifetime Coins: " + RESET + getLifetimeCoins(uuid) + "~";
