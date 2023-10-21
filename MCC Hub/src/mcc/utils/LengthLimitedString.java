@@ -85,7 +85,7 @@ public class LengthLimitedString {
 //         this.maxLength = maxLength;
 //     }
 
-//     public void addText(String text, int length) {
+//     public none addText(String text, int length) {
 //         if (length < text.length()) throw new IllegalArgumentException("The min-length of the text is greater than the length of the string.");
 //         this.texts.add(new Pair<>(text, length));
 //     }

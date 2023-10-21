@@ -175,7 +175,7 @@ public abstract class MCCGame<GameState extends Enum<GameState>, T extends Score
         return gameState;
     }
 
-    // private void teleportPlayersIntoMaps() {
+    // private none teleportPlayersIntoMaps() {
     //     for (int i = 0; i < this.matches.get(this.currentRound).size(); i++) {
     //     }
     // }
