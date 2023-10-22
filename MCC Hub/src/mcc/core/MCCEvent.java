@@ -32,6 +32,7 @@ public class MCCEvent {
      */
     public void tick(long now) {
         this.container.tick(now);
+        this.currentChapter.tick(now);
     }
 
     /**

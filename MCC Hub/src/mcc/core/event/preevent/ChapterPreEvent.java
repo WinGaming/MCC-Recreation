@@ -1,12 +1,16 @@
 package mcc.core.event.preevent;
 
+import mcc.core.EventChapterState;
+import mcc.core.EventChapterStateFactory;
 import mcc.core.event.EventChapter;
 
-public class ChapterPreEvent extends EventChapter {
+public class ChapterPreEvent extends EventChapter<ChapterPreEvent.ChapterPreEventStates> {
 
-    private ChapterPreEventStates currentState;
+    public ChapterPreEvent() {
+        super(ChapterPreEventStates.WAITING);
+    }
 
-    public enum ChapterPreEventStates {
+    public enum ChapterPreEventStates implements EventChapterStateFactory<ChapterPreEventStates> {
 
         /** The event is starting, giving everyone time to prepare */
         WAITING,
@@ -15,6 +19,11 @@ public class ChapterPreEvent extends EventChapter {
         CHECKING_READINESS,
 
         /** The countdown to the start of the event */
-        EVENT_COUNTDOWN
+        EVENT_COUNTDOWN;
+
+        @Override
+        public EventChapterState<ChapterPreEventStates> create() {
+            return null; // TODO: Implement (most likely using Class::new)
+        }
     }
 }

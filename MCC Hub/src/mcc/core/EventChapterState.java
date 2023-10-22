@@ -2,20 +2,22 @@ package mcc.core;
 
 import mcc.core.event.EventChapter;
 
-public abstract class EventChapterState<Chapter extends EventChapter> {
+import java.util.Optional;
 
-    private Chapter chapter;
-
-    public EventChapterState(Chapter chapter) {
-        this.chapter = chapter;
-    }
+public abstract class EventChapterState<StateEnum extends Enum<StateEnum>> {
 
     /**
      * Called when the state gets created.
      */
     public void init() {}
 
-    public abstract boolean tick(long now);
+    /**
+     * Called when the state gets ticked.
+     * @param now The current time in milliseconds
+     * @return The next state, if should be changed
+     */
+    public abstract Optional<StateEnum> tick(long now); // TODO: Allow switching to different chapter
+    // Maybe using the destroy method?
 
     /**
      * Called when the state gets destroyed.
