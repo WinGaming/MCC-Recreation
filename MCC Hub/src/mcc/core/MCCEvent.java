@@ -18,32 +18,43 @@ public class MCCEvent {
     // Accessories, etc. are stored here
     // Basically anything that must be saved between chapters
 
+    private final ComponentContainer container;
+
     private EventChapter currentChapter;
-    private ComponentContainer container;
 
     public MCCEvent() {
         this.container = new ComponentContainer();
-
-        // this.container.addComponent(new TestComponent());
     }
 
+    /**
+     * Updates all elements of the event.
+     * @param now The current time in milliseconds
+     */
     public void tick(long now) {
         this.container.tick(now);
     }
 
+    /**
+     * Switches to the given chapter.
+     * @param chapter The chapter to switch to
+     */
     public void setCurrentChapter(EventChapter chapter) {
         if (this.currentChapter != null) {
+            this.container.clear(); // TODO: Just filter out the components that are not needed anymore
             this.currentChapter.destroy();
         }
 
         this.currentChapter = chapter;
+        this.currentChapter.init();
+        this.container.addAll(chapter.createComponents());
     }
 
+    /**
+     * Cleans up the event and destroys all components.
+     */
     public void destroy() {
         this.container.destroy();
     }
 
     // TODO: Load components from config
-    // TODO: Store ComponentContainer somwhow next to the EventChapter instance
-
 }

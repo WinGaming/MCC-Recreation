@@ -19,9 +19,20 @@ public class ComponentContainer {
         component.init();
     }
 
+    public void addAll(Component ... components) {
+        for (Component component : components) {
+            this.addComponent(component);
+        }
+    }
+
     public void removeComponent(Component component) {
         this.components.remove(component);
         component.destroy();
+    }
+
+    public void clear() {
+        this.components.forEach(Component::destroy);
+        this.components.clear();
     }
 
     public void tick(long now) {
