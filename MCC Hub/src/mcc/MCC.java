@@ -40,6 +40,8 @@ public class MCC extends JavaPlugin implements Listener {
 
 	@Override
 	public void onEnable() {
+		System.out.println("Started MCC");
+
 		if (failedInitialization) {
 			throw new IllegalStateException("Unknown error occured while loading MCC. See error message above for more details");
 		}

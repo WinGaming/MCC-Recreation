@@ -6,7 +6,7 @@ package mcc.core;
 public interface Component {
 
     /**
-     * Called when the container is created.
+     * Called when the component is created.
      */
     default void init() {}
 
@@ -17,8 +17,7 @@ public interface Component {
     default void tick(long now) {}
 
     /**
-     * Called when the container is destroyed.
+     * Called when the component is destroyed.
      */
     default void destroy() {}
-
 }
