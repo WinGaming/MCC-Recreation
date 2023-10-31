@@ -1,4 +1,4 @@
-package mcc.core.event.preevent;
+package mcc.core.components;
 
 import mcc.core.components.ComponentScoreboard;
 import mcc.display.CachedScoreboardTemplate;

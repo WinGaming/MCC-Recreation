@@ -1,13 +1,7 @@
 package mcc.core;
 
-import mcc.core.components.TestComponent;
 import mcc.core.event.EventChapter;
-import mcc.indicator.ParticleIndicator;
-import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-
-import java.util.List;
+import mcc.core.team.TeamManager;
 
 /**
  * This class represents the current event.
@@ -15,14 +9,26 @@ import java.util.List;
  */
 public class MCCEvent {
 
+    private static MCCEvent INSTANCE;
+
+    public static MCCEvent getInstance() {
+        return INSTANCE;
+    }
+
     // Accessories, etc. are stored here
     // Basically anything that must be saved between chapters
 
+    private TeamManager teamManager;
+
     private final ComponentContainer container;
 
-    private EventChapter currentChapter;
+    private EventChapter<?> currentChapter;
 
     public MCCEvent() {
+        if (INSTANCE != null) throw new IllegalStateException("MCCEvent already initialized");
+
+        INSTANCE = this;
+
         this.container = new ComponentContainer();
     }
 
@@ -39,7 +45,7 @@ public class MCCEvent {
      * Switches to the given chapter.
      * @param chapter The chapter to switch to
      */
-    public void setCurrentChapter(EventChapter chapter) {
+    public void setCurrentChapter(EventChapter<?> chapter) {
         if (this.currentChapter != null) {
             this.container.clear(); // TODO: Just filter out the components that are not needed anymore
             this.currentChapter.destroy();
@@ -58,4 +64,12 @@ public class MCCEvent {
     }
 
     // TODO: Load components from config
+
+    /**
+     * Returns the team manager.
+     * @return The team manager
+     */
+    public TeamManager getTeamManager() {
+        return teamManager;
+    }
 }

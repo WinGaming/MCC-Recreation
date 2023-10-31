@@ -18,6 +18,9 @@ public class CoreTest extends JavaPlugin {
         this.event = new MCCEvent();
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> this.event.tick(System.currentTimeMillis()), 1, 0);
+
+        // Action on command:
+        // () -> this.event.setCurrentChapter(...);
     }
 
     @Override

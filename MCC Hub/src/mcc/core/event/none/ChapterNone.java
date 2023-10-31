@@ -5,8 +5,10 @@ import mcc.core.event.EventChapter;
 /**
  * This chapter represents no active event or any other acitve state.
  */
-public class ChapterNone extends EventChapter {
+public class ChapterNone extends EventChapter<ChapterNoneState> {
 
 
-
+    public ChapterNone(ChapterNoneState initialState) {
+        super(initialState);
+    }
 }
