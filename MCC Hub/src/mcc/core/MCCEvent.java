@@ -1,5 +1,6 @@
 package mcc.core;
 
+import mcc.core.components.global.ChatComponent;
 import mcc.core.event.EventChapter;
 import mcc.core.team.TeamManager;
 
@@ -18,7 +19,7 @@ public class MCCEvent {
     // Accessories, etc. are stored here
     // Basically anything that must be saved between chapters
 
-    private TeamManager teamManager;
+    private TeamManager teamManager = new TeamManager();
 
     private final ComponentContainer chapterComponents;
 
@@ -30,6 +31,7 @@ public class MCCEvent {
         INSTANCE = this;
 
         this.chapterComponents = new ComponentContainer();
+        this.chapterComponents.addComponent(new ChatComponent(new BukkitConnector()));
     }
 
     /**

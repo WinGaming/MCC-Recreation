@@ -1,18 +1,17 @@
 package mcc.core;
 
-import mcc.indicator.ParticleIndicator;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Arrays;
-import java.util.List;
-
 public class CoreTest extends JavaPlugin {
+
+    public static CoreTest TEMP_INSTANCE;
 
     private MCCEvent event;
     @Override
     public void onEnable() {
+        TEMP_INSTANCE = this;
+
         System.out.println("Started CoreTest");
 
         this.event = new MCCEvent();

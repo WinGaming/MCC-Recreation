@@ -11,4 +11,12 @@ public class Team {
     public List<EventPlayer> getPlayers() {
         return players;
     }
+
+    public char getTeamSymbol() {
+        return '#';
+    }
+
+    public String getTeamHexColor() {
+        return "#FA3A7F";
+    }
 }
