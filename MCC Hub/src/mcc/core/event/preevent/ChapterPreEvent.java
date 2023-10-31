@@ -11,6 +11,8 @@ public class ChapterPreEvent extends EventChapter<ChapterPreEventState> {
 
     @Override
     public Component[] createComponents() {
-        return new Component[] {}; // TODO:
+        return new Component[] {
+
+        }; // TODO: Load from config?
     }
 }
