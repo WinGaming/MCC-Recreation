@@ -1,6 +1,6 @@
 package mcc.core.event.preevent;
 
-import mcc.core.EventChapterState;
+import mcc.core.event.EventChapterState;
 
 import java.util.Optional;
 

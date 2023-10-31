@@ -1,8 +1,6 @@
 package mcc.core.event;
 
 import mcc.core.Component;
-import mcc.core.EventChapterState;
-import mcc.core.EventChapterStateFactory;
 
 import java.util.Optional;
 

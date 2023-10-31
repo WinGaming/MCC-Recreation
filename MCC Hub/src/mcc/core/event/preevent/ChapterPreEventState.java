@@ -1,7 +1,7 @@
 package mcc.core.event.preevent;
 
-import mcc.core.EventChapterState;
-import mcc.core.EventChapterStateFactory;
+import mcc.core.event.EventChapterState;
+import mcc.core.event.EventChapterStateFactory;
 
 import java.util.function.Supplier;
 

@@ -1,4 +1,4 @@
-package mcc.core;
+package mcc.core.event;
 
 import mcc.core.event.EventChapter;
 

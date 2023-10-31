@@ -20,7 +20,7 @@ public class MCCEvent {
 
     private TeamManager teamManager;
 
-    private final ComponentContainer container;
+    private final ComponentContainer chapterComponents;
 
     private EventChapter<?> currentChapter;
 
@@ -29,7 +29,7 @@ public class MCCEvent {
 
         INSTANCE = this;
 
-        this.container = new ComponentContainer();
+        this.chapterComponents = new ComponentContainer();
     }
 
     /**
@@ -37,8 +37,11 @@ public class MCCEvent {
      * @param now The current time in milliseconds
      */
     public void tick(long now) {
-        this.container.tick(now);
-        this.currentChapter.tick(now);
+        this.chapterComponents.tick(now);
+
+        if (this.currentChapter != null) {
+            this.currentChapter.tick(now);
+        }
     }
 
     /**
@@ -47,20 +50,20 @@ public class MCCEvent {
      */
     public void setCurrentChapter(EventChapter<?> chapter) {
         if (this.currentChapter != null) {
-            this.container.clear(); // TODO: Just filter out the components that are not needed anymore
+            this.chapterComponents.clear(); // TODO: Just filter out the components that are not needed anymore
             this.currentChapter.destroy();
         }
 
         this.currentChapter = chapter;
         this.currentChapter.init();
-        this.container.addAll(chapter.createComponents());
+        this.chapterComponents.addAll(chapter.createComponents());
     }
 
     /**
      * Cleans up the event and destroys all components.
      */
     public void destroy() {
-        this.container.destroy();
+        this.chapterComponents.destroy();
     }
 
     // TODO: Load components from config
