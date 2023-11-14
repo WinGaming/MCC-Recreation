@@ -14,7 +14,7 @@ public class CoreTest extends JavaPlugin {
 
         System.out.println("Started CoreTest");
 
-        this.event = new MCCEvent();
+        this.event = new MCCEvent(this);
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> this.event.tick(System.currentTimeMillis()), 1, 0);
 

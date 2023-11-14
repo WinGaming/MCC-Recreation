@@ -6,7 +6,7 @@ import org.bukkit.Bukkit;
 
 public class ComponentScoreboard implements Component {
 
-    private CachedScoreboardTemplate template;
+    private final CachedScoreboardTemplate template;
 
     public ComponentScoreboard(CachedScoreboardTemplate template) {
         this.template = template;
@@ -14,11 +14,11 @@ public class ComponentScoreboard implements Component {
 
     @Override
     public void init() {
-        Bukkit.getServer().getOnlinePlayers().forEach(player -> this.template.show(player));
+        Bukkit.getServer().getOnlinePlayers().forEach(this.template::show);
     }
 
     @Override
     public void destroy() {
-        Bukkit.getServer().getOnlinePlayers().forEach(player -> this.template.hide(player));
+        Bukkit.getServer().getOnlinePlayers().forEach(this.template::hide);
     }
 }

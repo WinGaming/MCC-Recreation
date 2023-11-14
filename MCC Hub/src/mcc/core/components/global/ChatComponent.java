@@ -2,14 +2,12 @@ package mcc.core.components.global;
 
 import mcc.core.BukkitConnector;
 import mcc.core.Component;
-import mcc.core.CoreTest;
 import mcc.core.MCCEvent;
 import mcc.core.players.EventPlayer;
 import mcc.core.team.Team;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -26,7 +24,7 @@ public class ChatComponent implements Component, Listener { // TODO: Remove TEMP
 
     @Override
     public void init() {
-        Bukkit.getPluginManager().registerEvents(this, CoreTest.TEMP_INSTANCE);
+        this.connector.registerEvents(this);
     }
 
     @EventHandler

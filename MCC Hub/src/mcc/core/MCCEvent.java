@@ -1,8 +1,12 @@
 package mcc.core;
 
+import mcc.commands.MCCCoreCommand;
 import mcc.core.components.global.ChatComponent;
+import mcc.core.components.global.JoinQuitMessagesComponent;
 import mcc.core.event.EventChapter;
 import mcc.core.team.TeamManager;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * This class represents the current event.
@@ -19,19 +23,31 @@ public class MCCEvent {
     // Accessories, etc. are stored here
     // Basically anything that must be saved between chapters
 
-    private TeamManager teamManager = new TeamManager();
+    private final TeamManager teamManager;
 
+    private final ComponentContainer globalComponents;
     private final ComponentContainer chapterComponents;
 
     private EventChapter<?> currentChapter;
 
-    public MCCEvent() {
+    private final BukkitConnector bukkitConnector;
+
+    public MCCEvent(JavaPlugin plugin) {
         if (INSTANCE != null) throw new IllegalStateException("MCCEvent already initialized");
 
         INSTANCE = this;
 
+        this.bukkitConnector = new BukkitConnector();
+
+        this.teamManager = new TeamManager();
+
         this.chapterComponents = new ComponentContainer();
-        this.chapterComponents.addComponent(new ChatComponent(new BukkitConnector()));
+
+        this.globalComponents = new ComponentContainer();
+        this.globalComponents.addComponent(new ChatComponent(this.bukkitConnector));
+        this.globalComponents.addComponent(new JoinQuitMessagesComponent(this.bukkitConnector));
+
+        plugin.getCommand("mcc").setExecutor(new MCCCoreCommand(this));
     }
 
     /**
@@ -39,6 +55,7 @@ public class MCCEvent {
      * @param now The current time in milliseconds
      */
     public void tick(long now) {
+        this.globalComponents.tick(now);
         this.chapterComponents.tick(now);
 
         if (this.currentChapter != null) {
@@ -65,6 +82,7 @@ public class MCCEvent {
      * Cleans up the event and destroys all components.
      */
     public void destroy() {
+        this.globalComponents.destroy();
         this.chapterComponents.destroy();
     }
 
