@@ -25,9 +25,7 @@ public class PreEventCoinsPartProvider implements ScoreboardPartProvider {
         EventPlayer eventPlayer = this.bukkitConnector.getEventPlayer(viewer);
         PlayerStatistics stats = eventPlayer.getStatistics();
 
-        String eventCoinsString;
-        eventCoinsString = GREEN + "" + BOLD + "Last Event Coins: " + RESET + stats.getEventCoins(this.prevEventId) + "\ue016";
-
+        String eventCoinsString = GREEN + "" + BOLD + "Last Event Coins: " + RESET + stats.getEventCoins(this.prevEventId) + "\ue016";
         String lifetimeString = GREEN + "" + BOLD + "Lifetime Coins: " + RESET + stats.getTotalCoins() + "\ue016";
 
         return new Pair<>(new String[] { eventCoinsString, lifetimeString }, System.currentTimeMillis());
