@@ -5,6 +5,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
+import java.util.UUID;
+
 public class BukkitConnector {
 
     public void registerEvents(Listener listener) {
@@ -12,6 +14,10 @@ public class BukkitConnector {
     }
 
     public EventPlayer getEventPlayer(Player player) {
+        return this.getEventPlayer(player.getUniqueId());
+    }
+
+    public EventPlayer getEventPlayer(UUID uuid) {
         return new DummyEventPlayer();
     }
 }

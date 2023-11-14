@@ -31,6 +31,22 @@ public abstract class EventChapter<StateEnum extends Enum<StateEnum> & EventChap
     }
 
     /**
+     * Returns the current state of the chapter.
+     * @return The current state
+     */
+    protected StateEnum getCurrentState() {
+        return currentState;
+    }
+
+    /**
+     * Returns the current state instance of the chapter.
+     * @return The current state instance
+     */
+    public EventChapterState<StateEnum> getCurrentStateInstance() {
+        return currentStateInstance;
+    }
+
+    /**
      * Called when the {@link EventChapter} instance gets created.
      */
     public void init() {}

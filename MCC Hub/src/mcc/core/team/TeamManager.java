@@ -21,4 +21,12 @@ public class TeamManager {
     public void tick(long now) {
 
     }
+
+    public int getPlayerCount() {
+        return 0;
+    }
+
+    public int getTotalPlayerCount() {
+        return 0;
+    }
 }

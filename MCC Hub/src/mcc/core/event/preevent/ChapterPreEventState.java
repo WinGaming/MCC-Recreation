@@ -21,9 +21,14 @@ public enum ChapterPreEventState implements EventChapterStateFactory<ChapterPreE
     CHECKING_READINESS(ChapterPreEventCheckingReadiness::new),
 
     /**
-     * The countdown to the start of the event
+     * The countdown to the start of the event before waiting for decision dome
      */
-    EVENT_COUNTDOWN(ChapterPreEventEventCountdown::new);
+    EVENT_START_COUNTDOWN(ChapterPreEventEventStartCountdown::new),
+
+    /**
+     * The countdown to the start of the event waiting for dome
+     */
+    EVENT_DECISION_DOME_COUNTDOWN(ChapterPreEventEventDecisionDomeCountdown::new);
 
     private final Supplier<EventChapterState<ChapterPreEventState>> factory;
 

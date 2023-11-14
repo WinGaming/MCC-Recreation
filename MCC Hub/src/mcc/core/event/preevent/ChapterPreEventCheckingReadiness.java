@@ -18,7 +18,7 @@ public class ChapterPreEventCheckingReadiness extends EventChapterState<ChapterP
     @Override
     public Optional<ChapterPreEventState> tick(long now) {
         return MCCEvent.getInstance().getTeamManager().allTeamsReady()
-                ? Optional.of(ChapterPreEventState.EVENT_COUNTDOWN)
+                ? Optional.of(ChapterPreEventState.EVENT_START_COUNTDOWN)
                 : Optional.empty();
     }
 }
