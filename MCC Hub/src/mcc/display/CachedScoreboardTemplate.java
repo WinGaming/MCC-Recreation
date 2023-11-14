@@ -1,5 +1,6 @@
 package mcc.display;
 
+import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
@@ -52,7 +53,7 @@ public class CachedScoreboardTemplate {
 
 	public void show(Player player) {
 		final String objectiveId = "objective_id_" + this.objectiveIdSuffix;
-		
+
 		if (this.objective == null) {
 			this.objective = new ScoreboardObjective(new Scoreboard(), objectiveId, IScoreboardCriteria.DUMMY, title, EnumScoreboardHealthDisplay.INTEGER);
 		}

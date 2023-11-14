@@ -1,5 +1,6 @@
 package mcc.core.event.preevent;
 
+import mcc.core.BukkitConnector;
 import mcc.core.Component;
 import mcc.core.components.ComponentScoreboard;
 import mcc.core.event.EventChapter;
@@ -19,7 +20,7 @@ public class ChapterPreEvent extends EventChapter<ChapterPreEventState> {
         return new Component[] {
             new ComponentScoreboard(new CachedScoreboardTemplate(IChatBaseComponent.literal("title"), "preevent", new ScoreboardPartProvider[]{
                     new StaticScoreboardPartProvider("Line A", "Line B")
-            }))
+            }), new BukkitConnector()) // TODO: The bukkitConnector can be removed when loading from config, so no worries here :)
         }; // TODO: Load from config?
     }
 }
