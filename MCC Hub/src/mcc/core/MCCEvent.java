@@ -4,9 +4,13 @@ import mcc.commands.MCCCoreCommand;
 import mcc.core.components.global.ChatComponent;
 import mcc.core.components.global.JoinQuitMessagesComponent;
 import mcc.core.event.EventChapter;
+import mcc.core.team.Team;
 import mcc.core.team.TeamManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * This class represents the current event.
@@ -39,7 +43,7 @@ public class MCCEvent {
 
         this.bukkitConnector = new BukkitConnector();
 
-        this.teamManager = new TeamManager();
+        this.teamManager = new TeamManager(new ArrayList<>(Arrays.asList(new Team())));
 
         this.chapterComponents = new ComponentContainer();
 
@@ -47,7 +51,7 @@ public class MCCEvent {
         this.globalComponents.addComponent(new ChatComponent(this.bukkitConnector));
         this.globalComponents.addComponent(new JoinQuitMessagesComponent(this.bukkitConnector));
 
-        plugin.getCommand("mcc").setExecutor(new MCCCoreCommand(this));
+        plugin.getCommand("mcc").setExecutor(new MCCCoreCommand());
     }
 
     /**
@@ -76,6 +80,10 @@ public class MCCEvent {
         this.currentChapter = chapter;
         this.currentChapter.init();
         this.chapterComponents.addAll(chapter.createComponents());
+    }
+
+    public EventChapter<?> getCurrentChapter() {
+        return currentChapter;
     }
 
     /**

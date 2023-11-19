@@ -2,12 +2,15 @@ package mcc.core.team;
 
 import mcc.core.players.EventPlayer;
 
+import java.util.List;
 import java.util.Optional;
 
 public class TeamManager {
 
-    public void resetReadiness() {
+    private List<Team> teams;
 
+    public TeamManager(List<Team> teams) {
+        this.teams = teams;
     }
 
     public Optional<Team> getTeamOf(EventPlayer player) {
@@ -15,7 +18,15 @@ public class TeamManager {
     }
 
     public boolean allTeamsReady() {
-        return false; // TODO: This would paused ceitain actions until all teams are ready
+        for (Team team : this.teams) {
+            for (EventPlayer player : team.getPlayers()) {
+                if (!player.isReady()) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     public void tick(long now) {
@@ -27,6 +38,10 @@ public class TeamManager {
     }
 
     public int getTotalPlayerCount() {
-        return 0;
+        return this.teams.stream().reduce(0, (acc, team) -> acc + team.getPlayers().size(), Integer::sum);
+    }
+
+    public List<Team> getTeams() {
+        return this.teams;
     }
 }

@@ -7,7 +7,6 @@ import mcc.core.event.EventChapter;
  */
 public class ChapterNone extends EventChapter<ChapterNoneState> {
 
-
     public ChapterNone(ChapterNoneState initialState) {
         super(initialState);
     }

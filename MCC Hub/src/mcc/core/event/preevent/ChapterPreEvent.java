@@ -2,19 +2,23 @@ package mcc.core.event.preevent;
 
 import mcc.core.BukkitConnector;
 import mcc.core.Component;
+import mcc.core.MCCEvent;
 import mcc.core.components.ComponentScoreboard;
 import mcc.core.display.PlayerCountScoreboardPartProvider;
 import mcc.core.display.PreEventCoinsPartProvider;
 import mcc.core.display.TeamScoreboardPartProvider;
 import mcc.core.event.EventChapter;
+import mcc.core.team.Team;
 import mcc.core.team.TeamManager;
 import mcc.display.CachedScoreboardTemplate;
 import mcc.display.ScoreboardPartProvider;
-import mcc.display.StaticScoreboardPartProvider;
 import mcc.display.SuppliedTimerScoreboardPartProvider;
 import mcc.timer.Timer;
 import net.minecraft.EnumChatFormat;
 import net.minecraft.network.chat.IChatBaseComponent;
+
+import java.util.List;
+
 import static org.bukkit.ChatColor.*;
 
 public class ChapterPreEvent extends EventChapter<ChapterPreEventState> {
@@ -31,8 +35,8 @@ public class ChapterPreEvent extends EventChapter<ChapterPreEventState> {
                     "preevent",
                     new ScoreboardPartProvider[]{
                             new SuppliedTimerScoreboardPartProvider(this::getCurrentTimerTitle, this::getCurrentTimer),
-                            new PlayerCountScoreboardPartProvider(new TeamManager()), // TODO: Use actual TeamManager
-                            new TeamScoreboardPartProvider(new TeamManager(), new BukkitConnector()),
+                            new PlayerCountScoreboardPartProvider(MCCEvent.getInstance().getTeamManager()), // TODO: Use actual TeamManager
+                            new TeamScoreboardPartProvider(MCCEvent.getInstance().getTeamManager(), new BukkitConnector()),
                             new PreEventCoinsPartProvider(new BukkitConnector(), "TODO"),
                     }),
                     new BukkitConnector()

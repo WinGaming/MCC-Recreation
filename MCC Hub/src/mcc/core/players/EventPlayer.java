@@ -1,5 +1,7 @@
 package mcc.core.players;
 
+import java.util.UUID;
+
 public interface EventPlayer {
 
     String getDisplayName();
@@ -8,4 +10,11 @@ public interface EventPlayer {
 
     PlayerStatistics getStatistics();
 
+    boolean isReady();
+
+    void resetReady();
+
+    void markReady();
+
+    UUID getUniqueId();
 }
