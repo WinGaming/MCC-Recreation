@@ -23,6 +23,11 @@ public class ComponentScoreboard implements Component, Listener {
     }
 
     @Override
+    public void onChapterStateChange() {
+        Bukkit.getServer().getOnlinePlayers().forEach(this.template::show);
+    }
+
+    @Override
     public void init() {
         Bukkit.getServer().getOnlinePlayers().forEach(this.template::show);
     }

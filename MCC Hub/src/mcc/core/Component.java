@@ -17,6 +17,12 @@ public interface Component {
     default void tick(long now) {}
 
     /**
+     * Called when the chapter state changes.
+     * This includes the chapter changing.
+     */
+    default void onChapterStateChange() {}
+
+    /**
      * Called when the component is destroyed.
      */
     default void destroy() {}

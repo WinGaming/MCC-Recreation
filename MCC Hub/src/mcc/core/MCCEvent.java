@@ -82,6 +82,10 @@ public class MCCEvent {
         this.chapterComponents.addAll(chapter.createComponents());
     }
 
+    public void onChapterStateChange() {
+        this.chapterComponents.onChapterStateChange();
+    }
+
     public EventChapter<?> getCurrentChapter() {
         return currentChapter;
     }

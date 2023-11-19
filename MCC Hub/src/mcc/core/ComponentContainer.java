@@ -35,6 +35,10 @@ public class ComponentContainer {
         this.components.clear();
     }
 
+    public void onChapterStateChange() {
+        this.components.forEach(Component::onChapterStateChange);
+    }
+
     public void tick(long now) {
         this.components.forEach(comp -> comp.tick(now));
     }
