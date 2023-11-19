@@ -33,6 +33,11 @@ public class ComponentScoreboard implements Component, Listener {
     }
 
     @Override
+    public void tick(long now) {
+        Bukkit.getServer().getOnlinePlayers().forEach(this.template::show);
+    }
+
+    @Override
     public void destroy() {
         Bukkit.getServer().getOnlinePlayers().forEach(this.template::hide);
 

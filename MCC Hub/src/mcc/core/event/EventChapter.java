@@ -16,6 +16,7 @@ public abstract class EventChapter<StateEnum extends Enum<StateEnum> & EventChap
     public EventChapter(StateEnum initialState) {
         this.currentState = initialState;
         this.currentStateInstance = initialState.create();
+        this.currentStateInstance.init();
         MCCEvent.getInstance().onChapterStateChange();
     }
 
@@ -29,6 +30,7 @@ public abstract class EventChapter<StateEnum extends Enum<StateEnum> & EventChap
             this.currentStateInstance.destroy();
             this.currentState = newState.get();
             this.currentStateInstance = this.currentState.create();
+            this.currentStateInstance.init();
             MCCEvent.getInstance().onChapterStateChange();
         }
     }
