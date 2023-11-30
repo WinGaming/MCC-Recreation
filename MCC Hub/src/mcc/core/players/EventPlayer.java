@@ -2,19 +2,46 @@ package mcc.core.players;
 
 import java.util.UUID;
 
-public interface EventPlayer {
+public class EventPlayer {
 
-    String getDisplayName();
+    private final String displayName;
+    private final UUID uniqueId;
+    private final PlayerStatistics stats;
 
-    boolean isOnline();
+    private boolean isReady = false;
 
-    PlayerStatistics getStatistics();
+    public EventPlayer(String displayName, UUID uniqueId, PlayerStatistics stats) {
+        this.displayName = displayName;
+        this.uniqueId = uniqueId;
+        this.stats = stats;
+    }
 
-    boolean isReady();
 
-    void resetReady();
+    boolean isReady() {
+        return this.isReady;
+    }
 
-    void markReady();
+    void resetReady() {
+        this.isReady = false;
+    }
 
-    UUID getUniqueId();
+    void markReady() {
+        this.isReady = true;
+    }
+
+    String getDisplayName() {
+        return this.displayName;
+    }
+
+    boolean isOnline() {
+        return true; // TODO:
+    }
+
+    PlayerStatistics getStatistics() {
+        return this.stats;
+    }
+
+    UUID getUniqueId() {
+        return this.uniqueId;
+    }
 }

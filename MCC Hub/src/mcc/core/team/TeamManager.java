@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public class TeamManager {
 
-    private List<Team> teams;
+    private final List<Team> teams;
 
     public TeamManager(List<Team> teams) {
         this.teams = teams;

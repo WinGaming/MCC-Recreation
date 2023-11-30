@@ -1,18 +1,21 @@
 package mcc.core.team;
 
-import mcc.core.DummyEventPlayer;
 import mcc.core.players.EventPlayer;
-import org.bukkit.ChatColor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Team {
 
-    private List<EventPlayer> players = new ArrayList<>();
+    private final List<EventPlayer> players;
+    private final char teamSymbol;
+    private final String teamColor;
+    private final String name;
 
-    public Team() {
-        this.players.add(new DummyEventPlayer());
+    public Team(String name, String hexColor, char symbol, List<EventPlayer> players) {
+        this.name = name;
+        this.teamColor = hexColor;
+        this.teamSymbol = symbol;
+        this.players = players;
     }
 
     public List<EventPlayer> getPlayers() {
@@ -20,15 +23,15 @@ public class Team {
     }
 
     public char getTeamSymbol() {
-        return '#';
+        return this.teamSymbol;
     }
 
     public String getTeamHexColor() {
-        return "#FA3A7F";
+        return this.teamColor;
     }
 
     public String getName() {
-        return "Example Team";
+        return this.name;
     }
 
     public String buildFullText() {

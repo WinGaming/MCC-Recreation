@@ -3,12 +3,14 @@ package mcc.core;
 import mcc.commands.MCCCoreCommand;
 import mcc.core.components.global.ChatComponent;
 import mcc.core.components.global.JoinQuitMessagesComponent;
+import mcc.core.data.FileDataStorage;
 import mcc.core.event.EventChapter;
 import mcc.core.team.Team;
 import mcc.core.team.TeamManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -36,10 +38,14 @@ public class MCCEvent {
 
     private final BukkitConnector bukkitConnector;
 
+    private FileDataStorage dataStorage;
+
     public MCCEvent(JavaPlugin plugin) {
         if (INSTANCE != null) throw new IllegalStateException("MCCEvent already initialized");
 
         INSTANCE = this;
+
+        this.dataStorage = new FileDataStorage(new File("./db"));
 
         this.bukkitConnector = new BukkitConnector();
 
