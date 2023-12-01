@@ -1,5 +1,7 @@
 package mcc.core.players;
 
+import org.bukkit.Bukkit;
+
 import java.util.UUID;
 
 public class EventPlayer {
@@ -34,7 +36,7 @@ public class EventPlayer {
     }
 
     public boolean isOnline() {
-        return true; // TODO:
+        return Bukkit.getPlayer(this.getUniqueId()) != null; // TODO:
     }
 
     public PlayerStatistics getStatistics() {

@@ -4,6 +4,7 @@ import mcc.core.BukkitConnector;
 import mcc.core.MCCEvent;
 import mcc.core.event.EventChapter;
 import mcc.core.event.EventChapterState;
+import mcc.core.event.minigame.ChapterMinigame;
 import mcc.core.event.preevent.ChapterPreEvent;
 import mcc.core.event.preevent.ChapterPreEventWaiting;
 import mcc.core.players.EventPlayer;
@@ -40,6 +41,8 @@ public class MCCCoreCommand implements CommandExecutor {
                 EventPlayer player = new BukkitConnector().getEventPlayer((Player) sender);
                 player.markReady();
             }
+        } else if (args[0].equalsIgnoreCase("game")) {
+            MCCEvent.getInstance().setCurrentChapter(new ChapterMinigame());
         }
 
         return true;
