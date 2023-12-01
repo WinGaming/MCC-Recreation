@@ -17,31 +17,31 @@ public class EventPlayer {
     }
 
 
-    boolean isReady() {
+    public boolean isReady() {
         return this.isReady;
     }
 
-    void resetReady() {
+    public void resetReady() {
         this.isReady = false;
     }
 
-    void markReady() {
+    public void markReady() {
         this.isReady = true;
     }
 
-    String getDisplayName() {
+    public String getDisplayName() {
         return this.displayName;
     }
 
-    boolean isOnline() {
+    public boolean isOnline() {
         return true; // TODO:
     }
 
-    PlayerStatistics getStatistics() {
+    public PlayerStatistics getStatistics() {
         return this.stats;
     }
 
-    UUID getUniqueId() {
+    public UUID getUniqueId() {
         return this.uniqueId;
     }
 }

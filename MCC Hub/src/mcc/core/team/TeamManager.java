@@ -14,6 +14,11 @@ public class TeamManager {
     }
 
     public Optional<Team> getTeamOf(EventPlayer player) {
+        for (Team team : this.teams) {
+            if (team.getPlayers().contains(player)) {
+                return Optional.of(team);
+            }
+        }
         return Optional.empty();
     }
 

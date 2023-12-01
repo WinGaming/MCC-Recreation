@@ -49,7 +49,7 @@ public class MCCEvent {
 
         this.bukkitConnector = new BukkitConnector();
 
-        this.teamManager = new TeamManager(new ArrayList<>(Arrays.asList(new Team())));
+        this.teamManager = dataStorage.createTeamManager("test_event").get();
 
         this.chapterComponents = new ComponentContainer();
 

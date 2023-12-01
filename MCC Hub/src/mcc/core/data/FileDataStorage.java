@@ -41,7 +41,7 @@ public class FileDataStorage {
             return Optional.empty();
         }
     }
-
+/*
     public Optional<List<EventPlayer>> loadPlayers(String eventId) {
         List<EventPlayer> players = new ArrayList<>();
 
@@ -62,7 +62,7 @@ public class FileDataStorage {
                 String displayName = playerObject.get("displayName").getAsString();
 
                 Optional<PlayerStatistics> stats = this.getPlayerStats(identifier);
-                if (!stats.isPresent()) {
+                if (stats.isEmpty()) {
                     return Optional.empty();
                 }
 
@@ -75,10 +75,8 @@ public class FileDataStorage {
             return Optional.empty();
         }
     }
-
-    public TeamManager createTeamManager(String eventId) {
-
-
+*/
+    public Optional<TeamManager> createTeamManager(String eventId) {
         File eventFile = new File(this.dataFolder, eventId + ".json");
         if (!eventFile.exists()) {
             return Optional.empty();
@@ -95,7 +93,8 @@ public class FileDataStorage {
                 JsonArray playersArray = teamObject.get("players").getAsJsonArray();
                 List<EventPlayer> players = new ArrayList<>();
                 for (JsonElement playerElement : playersArray) {
-
+                    UUID uuid = UUID.fromString(playerElement.getAsString());
+                    players.add(new EventPlayer("name", uuid, getPlayerStats(uuid).orElse(new PlayerStatistics(new HashMap<>()))));
                 }
 
                 teams.add(new Team(
@@ -106,7 +105,7 @@ public class FileDataStorage {
                 ));
             }
 
-            return Optional.of(teams);
+            return Optional.of(new TeamManager(teams));
         } catch (IOException e) {
             e.printStackTrace();
             return Optional.empty();
