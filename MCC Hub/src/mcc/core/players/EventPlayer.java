@@ -36,7 +36,7 @@ public class EventPlayer {
     }
 
     public boolean isOnline() {
-        return Bukkit.getPlayer(this.getUniqueId()) != null; // TODO:
+        return true || Bukkit.getPlayer(this.getUniqueId()) != null; // TODO:
     }
 
     public PlayerStatistics getStatistics() {

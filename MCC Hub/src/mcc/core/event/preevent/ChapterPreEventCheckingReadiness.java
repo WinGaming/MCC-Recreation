@@ -35,7 +35,7 @@ public class ChapterPreEventCheckingReadiness extends EventChapterState<ChapterP
             this.lastCheck = now;
             MCCEvent.getInstance().getTeamManager().getTeams().forEach(team -> {
                 team.getPlayers().forEach(player -> {
-                    if (player.isOnline() && !player.isReady()) {
+                    if (true || (player.isOnline() && !player.isReady())) {
                         Bukkit.getServer().getPlayer(player.getUniqueId()).spigot().sendMessage(
                                 new ComponentBuilder().append("Is everyone on your team ready? /ready").create()
                         );

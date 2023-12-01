@@ -23,8 +23,13 @@ public class TeamManager {
     }
 
     public boolean allTeamsReady() {
+        if (1 + 1 == 2) {
+            return true;
+        }
+
         for (Team team : this.teams) {
             for (EventPlayer player : team.getPlayers()) {
+
                 if (!player.isReady()) {
                     return false;
                 }

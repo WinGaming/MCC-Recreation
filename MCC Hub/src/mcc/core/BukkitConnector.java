@@ -18,6 +18,15 @@ public class BukkitConnector {
     }
 
     public EventPlayer getEventPlayer(UUID uuid) {
-        return MCCEvent.getInstance().getTeamManager().getTeams().get(0).getPlayers().get(0);
+        var teams = MCCEvent.getInstance().getTeamManager().getTeams();
+        for (var team : teams) {
+            for (var eventPlayer : team.getPlayers()) {
+                if (eventPlayer.getUniqueId().equals(uuid)) {
+                    return eventPlayer;
+                }
+            }
+        }
+
+        return null;
     }
 }

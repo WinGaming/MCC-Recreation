@@ -3,6 +3,7 @@ package mcc.core.event.preevent;
 import mcc.core.BukkitConnector;
 import mcc.core.Component;
 import mcc.core.MCCEvent;
+import mcc.core.components.ComponentDemo;
 import mcc.core.components.ComponentScoreboard;
 import mcc.core.display.PlayerCountScoreboardPartProvider;
 import mcc.core.display.PreEventCoinsPartProvider;
@@ -41,6 +42,7 @@ public class ChapterPreEvent extends EventChapter<ChapterPreEventState> {
                     }),
                     new BukkitConnector()
             ), // TODO: The bukkitConnector can be removed when loading from config, so no worries here :)
+                new ComponentDemo(),
         }; // TODO: Load from config?
     }
 

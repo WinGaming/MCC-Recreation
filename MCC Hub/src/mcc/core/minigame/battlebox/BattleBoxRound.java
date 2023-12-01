@@ -52,8 +52,10 @@ public class BattleBoxRound {
                 }
         );
 
+        boolean a = false;
         for (Team team : MCCEvent.getInstance().getTeamManager().getTeams()) {
-            teams.put(team, new BattleBoxTeam(Material.AMETHYST_BLOCK));
+            teams.put(team, new BattleBoxTeam(a ? Material.AMETHYST_BLOCK : Material.BONE_BLOCK));
+            a = true;
         }
 
         this.state = BattleBoxRoundState.SELECT_KIT;
